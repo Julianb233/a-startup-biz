@@ -83,6 +83,29 @@ interface ServiceTimelineProps {
 }
 
 export default function ServiceTimeline({ timeline, serviceTitle }: ServiceTimelineProps) {
+  // Calculate total estimated time summary
+  const calculateTotalTime = () => {
+    const hasDurations = timeline.some(step => step.duration)
+    if (!hasDurations) return null
+
+    const hasOngoing = timeline.some(step => step.duration?.toLowerCase().includes('ongoing'))
+    const firstStepDuration = timeline[0]?.duration
+
+    if (hasOngoing) {
+      return `Starts ${firstStepDuration || 'immediately'}, ongoing support included`
+    }
+
+    // Simple summary for services with defined durations
+    const timeframes = timeline.map(s => s.duration).filter(Boolean)
+    if (timeframes.length > 0) {
+      return `Typical timeline: ${firstStepDuration} to complete setup`
+    }
+
+    return null
+  }
+
+  const totalTimeEstimate = calculateTotalTime()
+
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -105,6 +128,16 @@ export default function ServiceTimeline({ timeline, serviceTitle }: ServiceTimel
           <p className="text-lg text-gray-600 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             A clear, structured approach to delivering results for your business
           </p>
+
+          {/* Total time estimate */}
+          {totalTimeEstimate && (
+            <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200">
+              <Clock className="w-4 h-4 text-orange-600" />
+              <span className="text-sm font-semibold text-orange-700" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {totalTimeEstimate}
+              </span>
+            </div>
+          )}
         </motion.div>
 
         {/* Desktop Timeline - Horizontal */}
@@ -155,6 +188,16 @@ export default function ServiceTimeline({ timeline, serviceTitle }: ServiceTimel
                     <h3 className="text-lg font-bold text-black mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       {step.title}
                     </h3>
+
+                    {/* Duration badge */}
+                    {step.duration && (
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-2 rounded-full bg-orange-100 text-orange-600 border border-orange-200">
+                        <Clock className="w-3 h-3" />
+                        <span className="text-xs font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                          {step.duration}
+                        </span>
+                      </div>
+                    )}
 
                     {/* Step description */}
                     <p className="text-sm text-gray-600 leading-relaxed max-w-[200px]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -212,6 +255,17 @@ export default function ServiceTimeline({ timeline, serviceTitle }: ServiceTimel
                       <h3 className="text-xl font-bold text-black mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         {step.title}
                       </h3>
+
+                      {/* Duration badge */}
+                      {step.duration && (
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-2 rounded-full bg-orange-100 text-orange-600 border border-orange-200">
+                          <Clock className="w-3 h-3" />
+                          <span className="text-xs font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                            {step.duration}
+                          </span>
+                        </div>
+                      )}
+
                       <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         {step.description}
                       </p>

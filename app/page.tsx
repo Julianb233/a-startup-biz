@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
 import Header from "@/components/header"
 import HeroSection from "@/components/hero-section"
+import StatisticsShowcase from "@/components/statistics-showcase"
 import ServicesShowcase from "@/components/services-showcase"
 import HowItWorks from "@/components/how-it-works"
 import AboutSection from "@/components/about-section"
+import BlogPreview from "@/components/blog-preview"
 import CTASection from "@/components/cta-section"
 import Footer from "@/components/footer"
 
@@ -38,6 +40,9 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Statistics Showcase - The Numbers Don't Lie */}
+      <StatisticsShowcase />
+
       {/* Services Showcase */}
       <ServicesShowcase />
 
@@ -46,6 +51,9 @@ export default function Home() {
 
       {/* About Section */}
       <AboutSection />
+
+      {/* Blog Preview */}
+      <BlogPreview />
 
       {/* CTA Section */}
       <CTASection />

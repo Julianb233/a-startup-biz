@@ -213,12 +213,6 @@ export const services: Service[] = [
       testimonialQuote: 'Finally understand where my money is going. Tory found $12K in deductions I was missing.',
       testimonialAuthor: 'Jennifer L., Restaurant Owner'
     },
-    faqs: [
-      { question: 'What is the difference between accounting and bookkeeping?', answer: 'Bookkeeping is the daily recording of transactions. Accounting is the analysis, strategy, and tax planning based on those records. We offer both—clean books and strategic financial guidance to help you make smarter decisions.' },
-      { question: 'How much can I really save on taxes?', answer: 'Most small businesses overpay by 20-40% due to missed deductions and poor planning. We average $15K-$50K in tax savings annually per client through proactive planning, entity optimization, and finding every legitimate deduction.' },
-      { question: 'Do you work with my existing CPA?', answer: 'Absolutely. We can either handle all your accounting and tax needs, or work alongside your CPA providing monthly financials and strategic support. Many CPAs appreciate having clean, organized books to work with at tax time.' },
-      { question: 'How often will I get financial reports?', answer: 'You receive monthly financial statements (P&L, Balance Sheet, Cash Flow) within 48 hours of month-end. You also get real-time access to your dashboard 24/7 so you always know where you stand.' }
-    ],
     relatedServices: ['legal-services', 'bookkeeping', 'accounting-services'],
   },
   {
@@ -267,12 +261,6 @@ export const services: Service[] = [
       testimonialQuote: 'My books were a disaster. Tory cleaned them up and now I actually know my numbers.',
       testimonialAuthor: 'David K., Contractor'
     },
-    faqs: [
-      { question: 'Do I really need a bookkeeper if I use QuickBooks?', answer: 'QuickBooks is a tool, not a solution. Most business owners who try to DIY their bookkeeping make costly errors in categorization, reconciliation, and reporting. A professional bookkeeper ensures your data is accurate and your books are audit-ready.' },
-      { question: 'How far behind can my books be for you to help?', answer: 'We have cleaned up books that were years behind. Our catch-up service gets you current quickly, typically within 1-2 weeks depending on volume. The longer you wait, the harder (and more expensive) it gets, so start now.' },
-      { question: 'What is included in your monthly bookkeeping service?', answer: 'Daily transaction recording, monthly bank reconciliation, accounts payable/receivable tracking, financial statement preparation, and access to your financial dashboard. Payroll processing is available as an add-on.' },
-      { question: 'Will you handle my payroll taxes too?', answer: 'Yes. Our payroll service includes accurate tax withholding, quarterly tax filings, W-2/1099 preparation, and direct deposit setup. No more worrying about IRS penalties for late or incorrect payroll tax payments.' }
-    ],
     relatedServices: ['ein-filing', 'business-strategy', 'accounting-services'],
   },
   {
@@ -323,12 +311,6 @@ export const services: Service[] = [
       testimonialQuote: 'The AI chatbot Tory built handles 70% of our customer inquiries automatically. Game changer.',
       testimonialAuthor: 'Alex P., SaaS Founder'
     },
-    faqs: [
-      { question: 'How much technical knowledge do I need to use AI tools?', answer: 'None. We build AI solutions that are simple for your team to use. We handle all the technical complexity—setup, integration, and ongoing maintenance. You just use the tools like any other software.' },
-      { question: 'Can AI really handle customer service as well as a human?', answer: 'For routine inquiries, scheduling, and FAQs—absolutely. AI chatbots handle 60-80% of typical customer questions instantly, 24/7. Complex issues still route to your team, but AI drastically reduces your support workload.' },
-      { question: 'What if the AI makes a mistake or gives wrong information?', answer: 'We train and test AI systems extensively before deployment. They work from your approved knowledge base, so responses are controlled and accurate. We also implement human oversight for critical interactions and monitor performance continuously.' },
-      { question: 'How long does it take to implement an AI solution?', answer: 'Simple chatbots can be live in 2-3 weeks. Complex custom automation typically takes 4-8 weeks including testing. We start with quick wins to deliver value fast, then expand capabilities over time.' }
-    ],
     relatedServices: ['bookkeeping', 'business-analytics', 'business-strategy'],
   },
   {
@@ -379,12 +361,6 @@ export const services: Service[] = [
       testimonialQuote: 'Our sales team finally has a system that works. Close rate up 40% in 3 months.',
       testimonialAuthor: 'Tom H., Insurance Agency Owner'
     },
-    faqs: [
-      { question: 'Which CRM platform do you recommend?', answer: 'It depends on your business size, budget, and needs. We typically recommend HubSpot for marketing-heavy businesses, Salesforce for enterprise, and Pipedrive or Close for sales teams. We help you choose the right fit, not just the most expensive.' },
-      { question: 'Can you migrate data from our current system?', answer: 'Yes. We safely migrate customer data, deal history, and contact information from spreadsheets, old CRMs, or other systems. We clean and organize data during migration so you start with quality information.' },
-      { question: 'Will my team actually use the CRM?', answer: 'That is why we focus on user adoption. We design simple workflows, provide hands-on training, and set up automation to reduce manual data entry. When a CRM makes their job easier, teams embrace it.' },
-      { question: 'How do you measure CRM success?', answer: 'We track adoption rate (team usage), lead response time, sales cycle length, and close rates. A successful CRM improves all these metrics. We provide monthly reports showing exactly how the CRM impacts your bottom line.' }
-    ],
     relatedServices: ['accounting-services', 'virtual-assistants', 'business-analytics'],
   },
   {
@@ -435,12 +411,6 @@ export const services: Service[] = [
       testimonialQuote: 'New website tripled our online leads. Should have done this years ago.',
       testimonialAuthor: 'Karen S., Law Firm Partner'
     },
-    faqs: [
-      { question: 'How long does it take to build a website?', answer: 'Most business websites take 4-8 weeks from start to launch. This includes discovery, design, development, content, and testing. Rush projects can be completed faster for an additional fee.' },
-      { question: 'Will I be able to update the website myself?', answer: 'Absolutely. We build sites on modern CMS platforms (WordPress, Webflow, or custom) that let you update content, add pages, and manage your site without coding. We provide training and documentation.' },
-      { question: 'Do you provide website hosting and maintenance?', answer: 'Yes. We offer managed hosting, security updates, backups, and ongoing maintenance. You can also host elsewhere—we build sites that work with any quality hosting provider.' },
-      { question: 'What if I do not like the design?', answer: 'We show you design mockups before development begins. You get multiple revision rounds to ensure you love the design. We do not start building until you approve the design—no surprises.' }
-    ],
     relatedServices: ['crm-implementation', 'website-development', 'it-services'],
   },
   {
@@ -491,12 +461,6 @@ export const services: Service[] = [
       testimonialQuote: 'Finally a marketing strategy that actually makes sense. Our CAC dropped by half.',
       testimonialAuthor: 'Ryan M., B2B Software'
     },
-    faqs: [
-      { question: 'How do you determine which marketing channels to use?', answer: 'We start with where your ideal customers actually spend time. Through market research and competitor analysis, we identify the 2-3 channels most likely to drive results, then test and optimize. No wasted budget on channels that do not work for your business.' },
-      { question: 'What is your typical ROI on marketing campaigns?', answer: 'Most clients see 3-5x ROI within 6 months. Early campaigns focus on testing and learning, then we scale what works. We track every dollar spent and every lead generated so you know exactly what is working.' },
-      { question: 'Do you handle the actual marketing execution or just strategy?', answer: 'Both. We create the strategy AND execute it—content creation, ad campaigns, email marketing, social media. You get a full marketing team at a fraction of the cost of hiring in-house.' },
-      { question: 'How often will I see campaign results and reports?', answer: 'Weekly performance updates and monthly detailed reports. You also get real-time dashboard access 24/7 to see campaign performance, lead flow, and ROI anytime.' }
-    ],
     relatedServices: ['ai-solutions', 'marketing-strategy', 'social-media'],
   },
   {
@@ -547,12 +511,6 @@ export const services: Service[] = [
       testimonialQuote: 'Tory saw opportunities I was blind to. Revenue up 60% following his strategy.',
       testimonialAuthor: 'Patricia W., Manufacturing CEO'
     },
-    faqs: [
-      { question: 'How is your consulting different from other business consultants?', answer: 'Most consultants have MBAs and case studies. I have 46 years and 100+ businesses actually built and scaled. You get advice from someone who has done it, not just studied it. Real experience beats theory every time.' },
-      { question: 'Do you work with startups or just established businesses?', answer: 'Both. Startups get help validating ideas, building business plans, and avoiding costly mistakes. Established businesses get growth strategies, operational improvements, and scaling plans. The approach differs, but the value is the same—actionable guidance from experience.' },
-      { question: 'What if I need help implementing the strategy?', answer: 'We do not just hand you a plan and disappear. Implementation support is available—we can introduce you to our network, help hire key roles, or provide fractional executive support to execute the strategy alongside you.' },
-      { question: 'How long does a typical strategic consulting engagement last?', answer: 'Initial strategy development takes 4-6 weeks. Many clients then retain us for ongoing quarterly reviews and strategic guidance. The relationship evolves based on your needs and growth stage.' }
-    ],
     relatedServices: ['seo-services', 'content-creation', 'ai-solutions'],
   },
   {
@@ -602,12 +560,6 @@ export const services: Service[] = [
       testimonialQuote: 'Went from constant turnover to a stable, happy team. The hiring system Tory built works.',
       testimonialAuthor: 'Lisa T., Healthcare Practice Owner'
     },
-    faqs: [
-      { question: 'Do I need HR services if I only have a few employees?', answer: 'Absolutely. Even one bad hire or one HR compliance mistake can cost you tens of thousands. Proper hiring processes, employee handbooks, and compliance from day one protects you from costly lawsuits and turnover.' },
-      { question: 'Can you help me fire a problem employee legally?', answer: 'Yes. We guide you through proper termination procedures that minimize legal risk. This includes documentation, final pay requirements, unemployment claims, and separation agreements. Doing it right protects you from wrongful termination lawsuits.' },
-      { question: 'What HR compliance do I actually need to worry about?', answer: 'Depends on your state, industry, and employee count. Common requirements include employment posters, harassment prevention training, I-9 verification, workers comp insurance, and proper wage/hour practices. We audit your compliance and fix gaps.' },
-      { question: 'How do you help improve employee retention?', answer: 'We implement structured onboarding, clear job descriptions, performance feedback systems, and development plans. Employees stay when they know what is expected, feel valued, and see a future. Our systems create that environment.' }
-    ],
     relatedServices: ['social-media', 'seo-services', 'content-creation'],
   },
   {
@@ -657,12 +609,6 @@ export const services: Service[] = [
       testimonialQuote: 'We had a ransomware attempt. Their security caught it before any damage. Worth every penny.',
       testimonialAuthor: 'Mark D., Accounting Firm'
     },
-    faqs: [
-      { question: 'Do you provide on-site IT support or just remote?', answer: 'Both. Most issues are resolved remotely within minutes. For hardware problems, network setup, or on-site needs, we dispatch technicians. You get fast remote support backed by local presence when needed.' },
-      { question: 'What happens if we get hacked or hit with ransomware?', answer: 'Our cybersecurity measures prevent 99% of attacks. If an incident occurs, we have incident response protocols—isolate the threat, recover from backups, and restore operations fast. Our clients have never paid a ransom because we have proper backups.' },
-      { question: 'Can you work with our existing IT setup?', answer: 'Yes. We assess your current infrastructure and either enhance it or migrate you to better systems. We work with all major platforms—Microsoft, Google, Apple—and can integrate with your existing tools.' },
-      { question: 'How quickly do you respond to IT emergencies?', answer: 'Critical issues (server down, security breach, complete outage) get immediate response—within 15 minutes. High priority issues within 1 hour. Standard requests within 4 hours. We monitor systems 24/7 to catch problems before they impact you.' }
-    ],
     relatedServices: ['business-coaching', 'legal-services', 'business-analytics'],
   },
   {
@@ -712,12 +658,6 @@ export const services: Service[] = [
       testimonialQuote: 'From 500 to 15,000 followers in 6 months. Our DMs are now full of leads.',
       testimonialAuthor: 'Chris B., Fitness Studio Owner'
     },
-    faqs: [
-      { question: 'Which social media platforms should my business be on?', answer: 'It depends on your audience. B2B companies thrive on LinkedIn. Retail and lifestyle brands need Instagram and Facebook. Service businesses often succeed with Facebook and YouTube. We analyze where your customers are and focus there—not everywhere.' },
-      { question: 'How often should I be posting on social media?', answer: 'Quality beats quantity. We recommend 3-5 posts per week on main platforms, daily Stories/Reels for engagement. Consistency matters more than volume. We create a sustainable posting schedule you can actually maintain.' },
-      { question: 'Do you handle responding to comments and messages?', answer: 'Yes. Community management is included—we respond to comments, answer DMs, and engage with your audience daily. This builds relationships and keeps your social presence active even when you are busy.' },
-      { question: 'How do you measure social media success?', answer: 'We track engagement rate, follower growth, website traffic from social, and most importantly—leads and sales generated. Vanity metrics like follower count matter less than actual business results. We optimize for ROI, not just likes.' }
-    ],
     relatedServices: ['virtual-assistants', 'legal-services', 'business-coaching'],
   },
   {
@@ -767,12 +707,6 @@ export const services: Service[] = [
       testimonialQuote: 'Went from page 5 to position 3 in 4 months. Organic leads now beat our paid ads.',
       testimonialAuthor: 'Steve R., Plumbing Company Owner'
     },
-    faqs: [
-      { question: 'How long does SEO take to show results?', answer: 'Expect to see movement in 3-4 months and significant results in 6-12 months. SEO is a long-term strategy, not a quick fix. However, technical fixes can improve site speed and user experience immediately.' },
-      { question: 'Can you guarantee first page rankings?', answer: 'Anyone who guarantees #1 rankings is lying. We can guarantee quality work, best practices, and steady improvement. Our track record shows 80%+ of clients reach page 1 for target keywords within 12 months.' },
-      { question: 'What is the difference between SEO and paid ads?', answer: 'Paid ads deliver immediate traffic but stop when you stop paying. SEO builds long-term organic traffic that keeps coming without ad spend. Smart businesses use both—ads for quick wins, SEO for sustainable growth.' },
-      { question: 'Do you do local SEO for service area businesses?', answer: 'Absolutely. Local SEO is one of our specialties—Google Business Profile optimization, local citations, review management, and local content. Perfect for businesses serving specific geographic areas.' }
-    ],
     relatedServices: ['ai-solutions', 'website-development', 'crm-implementation'],
   },
   {
@@ -822,12 +756,6 @@ export const services: Service[] = [
       testimonialQuote: 'My VA handles everything I used to dread. I focus on sales now. Best decision ever.',
       testimonialAuthor: 'Amy K., Consulting Firm'
     },
-    faqs: [
-      { question: 'Where are your virtual assistants located?', answer: 'We work with skilled VAs in the Philippines and Latin America. They are highly trained, English-fluent, and work in your time zone. Many have college degrees and specialized skills beyond basic admin work.' },
-      { question: 'What if my VA does not work out?', answer: 'We provide a 30-day trial period. If the match is not right, we find you a replacement at no additional cost. Our goal is the right long-term fit, not just filling a seat.' },
-      { question: 'How do I communicate with and manage a VA?', answer: 'We set you up with project management tools (Asana, Trello) and communication platforms (Slack, Zoom). Daily check-ins, clear task lists, and regular feedback keep everyone aligned. We provide management training if needed.' },
-      { question: 'Can a VA really handle sensitive business information?', answer: 'Yes. All VAs sign NDAs and data security agreements. We implement access controls, secure password management, and regular security training. Many of our clients trust VAs with financial data, customer information, and confidential projects.' }
-    ],
     relatedServices: ['marketing-strategy', 'content-creation', 'seo-services'],
   },
   {
@@ -877,12 +805,6 @@ export const services: Service[] = [
       testimonialQuote: 'Tory sees around corners I cannot. His coaching doubled my business in one year.',
       testimonialAuthor: 'James F., Agency Owner'
     },
-    faqs: [
-      { question: 'How is coaching different from consulting?', answer: 'Consulting tells you what to do. Coaching helps you figure it out and holds you accountable to do it. You get strategic advice PLUS accountability, support, and someone in your corner through challenges. The combination drives faster results.' },
-      { question: 'What should I expect from our coaching sessions?', answer: 'Weekly 60-minute calls focused on your biggest challenges and opportunities. We review progress, solve problems, plan next steps, and ensure you stay on track. Between sessions, you have email access for quick guidance.' },
-      { question: 'Do you work with businesses in specific industries?', answer: 'I have experience across dozens of industries—from retail to services to manufacturing to tech. Business fundamentals are universal. The specifics change, but growth principles remain the same.' },
-      { question: 'What results can I expect from coaching?', answer: 'Most coaching clients see faster decision-making, better strategic clarity, and accelerated growth. On average, businesses grow 2x faster with coaching than trying to figure it out alone. You also avoid expensive mistakes I have already made.' }
-    ],
     relatedServices: ['website-development', 'content-creation', 'social-media'],
   },
   {
@@ -931,12 +853,6 @@ export const services: Service[] = [
       testimonialQuote: 'The new website copy Tory created increased our conversions by 180%. Words matter.',
       testimonialAuthor: 'Nicole A., SaaS Company'
     },
-    faqs: [
-      { question: 'Do you write content for technical or niche industries?', answer: 'Yes. We research your industry thoroughly and interview you to understand technical details. Our writers adapt to any industry voice—from legal to medical to engineering. If you can explain it, we can write about it compellingly.' },
-      { question: 'Can you match my brand voice?', answer: 'Absolutely. We start with a brand voice discovery session, review your existing content, and create style guidelines. Most clients cannot tell the difference between our writing and their own after the first few pieces.' },
-      { question: 'How many revisions do I get?', answer: 'Two rounds of revisions are included on all content. In reality, most clients are happy after the first draft because we nail the voice and messaging early. Additional revisions available if needed.' },
-      { question: 'Do you handle the SEO keywords or do I provide them?', answer: 'We handle keyword research as part of content strategy. We identify what your customers are searching for and create content targeting those terms. You can also provide specific keywords you want to rank for.' }
-    ],
     relatedServices: ['hr-solutions', 'bookkeeping', 'crm-implementation'],
   },
   {
@@ -986,12 +902,6 @@ export const services: Service[] = [
       testimonialQuote: 'Finally have a single dashboard showing everything. Found $50K in hidden opportunities.',
       testimonialAuthor: 'Robert T., E-commerce CEO'
     },
-    faqs: [
-      { question: 'What data sources can you integrate into dashboards?', answer: 'We connect virtually any business system—QuickBooks, Salesforce, Shopify, Google Analytics, social media platforms, ad accounts, and more. If it has an API or exports data, we can integrate it into your dashboard.' },
-      { question: 'Do I need a data analyst on staff to use your dashboards?', answer: 'No. We design dashboards for business owners, not data scientists. Clear visualizations, plain-English insights, and intuitive navigation. You will understand your metrics at a glance.' },
-      { question: 'How much does a custom dashboard cost?', answer: 'Depends on complexity and data sources. Simple dashboards start at $2,500 one-time setup. Complex multi-source dashboards with predictive analytics range from $8,000-$15,000. Monthly support and updates available.' },
-      { question: 'Can you help us figure out what we should be measuring?', answer: 'Absolutely. Many businesses track too many metrics or the wrong ones. We help you identify the 5-10 KPIs that actually drive your business, then build dashboards around those critical numbers.' }
-    ],
     relatedServices: ['business-strategy', 'business-analytics', 'marketing-strategy'],
   }
 ];

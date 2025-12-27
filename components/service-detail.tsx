@@ -1,8 +1,9 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
+import { useState, useEffect } from "react"
 import {
   FileText,
   Scale,
@@ -26,12 +27,14 @@ import {
   ArrowLeft,
   Clock,
   Shield,
-  Zap
+  Zap,
+  ChevronRight
 } from "lucide-react"
-import { Service } from "@/lib/service-data"
+import { Service, getRelatedServices } from "@/lib/service-data"
 import ServiceBenefitCards from "./service-benefit-cards"
 import ServiceTimeline from "./service-timeline"
 import BusinessImpactSection from "./business-impact-section"
+import ServiceFAQ from "./service-faq"
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -59,6 +62,7 @@ interface ServiceDetailProps {
 
 export default function ServiceDetail({ service }: ServiceDetailProps) {
   const Icon = iconMap[service.icon]
+  const [showStickyCTA, setShowStickyCTA] = useState(false)
 
   const priceDisplay = service.pricing.customQuote
     ? "Custom Quote"
@@ -71,6 +75,16 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
       ? 'one-time'
       : `per ${service.pricing.billingPeriod}`
     : ''
+
+  // Scroll listener for sticky CTA bar
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyCTA(window.scrollY > 200)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <>
@@ -109,11 +123,50 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
       {/* Main Content Section */}
       <section className={`${service.heroImage ? 'pt-12' : 'pt-32'} pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-orange-50 to-white`}>
         <div className="max-w-7xl mx-auto">
+          {/* Breadcrumb Navigation */}
+          <motion.nav
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+            aria-label="Breadcrumb"
+          >
+            <ol className="flex items-center gap-2 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <li>
+                <Link
+                  href="/"
+                  className="text-gray-500 hover:text-[#ff6a1a] transition-colors"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+              </li>
+              <li>
+                <Link
+                  href="/services"
+                  className="text-gray-500 hover:text-[#ff6a1a] transition-colors"
+                >
+                  Services
+                </Link>
+              </li>
+              <li>
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+              </li>
+              <li>
+                <span className="text-[#ff6a1a] font-medium">
+                  {service.title}
+                </span>
+              </li>
+            </ol>
+          </motion.nav>
+
           {/* Back Button */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-8"
           >
             <Link
@@ -199,7 +252,7 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                 {/* CTA Buttons */}
                 <div className="space-y-3 mb-8">
                   <Link
-                    href="/contact"
+                    href={`/contact?service=${service.slug}`}
                     className="w-full flex items-center justify-center gap-2 bg-[#ff6a1a] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#e55f17] transition-all shadow-md hover:shadow-lg"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
@@ -295,6 +348,85 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
         <BusinessImpactSection impact={service.businessImpact} serviceTitle={service.shortTitle} />
       )}
 
+      {/* FAQ Section */}
+      {service.faqs && service.faqs.length > 0 && (
+        <ServiceFAQ faqs={service.faqs} serviceTitle={service.shortTitle} />
+      )}
+
+      {/* Related Services Section */}
+      {(() => {
+        const relatedServices = getRelatedServices(service);
+        if (relatedServices.length === 0) return null;
+
+        return (
+          <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+            <div className="max-w-7xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-12"
+              >
+                <h2 className="text-3xl sm:text-4xl font-bold text-black mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Often Paired With
+                </h2>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Maximize your business success with these complementary services
+                </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-3 gap-8">
+                {relatedServices.map((relatedService, index) => {
+                  const RelatedIcon = iconMap[relatedService.icon];
+                  const relatedPriceDisplay = relatedService.pricing.customQuote
+                    ? "Custom Quote"
+                    : relatedService.pricing.priceRange
+                    ? `From $${relatedService.pricing.priceRange.min.toLocaleString()}`
+                    : `$${relatedService.pricing.basePrice.toLocaleString()}`;
+
+                  return (
+                    <motion.div
+                      key={relatedService.slug}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <Link
+                        href={`/services/${relatedService.slug}`}
+                        className="block h-full bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-2xl p-6 hover:border-[#ff6a1a] hover:shadow-lg transition-all group"
+                      >
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="w-14 h-14 bg-gradient-to-br from-[#ff6a1a] to-[#e55f17] rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                            {RelatedIcon && <RelatedIcon className="w-7 h-7 text-white" />}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-black mb-1 group-hover:text-[#ff6a1a] transition-colors" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                              {relatedService.shortTitle}
+                            </h3>
+                            <div className="text-sm font-semibold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                              {relatedPriceDisplay}
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                          {relatedService.description}
+                        </p>
+                        <div className="flex items-center gap-2 text-[#ff6a1a] font-semibold text-sm group-hover:gap-3 transition-all" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                          Learn More
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
       {/* Why Work With Tory Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black">
         <div className="max-w-7xl mx-auto">
@@ -366,7 +498,7 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/contact"
+                href={`/contact?service=${service.slug}`}
                 className="inline-flex items-center justify-center gap-2 bg-[#ff6a1a] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#e55f17] transition-all shadow-md hover:shadow-lg"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
@@ -384,6 +516,44 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
           </motion.div>
         </div>
       </section>
+
+      {/* Sticky Mobile CTA Bar */}
+      <AnimatePresence>
+        {showStickyCTA && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
+          >
+            <div className="bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-lg">
+              <div className="px-4 py-3 flex items-center justify-between gap-3">
+                {/* Service Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-black truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    {service.shortTitle}
+                  </div>
+                  <div className="text-xs text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    {priceDisplay}
+                    {billingPeriod && ` ${billingPeriod}`}
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <Link
+                  href={`/contact?service=${service.slug}`}
+                  className="flex items-center gap-2 bg-[#ff6a1a] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#e55f17] transition-all shadow-md whitespace-nowrap"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Get Started
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

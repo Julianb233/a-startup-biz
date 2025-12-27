@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
 import {
   FileText,
@@ -76,8 +76,37 @@ interface ServiceBenefitCardsProps {
 }
 
 export default function ServiceBenefitCards({ cards, serviceTitle }: ServiceBenefitCardsProps) {
+  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set())
+  const [autoFlipTriggered, setAutoFlipTriggered] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(true)
+  const [isInView, setIsInView] = useState(false)
+  const sectionRef = useRef<HTMLDivElement>(null)
+
+  // Intersection Observer to detect when cards come into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !autoFlipTriggered) {
+          setIsInView(true)
+        }
+      },
+      { threshold: 0.3 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [autoFlipTriggered])
+
+  const handleCardFlip = (index: number) => {
+    setFlippedCards(prev => new Set(prev).add(index))
+    setShowTooltip(false)
+  }
+
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
+    <section ref={sectionRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -100,7 +129,7 @@ export default function ServiceBenefitCards({ cards, serviceTitle }: ServiceBene
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
           {cards.map((card, index) => (
             <motion.div
               key={index}
@@ -108,8 +137,39 @@ export default function ServiceBenefitCards({ cards, serviceTitle }: ServiceBene
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="relative"
             >
-              <BenefitCard card={card} index={index} />
+              <BenefitCard
+                card={card}
+                index={index}
+                hasBeenFlipped={flippedCards.has(index)}
+                onFlip={handleCardFlip}
+                shouldAutoFlip={index === 0 && isInView && !autoFlipTriggered}
+                onAutoFlipComplete={() => setAutoFlipTriggered(true)}
+              />
+
+              {/* "Click to explore" tooltip - only on first unflipped card, desktop only */}
+              {index === 0 && showTooltip && !flippedCards.has(0) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="hidden lg:block absolute -top-16 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
+                >
+                  <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="bg-[#ff6a1a] text-white px-4 py-2 rounded-lg shadow-lg text-sm font-semibold whitespace-nowrap"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    Click to explore
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                      <div className="border-8 border-transparent border-t-[#ff6a1a]" />
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
             </motion.div>
           ))}
         </div>
@@ -118,10 +178,20 @@ export default function ServiceBenefitCards({ cards, serviceTitle }: ServiceBene
   )
 }
 
-function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
+interface BenefitCardProps {
+  card: ServiceCard
+  index: number
+  hasBeenFlipped: boolean
+  onFlip: (index: number) => void
+  shouldAutoFlip: boolean
+  onAutoFlipComplete: () => void
+}
+
+function BenefitCard({ card, index, hasBeenFlipped, onFlip, shouldAutoFlip, onAutoFlipComplete }: BenefitCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
+  const autoFlipExecutedRef = useRef(false)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -134,6 +204,28 @@ function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
     stiffness: 300,
     damping: 30,
   })
+
+  // Auto-flip first card after delay when in view
+  useEffect(() => {
+    if (shouldAutoFlip && !autoFlipExecutedRef.current) {
+      autoFlipExecutedRef.current = true
+
+      // Wait 2.5s, then flip to back
+      const flipToBack = setTimeout(() => {
+        setIsFlipped(true)
+
+        // Wait 2s, then flip back to front
+        const flipToFront = setTimeout(() => {
+          setIsFlipped(false)
+          onAutoFlipComplete()
+        }, 2000)
+
+        return () => clearTimeout(flipToFront)
+      }, 2500)
+
+      return () => clearTimeout(flipToBack)
+    }
+  }, [shouldAutoFlip, onAutoFlipComplete])
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current || isFlipped) return
@@ -155,6 +247,23 @@ function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
     setIsHovered(false)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault() // Prevent page scroll on Space key
+      setIsFlipped(!isFlipped)
+      if (!isFlipped) {
+        onFlip(index)
+      }
+    }
+  }
+
+  const handleClick = () => {
+    setIsFlipped(!isFlipped)
+    if (!isFlipped) {
+      onFlip(index)
+    }
+  }
+
   const Icon = iconMap[card.icon] || Zap
 
   return (
@@ -167,7 +276,7 @@ function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
       style={{ perspective: "1000px" }}
     >
       <motion.div
-        className="relative w-full h-[400px] cursor-pointer"
+        className="relative w-full h-[400px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#ff6a1a] focus:ring-offset-2 rounded-2xl"
         style={{
           rotateX: isFlipped ? 0 : rotateX,
           rotateY: isFlipped ? 180 : rotateY,
@@ -180,7 +289,11 @@ function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
           duration: 0.6,
           ease: "easeInOut",
         }}
-        onClick={() => setIsFlipped(!isFlipped)}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-label={`${card.title} - ${isFlipped ? 'showing highlights' : 'click or press Enter to flip and see highlights'}`}
       >
         {/* Front of card */}
         <motion.div
@@ -190,7 +303,37 @@ function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
             transformStyle: "preserve-3d",
           }}
         >
-          <div className="relative w-full h-full bg-white border-2 border-gray-200 rounded-2xl overflow-hidden group hover:border-[#ff6a1a]/50 transition-colors duration-300">
+          <motion.div
+            className="relative w-full h-full bg-white rounded-2xl overflow-hidden group transition-colors duration-300"
+            style={{
+              border: '2px solid',
+            }}
+            animate={
+              !hasBeenFlipped
+                ? {
+                    borderColor: [
+                      'rgb(229, 231, 235)', // gray-200
+                      'rgba(255, 106, 26, 0.4)', // orange with opacity
+                      'rgb(229, 231, 235)', // gray-200
+                    ],
+                  }
+                : {
+                    borderColor: 'rgb(229, 231, 235)',
+                  }
+            }
+            transition={
+              !hasBeenFlipped
+                ? {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }
+                : {}
+            }
+            whileHover={{
+              borderColor: 'rgba(255, 106, 26, 0.5)',
+            }}
+          >
             {/* Gradient overlay on hover */}
             <motion.div
               className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/0 to-[#ff6a1a]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -254,7 +397,7 @@ function BenefitCard({ card, index }: { card: ServiceCard; index: number }) {
               {/* Bottom accent */}
               <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff6a1a] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* Back of card */}

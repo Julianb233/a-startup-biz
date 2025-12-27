@@ -3,6 +3,9 @@ import type { Metadata, Viewport } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import { Montserrat, Lato } from "next/font/google"
 import SmoothScroll from "@/components/smooth-scroll"
+import { AuthProvider } from "@/components/auth-provider"
+import { ChatbotProvider } from "@/components/chatbot-provider"
+import SalesChatbot from "@/components/sales-chatbot"
 import "./globals.css"
 
 const montserrat = Montserrat({
@@ -145,7 +148,12 @@ export default function RootLayout({
       <body
         className={`font-sans antialiased overflow-x-hidden bg-white ${montserrat.variable} ${lato.variable}`}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        <AuthProvider>
+          <ChatbotProvider>
+            <SmoothScroll>{children}</SmoothScroll>
+            <SalesChatbot />
+          </ChatbotProvider>
+        </AuthProvider>
         <Analytics />
       </body>
     </html>

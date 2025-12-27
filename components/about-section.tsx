@@ -2,30 +2,32 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Award, TrendingUp, Users, Target, CheckCircle2, Sparkles } from 'lucide-react';
+import { Award, Briefcase, Users, Target, CheckCircle2, Sparkles, AlertTriangle, DollarSign, ArrowRight, Quote } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   const credentials = [
-    { icon: Award, label: 'Certified Business Consultant' },
-    { icon: TrendingUp, label: '10+ Years Experience' },
-    { icon: Users, label: '200+ Businesses Helped' },
-    { icon: Target, label: '95% Success Rate' },
+    { icon: Briefcase, label: '100+ Businesses Started', value: '100+' },
+    { icon: Award, label: 'Years of Experience', value: '46+' },
+    { icon: Users, label: 'Started at Age', value: '11' },
+    { icon: Target, label: 'Absentee Owner Expert', value: '✓' },
   ];
 
   const expertise = [
-    'Business Strategy & Planning',
-    'Financial Modeling & Forecasting',
-    'Operations Optimization',
-    'Marketing & Growth',
-    'Team Building & Leadership',
-    'Fundraising & Investment',
+    'Startup Validation & Launch',
+    'Business Plan Development',
+    'Absentee Ownership Mastery',
+    'Operational Systems',
+    'Growth & Scaling Strategy',
+    'Exit Planning',
   ];
 
   return (
     <section
+      id="about"
       ref={sectionRef}
       className="relative bg-gradient-to-b from-white via-gray-50 to-white py-24 sm:py-32 overflow-hidden"
     >
@@ -50,7 +52,7 @@ export default function AboutSection() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff6a1a]/10 border border-[#ff6a1a]/20 mb-6"
           >
             <Sparkles className="w-4 h-4 text-[#ff6a1a]" />
-            <span className="text-sm font-medium text-[#ff6a1a]">Meet Your Guide</span>
+            <span className="text-sm font-medium text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Meet Your Guide</span>
           </motion.div>
 
           <motion.h2
@@ -58,17 +60,27 @@ export default function AboutSection() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
-            Your Guide to{' '}
+            Meet{' '}
             <span className="bg-gradient-to-r from-[#ff6a1a] to-[#ff8c4a] bg-clip-text text-transparent">
-              Business Success
+              Tory R. Zweigle
             </span>
           </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-xl text-gray-600 max-w-3xl mx-auto"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}
+          >
+            Serial Entrepreneur & Business Mentor
+          </motion.p>
         </motion.div>
 
         {/* Two-Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Image/Visual */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Left: Image/Visual & Stats */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -79,18 +91,12 @@ export default function AboutSection() {
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/20 via-transparent to-[#ff8c4a]/20 z-10" />
 
-              {/* Image Placeholder - Replace with actual image */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200">
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#ff6a1a] to-[#ff8c4a] flex items-center justify-center">
-                      <span className="text-6xl font-bold text-white">TZ</span>
-                    </div>
-                    <p className="text-gray-600 text-sm">Professional Photo</p>
-                    <p className="text-gray-500 text-xs">Coming Soon</p>
-                  </div>
-                </div>
-              </div>
+              {/* Tory's Professional Photo */}
+              <img
+                src="/images/tory-profile.jpg"
+                alt="Tory R. Zweigle - Serial Entrepreneur & Business Mentor"
+                className="absolute inset-0 w-full h-full object-cover object-top"
+              />
 
               {/* Decorative Elements */}
               <motion.div
@@ -135,8 +141,11 @@ export default function AboutSection() {
                   whileHover={{ scale: 1.05, y: -4 }}
                   className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg backdrop-blur-sm"
                 >
-                  <cred.icon className="w-6 h-6 text-[#ff6a1a] mb-2" />
-                  <p className="text-xs font-medium text-gray-900 leading-tight">
+                  <div className="flex items-center gap-2 mb-1">
+                    <cred.icon className="w-5 h-5 text-[#ff6a1a]" />
+                    <span className="text-xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>{cred.value}</span>
+                  </div>
+                  <p className="text-xs font-medium text-gray-600 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                     {cred.label}
                   </p>
                 </motion.div>
@@ -151,45 +160,96 @@ export default function AboutSection() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="space-y-8"
           >
-            {/* Name & Title */}
-            <div>
-              <motion.h3
-                initial={{ opacity: 0, y: 10 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2"
-              >
-                Tory Zweigle
-              </motion.h3>
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.7 }}
-                className="text-xl text-[#ff6a1a] font-semibold"
-              >
-                Founder & Business Consultant
-              </motion.p>
-            </div>
+            {/* Bio - A Lifetime Devoted to Business */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="space-y-6 text-gray-700 leading-relaxed"
+            >
+              <div>
+                <h3 className="text-2xl font-bold text-black mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  A Lifetime Devoted to Business
+                </h3>
+                <p className="text-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  My name is Tory R. Zweigle, and I am a serial entrepreneur. For the last five decades,
+                  I have done nothing but eat, breathe, and sleep business. I started at age 11, beginning
+                  a lifelong journey of ideas and startups.
+                </p>
+              </div>
 
-            {/* Bio */}
+              <p style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Most people will never start a new business. And those who do usually only build one.
+                Some will grow it into a very successful company, or expand into multiple locations.
+                Along that path of owner–operator, you get hands-on training in people, finance, rules,
+                regulations, legal issues, ergonomics, human nature, and hopefully some common sense.
+              </p>
+
+              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                <h4 className="text-lg font-bold text-black mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Lessons From a Lifetime of Business
+                </h4>
+                <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  You learn a lot from a single business venture. If you're lucky enough to build two
+                  successful businesses, then you're on a path of hard work and intentional growth.
+                  Being self-employed means you learn every day, every month, and every year. Those
+                  lessons stay with you forever—and sometimes you even pass them along to others who
+                  cross your path in business and in life.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* What 100+ Startups Taught Me */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="space-y-4"
+            >
+              <h4 className="text-xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                What 100+ Startups Taught Me About True Success
+              </h4>
+              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                I have been in thousands of situations across the many businesses I've run. For every
+                business I start, it's always a new journey, with new insights at new times in new places.
+                I still learn every day.
+              </p>
+              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                There are not many people on this planet who have started over 100 businesses. And I do
+                not recommend it to anyone. Even though entrepreneurship can build great wealth, it comes
+                with a price.
+              </p>
+              <div className="flex items-start gap-3 bg-[#ff6a1a]/5 rounded-xl p-4 border border-[#ff6a1a]/20">
+                <Target className="w-6 h-6 text-[#ff6a1a] flex-shrink-0 mt-0.5" />
+                <p className="text-gray-700 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <span className="text-black font-bold">Family is the key to life.</span> If you can build
+                  both—a good business and a good family life—you are wealthy beyond dreams.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Why Most Business Advice Fails */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.8 }}
-              className="space-y-4 text-gray-700 leading-relaxed"
+              className="space-y-4"
             >
-              <p className="text-lg">
-                I'm a business consultant dedicated to helping entrepreneurs turn their ideas into thriving realities.
-                With over a decade of experience, I've helped hundreds of businesses navigate the challenges of growth,
-                strategy, and scaling.
+              <h4 className="text-xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <AlertTriangle className="w-5 h-5 text-[#ff6a1a]" />
+                Why Most Business Advice Fails You
+              </h4>
+              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                I've had so many startups that I can see what others do not. Your business is in a
+                fishbowl to me. I can see all around it while you're inside the bowl trying to keep
+                things going. I see the ups, the downs, the patterns, the blind spots, the opportunities,
+                and the dangers.
               </p>
-              <p>
-                My approach is simple: I don't believe in one-size-fits-all solutions. Every business is unique,
-                and I work closely with each client to develop strategies that align with their vision, values, and goals.
-              </p>
-              <p>
-                Whether you're just starting out or looking to take your established business to the next level,
-                I'm here to provide the guidance, accountability, and expertise you need to succeed.
+              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Most business consultants have never started a business before starting their consulting
+                career. How do you give advice on something you've never done? Just like professors
+                teaching business all over the world—they've likely never started a business.{' '}
+                <span className="font-bold text-black">Most consultants teach theory. And theory does not pay the bills.</span>
               </p>
             </motion.div>
 
@@ -199,7 +259,7 @@ export default function AboutSection() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.9 }}
             >
-              <h4 className="text-lg font-bold text-gray-900 mb-4">Areas of Expertise</h4>
+              <h4 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>Areas of Expertise</h4>
               <div className="grid sm:grid-cols-2 gap-3">
                 {expertise.map((item, index) => (
                   <motion.div
@@ -207,57 +267,114 @@ export default function AboutSection() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.4, delay: 1.0 + index * 0.1 }}
-                    className="flex items-start gap-2"
+                    className="flex items-center gap-2"
                   >
-                    <CheckCircle2 className="w-5 h-5 text-[#ff6a1a] flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 text-sm">{item}</span>
+                    <CheckCircle2 className="w-5 h-5 text-[#ff6a1a] flex-shrink-0" />
+                    <span className="text-gray-700 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
                   </motion.div>
                 ))}
               </div>
             </motion.div>
-
-            {/* Call-to-Action */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 1.2 }}
-              className="pt-4"
-            >
-              <div className="flex flex-col sm:flex-row gap-4">
-                <motion.a
-                  href="#contact"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-[#ff6a1a] to-[#ff8c4a] text-white font-semibold shadow-lg shadow-[#ff6a1a]/30 hover:shadow-[#ff6a1a]/50 transition-all duration-300"
-                >
-                  Let's Work Together
-                </motion.a>
-                <motion.a
-                  href="#services"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-xl border-2 border-[#ff6a1a] text-[#ff6a1a] font-semibold hover:bg-[#ff6a1a]/5 transition-all duration-300"
-                >
-                  View Services
-                </motion.a>
-              </div>
-            </motion.div>
-
-            {/* Trust Badge */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 1.3 }}
-              className="pt-6 border-t border-gray-200"
-            >
-              <p className="text-sm text-gray-600 italic">
-                "Success isn't just about having a great idea—it's about having the right strategy,
-                the right mindset, and the right guide to help you navigate the journey."
-              </p>
-              <p className="text-sm font-semibold text-gray-900 mt-2">— Tory Zweigle</p>
-            </motion.div>
           </motion.div>
         </div>
+
+        {/* The $1,000 Investment Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1.0 }}
+          className="mt-20 bg-black rounded-3xl p-8 sm:p-12 relative overflow-hidden"
+        >
+          {/* Background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0" style={{
+              backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px"
+            }} />
+          </div>
+
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <DollarSign className="w-8 h-8 text-[#ff6a1a]" />
+              <h3 className="text-3xl sm:text-4xl font-bold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                The $1,000 Investment That Pays for Itself
+              </h3>
+            </div>
+
+            <div className="space-y-6 text-white/80 text-lg text-center mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p>
+                My idea is simple: I charge <span className="text-[#ff6a1a] font-bold">$1,000 for a 30-minute Zoom call</span>.
+                You will fill out our questionnaire beforehand so I can prepare and understand your idea,
+                your funding, your timeline, and your plan.
+              </p>
+              <p>
+                During the call, I will tell you exactly what I see—good or bad. After the call, I follow
+                up with an email explaining why your idea works or why it doesn't.
+              </p>
+              <p className="text-white font-semibold">
+                It will be the best $1,000 you ever spend for your future in business and in life.
+              </p>
+            </div>
+
+            {/* Quote */}
+            <div className="bg-white/10 rounded-2xl p-6 mb-8 border border-white/20">
+              <Quote className="w-8 h-8 text-[#ff6a1a] mb-4" />
+              <p className="text-white text-lg italic mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                "Think of this as insurance. If you listen to the advice, you will save yourself money,
+                stress, and possibly your life savings. Stop throwing good money after bad."
+              </p>
+              <p className="text-[#ff6a1a] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>— Tory R. Zweigle</p>
+            </div>
+
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/book-call">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-[#ff6a1a] text-white font-bold text-lg shadow-lg shadow-[#ff6a1a]/30 hover:shadow-[#ff6a1a]/50 transition-all duration-300"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Book Your $1,000 Clarity Call
+                  <ArrowRight className="w-5 h-5" />
+                </motion.div>
+              </Link>
+              <Link href="/services">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-xl border-2 border-white/30 text-white font-bold hover:bg-white/10 transition-all duration-300"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  View All Services
+                </motion.div>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Final Warning/Truth Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 1.1 }}
+          className="mt-16 text-center max-w-3xl mx-auto"
+        >
+          <div className="bg-gradient-to-br from-gray-50 to-orange-50 rounded-2xl p-8 border border-gray-200">
+            <h4 className="text-xl font-bold text-black mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              The Ultimate Goal & The Stark Warning
+            </h4>
+            <p className="text-gray-600 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              I firmly believe most people do not belong in business. Some statistics show that 90% of
+              businesses fail within the first five years. Why become a statistic when solid advice from
+              someone seasoned like me can help you avoid the biggest potholes?
+            </p>
+            <p className="text-gray-700 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <span className="text-[#ff6a1a] font-bold">My goal</span> is to help people understand
+              whether they are true entrepreneurs—or wantrepreneurs.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
