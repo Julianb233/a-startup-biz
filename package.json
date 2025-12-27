@@ -5,8 +5,11 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "db:setup": "tsx scripts/setup-db.ts",
+    "db:migrate": "tsx scripts/setup-db.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.5",
@@ -15,6 +18,7 @@
     "@expo/metro-runtime": "latest",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^3.10.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@nuxt/kit": "latest",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
