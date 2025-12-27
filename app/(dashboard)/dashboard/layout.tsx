@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import DashboardSidebar from "@/components/dashboard-sidebar"
+import { ChatbotProvider } from "@/components/chatbot-provider"
+import SalesChatbot from "@/components/sales-chatbot"
 import { Menu, User, LogOut, Settings, ChevronDown } from "lucide-react"
 
 export default function DashboardLayout({
@@ -42,13 +44,14 @@ export default function DashboardLayout({
     : "U"
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
-        <DashboardSidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
+    <ChatbotProvider>
+      <div className="min-h-screen bg-gray-50">
+        <div className="flex h-screen overflow-hidden">
+          {/* Sidebar */}
+          <DashboardSidebar
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
 
         {/* Main content */}
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -149,7 +152,11 @@ export default function DashboardLayout({
             </div>
           </main>
         </div>
+
+        {/* Sales Chatbot */}
+        <SalesChatbot />
       </div>
     </div>
+    </ChatbotProvider>
   )
 }

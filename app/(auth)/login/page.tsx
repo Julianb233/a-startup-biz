@@ -19,7 +19,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/"
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
 
   const [error, setError] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
