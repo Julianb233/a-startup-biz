@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
+import { UserMenu } from "./user-menu"
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -134,17 +135,10 @@ export default function Header() {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-4"
             >
-              {/* CTA Button */}
-              <motion.a
-                href="/contact"
-                onClick={(e) => handleNavClick(e, "/contact")}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="hidden sm:flex items-center px-6 py-2.5 bg-[#ff6a1a] text-white font-semibold text-[15px] rounded-md hover:bg-[#e55f17] transition-all shadow-sm"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                Get Started
-              </motion.a>
+              {/* User Menu - Shows Sign In/Get Started when logged out, User avatar when logged in */}
+              <div className="hidden sm:block">
+                <UserMenu />
+              </div>
 
               {/* Mobile Menu Button */}
               <button
@@ -247,14 +241,9 @@ export default function Header() {
                 }}
                 className="mt-8 space-y-4"
               >
-                <a
-                  href="/contact"
-                  onClick={(e) => handleNavClick(e, "/contact")}
-                  className="block px-6 py-3 bg-[#ff6a1a] text-white font-semibold text-base rounded-md hover:bg-[#e55f17] transition-all text-center shadow-sm"
-                  style={{ fontFamily: 'Montserrat, sans-serif' }}
-                >
-                  Get Started
-                </a>
+                <div className="flex justify-center">
+                  <UserMenu />
+                </div>
               </motion.div>
 
               {/* Professional Tagline */}

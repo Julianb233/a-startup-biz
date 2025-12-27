@@ -1,6 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { FOOTER_NAVIGATION } from "@/lib/site-config"
 
 export default function Footer() {
   return (
@@ -85,22 +86,17 @@ export default function Footer() {
             viewport={{ once: true }}
           >
             <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Services
+              {FOOTER_NAVIGATION.services.title}
             </h4>
             <ul className="space-y-3">
-              {[
-                { name: "Business Strategy", href: "#services" },
-                { name: "Market Research", href: "#services" },
-                { name: "Financial Planning", href: "#services" },
-                { name: "Brand Development", href: "#services" },
-              ].map((link) => (
-                <li key={link.name}>
+              {FOOTER_NAVIGATION.services.items.map((link) => (
+                <li key={link.id}>
                   <Link
                     href={link.href}
                     className="text-[#c0c0c0] hover:text-[#ff6a1a] transition-colors text-sm font-medium"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
-                    {link.name}
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -115,22 +111,17 @@ export default function Footer() {
             viewport={{ once: true }}
           >
             <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Company
+              {FOOTER_NAVIGATION.company.title}
             </h4>
             <ul className="space-y-3">
-              {[
-                { name: "About Us", href: "#about" },
-                { name: "Our Team", href: "#about" },
-                { name: "Case Studies", href: "#case-studies" },
-                { name: "Testimonials", href: "#testimonials" },
-              ].map((link) => (
-                <li key={link.name}>
+              {FOOTER_NAVIGATION.company.items.map((link) => (
+                <li key={link.id}>
                   <Link
                     href={link.href}
                     className="text-[#c0c0c0] hover:text-[#ff6a1a] transition-colors text-sm font-medium"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
-                    {link.name}
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -200,12 +191,16 @@ export default function Footer() {
 
             {/* Legal Links */}
             <div className="flex items-center gap-6 text-sm text-[#c0c0c0]">
-              <Link href="/privacy" className="hover:text-[#ff6a1a] transition-colors" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="hover:text-[#ff6a1a] transition-colors" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Terms of Service
-              </Link>
+              {FOOTER_NAVIGATION.legal.items.map((link) => (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className="hover:text-[#ff6a1a] transition-colors"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
