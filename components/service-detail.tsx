@@ -509,8 +509,8 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               Ready to Transform Your Business?
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Let's discuss how {service.shortTitle} can help you achieve your goals.
-              Book a free consultation today.
+              Let&apos;s discuss how {service.shortTitle} can help you achieve your goals.
+              Book a consultation today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -518,7 +518,7 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                 className="inline-flex items-center justify-center gap-2 bg-[#ff6a1a] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#e55f17] transition-all shadow-md hover:shadow-lg"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                Book Free Consultation
+                Get Started
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link

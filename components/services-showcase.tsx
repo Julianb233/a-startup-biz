@@ -258,7 +258,7 @@ export default function ServicesShowcase() {
             href="/contact"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#ff6a1a] text-white font-semibold rounded-lg hover:bg-[#ea580c] transition-all duration-300 hover:shadow-lg hover:shadow-[#ff6a1a]/25 hover:-translate-y-0.5"
           >
-            Schedule a Free Consultation
+            Schedule a Consultation
             <svg
               className="w-5 h-5"
               fill="none"

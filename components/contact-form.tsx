@@ -161,7 +161,7 @@ export default function ContactForm() {
               className="text-lg md:text-xl text-gray-600 leading-relaxed"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Book your free consultation and let's turn your business idea into reality.
+              Book your consultation and let's turn your business idea into reality.
               I'll respond within 24 hours to schedule a time that works for you.
             </p>
           </motion.div>
@@ -186,7 +186,7 @@ export default function ContactForm() {
                     className="text-2xl md:text-3xl font-bold text-gray-900 mb-3"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
-                    Get Your Free Consultation
+                    Start Your Consultation
                   </h2>
                   <p
                     className="text-gray-600"
@@ -358,7 +358,7 @@ export default function ContactForm() {
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        Book My Free Consultation
+                        Submit Consultation Request
                       </>
                     )}
                   </button>
@@ -421,7 +421,7 @@ export default function ContactForm() {
                     { title: "500+ Businesses Launched", description: "Proven track record of helping entrepreneurs succeed" },
                     { title: "10+ Years Experience", description: "Deep expertise in business consulting" },
                     { title: "98% Satisfaction Rate", description: "Clients love our no-BS approach" },
-                    { title: "Free Consultation", description: "No obligation - just honest advice" }
+                    { title: "Expert Consultation", description: "No obligation - just honest advice" }
                   ].map((item, index) => (
                     <div key={index} className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-[#ff6a1a] mt-1 flex-shrink-0" />
@@ -439,7 +439,7 @@ export default function ContactForm() {
                 <div className="flex items-start gap-3">
                   <MessageSquare className="w-5 h-5 text-[#ff6a1a] mt-1 flex-shrink-0" />
                   <p className="text-sm text-gray-700 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    <strong>Note:</strong> The free consultation is a no-pressure conversation about your business goals. I'll give you honest recommendations—whether you work with me or not.
+                    <strong>Note:</strong> This is a no-pressure conversation about your business goals. I'll give you honest recommendations—whether you work with me or not.
                   </p>
                 </div>
               </div>

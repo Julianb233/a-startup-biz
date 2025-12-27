@@ -15,7 +15,7 @@ const steps: Step[] = [
   {
     number: 1,
     title: 'Consult',
-    description: 'Book a free consultation to discuss your business needs',
+    description: 'Book a consultation to discuss your business needs',
     icon: MessageCircle,
   },
   {
@@ -175,7 +175,7 @@ export default function HowItWorks() {
             href="/contact"
             className="inline-block bg-[#ff6a1a] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#e55a0a] transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform"
           >
-            Book Your Free Consultation
+            Book Your Consultation
           </Link>
         </motion.div>
       </div>

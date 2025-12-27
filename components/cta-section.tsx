@@ -226,7 +226,7 @@ export default function CTASection() {
                       Book a Strategy Call
                     </h4>
                     <p className="text-gray-400 mb-4">
-                      Get personalized guidance in a free 30-minute consultation.
+                      Get personalized guidance in a 30-minute strategy call.
                       No pressure, just clarity.
                     </p>
                     <a
@@ -293,7 +293,7 @@ export default function CTASection() {
                 <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
                 </div>
-                <span className="text-sm">Free Consultation</span>
+                <span className="text-sm">Strategy Call</span>
               </div>
               <div className="flex items-center gap-2 text-gray-400">
                 <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">

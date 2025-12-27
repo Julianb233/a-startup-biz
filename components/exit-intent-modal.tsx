@@ -75,7 +75,7 @@ export function ExitIntentModal() {
       type: "exit-intent-lead",
       name: formData.name,
       email: formData.email,
-      offer: "Free AI Readiness Assessment",
+      offer: "AI Readiness Assessment",
       submittedAt: new Date().toISOString(),
       source: "wizard-of-ai-exit-intent",
     }
@@ -210,7 +210,7 @@ export function ExitIntentModal() {
                     Wait! Don't Leave Yet
                   </h2>
                   <p className="text-[#D4A84B] text-center text-lg font-semibold mb-2">
-                    Get Your Free AI Readiness Assessment
+                    Get Your AI Readiness Assessment
                   </p>
                   <p className="text-[#FDF8E8]/70 text-center mb-8">
                     Don't leave without your personalized AI strategy. Discover how AI can transform your business in
@@ -294,7 +294,7 @@ export function ExitIntentModal() {
                         </>
                       ) : (
                         <>
-                          Get My Free Assessment
+                          Get My Assessment
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                           </svg>

@@ -494,15 +494,15 @@ export default function BookCallPage() {
           </h2>
 
           <p className="text-xl text-gray-600 mb-6 max-w-2xl mx-auto">
-            If you don&apos;t get at least one actionable insight that could save or make you thousands of dollars, we&apos;ll refund your $1,000. No questions asked.
+            You&apos;ll walk away with actionable insights that could save or make you thousands of dollars. After 46 years and 100+ businesses, I&apos;ve seen it all and can spot what others miss.
           </p>
 
           <div className="bg-white rounded-2xl p-8 shadow-premium inline-block">
             <p className="text-2xl font-bold text-orange-500 mb-2">
-              100% Satisfaction Guarantee
+              Proven Results, Real Experience
             </p>
             <p className="text-gray-600">
-              Because we&apos;re confident in the value we provide
+              Advice backed by decades of hands-on business building
             </p>
           </div>
         </motion.div>

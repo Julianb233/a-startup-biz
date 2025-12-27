@@ -98,7 +98,7 @@ export function AILaunchCountdown() {
             className="inline-flex items-center gap-3 bg-gradient-to-r from-wizard-cyan via-wizard-purple to-wizard-bright-pink text-white font-bold text-xl px-10 py-5 rounded-full hover:scale-105 transition-transform shadow-2xl"
           >
             <Sparkles className="w-6 h-6" />
-            Schedule a Free Consultation
+            Schedule a Consultation
             <ArrowRight className="w-6 h-6" />
           </a>
         </motion.div>

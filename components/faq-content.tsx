@@ -254,7 +254,7 @@ export default function FAQContent() {
             </h2>
 
             <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Can't find what you're looking for? Book a free consultation and I'll answer all your questions personally.
+              Can't find what you're looking for? Book a consultation and I'll answer all your questions personally.
             </p>
 
             <motion.a
@@ -264,7 +264,7 @@ export default function FAQContent() {
               className="inline-flex items-center px-10 py-5 bg-black text-white font-bold text-lg rounded-xl hover:bg-black/90 transition-all shadow-2xl"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Get Your Free Consultation
+              Get Your Consultation
             </motion.a>
 
             <p className="text-white/80 text-sm mt-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>

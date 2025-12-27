@@ -185,7 +185,7 @@ export function MidPageCTA() {
                     </span>
                   </div>
                   <h3 className="text-[#FDF8E8] text-lg md:text-2xl font-bold mb-1">
-                    Get Your Free AI Roadmap
+                    Get Your AI Roadmap
                   </h3>
                   <p className="text-[#FDF8E8]/70 text-sm md:text-base">
                     30-Minute Strategy Call • No Obligation • 24hr Response

@@ -41,7 +41,7 @@ export default function ServicesCTA() {
               className="text-lg sm:text-xl mb-8 text-white/90 max-w-2xl"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Let's turn your business vision into reality. Book a free consultation
+              Let's turn your business vision into reality. Book a consultation
               to discuss which services are right for you.
             </motion.p>
 
@@ -57,7 +57,7 @@ export default function ServicesCTA() {
                 className="inline-flex items-center justify-center gap-2 bg-white text-[#ff6a1a] px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                Book Free Consultation
+                Book Consultation
                 <ArrowRight className="w-5 h-5" />
               </Link>
 
@@ -78,7 +78,7 @@ export default function ServicesCTA() {
               className="flex flex-wrap gap-4"
             >
               {[
-                "Free Initial Consultation",
+                "Initial Consultation",
                 "Custom Solutions",
                 "Expert Support",
                 "Transparent Pricing"
