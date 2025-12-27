@@ -9,7 +9,12 @@ import {
   Calendar,
   User,
   Settings,
-  X
+  X,
+  ShoppingBag,
+  Briefcase,
+  FileText,
+  MapPin,
+  HelpCircle
 } from "lucide-react"
 
 interface DashboardSidebarProps {
@@ -24,14 +29,39 @@ const navigation = [
     icon: LayoutDashboard
   },
   {
-    name: "Resources",
-    href: "/dashboard/resources",
-    icon: FolderOpen
+    name: "My Services",
+    href: "/dashboard/services",
+    icon: Briefcase
+  },
+  {
+    name: "My Orders",
+    href: "/dashboard/orders",
+    icon: ShoppingBag
   },
   {
     name: "Consultations",
     href: "/dashboard/consultations",
     icon: Calendar
+  },
+  {
+    name: "Documents",
+    href: "/dashboard/documents",
+    icon: FileText
+  },
+  {
+    name: "Local Resources",
+    href: "/dashboard/local-resources",
+    icon: MapPin
+  },
+  {
+    name: "Resources",
+    href: "/dashboard/resources",
+    icon: FolderOpen
+  },
+  {
+    name: "Support",
+    href: "/dashboard/support",
+    icon: HelpCircle
   },
   {
     name: "Profile",
