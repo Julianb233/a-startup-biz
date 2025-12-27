@@ -24,11 +24,24 @@ import {
   bestTimes,
   timezones,
   communicationPreferences,
+  referralSources,
+  brandStyles,
+  businessCategories,
   validateStep,
   saveProgress,
   loadProgress,
   clearProgress,
 } from '@/lib/onboarding-data';
+import {
+  Palette,
+  Globe,
+  Upload,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  Youtube,
+} from 'lucide-react';
 
 const STEPS = [
   {
@@ -53,6 +66,16 @@ const STEPS = [
   },
   {
     id: 5,
+    title: 'Branding & Content',
+    description: 'Share your brand identity and messaging',
+  },
+  {
+    id: 6,
+    title: 'Online Presence',
+    description: 'Your digital footprint and social profiles',
+  },
+  {
+    id: 7,
     title: 'Contact Preferences',
     description: 'How should we reach you?',
   },
@@ -65,22 +88,49 @@ export default function IntakePage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState<Partial<OnboardingData>>({
+    // Step 1
     companyName: '',
     industry: undefined,
     companySize: undefined,
     revenueRange: undefined,
     yearsInBusiness: '',
     website: '',
+    // Step 2
     businessGoals: [],
     primaryChallenge: '',
     timeline: undefined,
+    // Step 3
     currentTools: [],
     teamSize: '',
     budgetRange: undefined,
     additionalContext: '',
+    referralSource: undefined,
+    referralCode: '',
+    // Step 4
     servicesInterested: [],
     priorityLevel: undefined,
     specificNeeds: '',
+    // Step 5 - Branding & Content
+    brandStyle: undefined,
+    primaryColor: '#ff6a1a',
+    secondaryColor: '#1a1a2e',
+    logoUrl: '',
+    aboutBusiness: '',
+    servicesDescription: '',
+    uniqueValue: '',
+    targetAudience: '',
+    // Step 6 - Online Presence
+    businessCategory: undefined,
+    businessHours: '',
+    businessDescription: '',
+    socialFacebook: '',
+    socialInstagram: '',
+    socialLinkedin: '',
+    socialTiktok: '',
+    socialYoutube: '',
+    socialTwitter: '',
+    googleMapsUrl: '',
+    // Step 7
     contactName: '',
     contactEmail: '',
     contactPhone: '',
@@ -94,7 +144,7 @@ export default function IntakePage() {
   useEffect(() => {
     const saved = loadProgress();
     if (saved) {
-      setFormData(saved);
+      setFormData((prev) => ({ ...prev, ...saved }));
     }
   }, []);
 
@@ -180,7 +230,7 @@ export default function IntakePage() {
         onStepChange={setCurrentStep}
         onNext={handleNext}
         onSubmit={handleSubmit}
-        isLastStep={currentStep === 5}
+        isLastStep={currentStep === 7}
         isSubmitting={isSubmitting}
       >
         {errors.general && (
@@ -193,6 +243,7 @@ export default function IntakePage() {
           </motion.div>
         )}
 
+        {/* Step 1: Business Information */}
         {currentStep === 1 && (
           <StepContent>
             <FormField label="Company Name" required>
@@ -272,6 +323,7 @@ export default function IntakePage() {
           </StepContent>
         )}
 
+        {/* Step 2: Goals & Challenges */}
         {currentStep === 2 && (
           <StepContent>
             <FormField
@@ -325,6 +377,7 @@ export default function IntakePage() {
           </StepContent>
         )}
 
+        {/* Step 3: Current Situation */}
         {currentStep === 3 && (
           <StepContent>
             <FormField
@@ -364,6 +417,36 @@ export default function IntakePage() {
             </FormField>
 
             <FormField
+              label="How did you hear about us?"
+              description="This helps us serve you better"
+            >
+              <RadioGroup
+                options={referralSources}
+                selected={formData.referralSource || ''}
+                onChange={(value) =>
+                  updateField(
+                    'referralSource',
+                    value as (typeof referralSources)[number]
+                  )
+                }
+                name="referralSource"
+              />
+            </FormField>
+
+            <FormField
+              label="Referral Code"
+              description="If someone referred you, enter their code here"
+            >
+              <input
+                type="text"
+                value={formData.referralCode}
+                onChange={(e) => updateField('referralCode', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="Enter referral code (optional)"
+              />
+            </FormField>
+
+            <FormField
               label="Additional Context"
               description="Any other information that would help us serve you better?"
             >
@@ -381,6 +464,7 @@ export default function IntakePage() {
           </StepContent>
         )}
 
+        {/* Step 4: Service Preferences */}
         {currentStep === 4 && (
           <StepContent>
             <FormField
@@ -427,7 +511,316 @@ export default function IntakePage() {
           </StepContent>
         )}
 
+        {/* Step 5: Branding & Content */}
         {currentStep === 5 && (
+          <StepContent>
+            <div className="flex items-center gap-3 mb-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+              <Palette className="w-6 h-6 text-orange-600" />
+              <div>
+                <h3 className="font-semibold text-gray-900">Brand Information</h3>
+                <p className="text-sm text-gray-600">
+                  This information helps us create assets that match your brand identity
+                </p>
+              </div>
+            </div>
+
+            <FormField
+              label="Brand Style"
+              description="What best describes your brand personality?"
+            >
+              <RadioGroup
+                options={brandStyles}
+                selected={formData.brandStyle || ''}
+                onChange={(value) =>
+                  updateField('brandStyle', value as (typeof brandStyles)[number])
+                }
+                name="brandStyle"
+              />
+            </FormField>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField label="Primary Brand Color">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.primaryColor || '#ff6a1a'}
+                    onChange={(e) => updateField('primaryColor', e.target.value)}
+                    className="w-16 h-12 rounded-lg border border-gray-300 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={formData.primaryColor || '#ff6a1a'}
+                    onChange={(e) => updateField('primaryColor', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="#ff6a1a"
+                  />
+                </div>
+              </FormField>
+
+              <FormField label="Secondary Brand Color">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={formData.secondaryColor || '#1a1a2e'}
+                    onChange={(e) => updateField('secondaryColor', e.target.value)}
+                    className="w-16 h-12 rounded-lg border border-gray-300 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={formData.secondaryColor || '#1a1a2e'}
+                    onChange={(e) => updateField('secondaryColor', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="#1a1a2e"
+                  />
+                </div>
+              </FormField>
+            </div>
+
+            <FormField
+              label="Logo"
+              description="Upload your logo or provide a URL to it"
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <input
+                    type="url"
+                    value={formData.logoUrl}
+                    onChange={(e) => updateField('logoUrl', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://example.com/your-logo.png"
+                  />
+                </div>
+                <div className="flex items-center justify-center w-16 h-12 bg-gray-100 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:bg-gray-50">
+                  <Upload className="w-5 h-5 text-gray-400" />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Tip: Use Dropbox, Google Drive, or any image hosting service to get a URL
+              </p>
+            </FormField>
+
+            <FormField
+              label="About Your Business"
+              description="This will be used for website content, marketing materials, and AI-generated content"
+            >
+              <textarea
+                value={formData.aboutBusiness}
+                onChange={(e) => updateField('aboutBusiness', e.target.value)}
+                rows={5}
+                maxLength={2000}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                placeholder="Tell us about your business story, mission, and what makes you unique..."
+              />
+              <p className="text-xs text-gray-500 text-right">
+                {formData.aboutBusiness?.length || 0} / 2000
+              </p>
+            </FormField>
+
+            <FormField
+              label="Services/Products Description"
+              description="Describe the main services or products you offer"
+            >
+              <textarea
+                value={formData.servicesDescription}
+                onChange={(e) => updateField('servicesDescription', e.target.value)}
+                rows={4}
+                maxLength={2000}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                placeholder="List and describe your main offerings..."
+              />
+            </FormField>
+
+            <FormField
+              label="Unique Value Proposition"
+              description="What sets you apart from competitors?"
+            >
+              <textarea
+                value={formData.uniqueValue}
+                onChange={(e) => updateField('uniqueValue', e.target.value)}
+                rows={3}
+                maxLength={500}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                placeholder="What makes your business unique?"
+              />
+            </FormField>
+
+            <FormField
+              label="Target Audience"
+              description="Who are your ideal customers?"
+            >
+              <textarea
+                value={formData.targetAudience}
+                onChange={(e) => updateField('targetAudience', e.target.value)}
+                rows={3}
+                maxLength={500}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                placeholder="Describe your ideal customer profile..."
+              />
+            </FormField>
+          </StepContent>
+        )}
+
+        {/* Step 6: Online Presence */}
+        {currentStep === 6 && (
+          <StepContent>
+            <div className="flex items-center gap-3 mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <Globe className="w-6 h-6 text-blue-600" />
+              <div>
+                <h3 className="font-semibold text-gray-900">Online Presence</h3>
+                <p className="text-sm text-gray-600">
+                  Help us understand your digital footprint for SEO and marketing
+                </p>
+              </div>
+            </div>
+
+            <FormField
+              label="Business Category"
+              description="For Google My Business and local SEO"
+            >
+              <RadioGroup
+                options={businessCategories}
+                selected={formData.businessCategory || ''}
+                onChange={(value) =>
+                  updateField('businessCategory', value as (typeof businessCategories)[number])
+                }
+                name="businessCategory"
+              />
+            </FormField>
+
+            <FormField
+              label="Business Hours"
+              description="When are you typically open?"
+            >
+              <input
+                type="text"
+                value={formData.businessHours}
+                onChange={(e) => updateField('businessHours', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="e.g., Mon-Fri 9am-6pm, Sat 10am-4pm"
+              />
+            </FormField>
+
+            <FormField
+              label="Short Business Description"
+              description="A brief description for Google My Business (max 750 characters)"
+            >
+              <textarea
+                value={formData.businessDescription}
+                onChange={(e) => updateField('businessDescription', e.target.value)}
+                rows={3}
+                maxLength={750}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+                placeholder="Brief description for search engines and Google My Business..."
+              />
+              <p className="text-xs text-gray-500 text-right">
+                {formData.businessDescription?.length || 0} / 750
+              </p>
+            </FormField>
+
+            <FormField
+              label="Google Maps URL"
+              description="Link to your Google Maps listing if you have one"
+            >
+              <input
+                type="url"
+                value={formData.googleMapsUrl}
+                onChange={(e) => updateField('googleMapsUrl', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="https://maps.google.com/..."
+              />
+            </FormField>
+
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Social Media Profiles</h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Enter your social media profile URLs (leave blank if not applicable)
+              </p>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Facebook className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.socialFacebook}
+                    onChange={(e) => updateField('socialFacebook', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://facebook.com/yourbusiness"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                    <Instagram className="w-5 h-5 text-pink-600" />
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.socialInstagram}
+                    onChange={(e) => updateField('socialInstagram', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://instagram.com/yourbusiness"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Linkedin className="w-5 h-5 text-blue-700" />
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.socialLinkedin}
+                    onChange={(e) => updateField('socialLinkedin', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://linkedin.com/company/yourbusiness"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Twitter className="w-5 h-5 text-gray-800" />
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.socialTwitter}
+                    onChange={(e) => updateField('socialTwitter', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://x.com/yourbusiness"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Youtube className="w-5 h-5 text-red-600" />
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.socialYoutube}
+                    onChange={(e) => updateField('socialYoutube', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://youtube.com/@yourbusiness"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">TT</span>
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.socialTiktok}
+                    onChange={(e) => updateField('socialTiktok', e.target.value)}
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="https://tiktok.com/@yourbusiness"
+                  />
+                </div>
+              </div>
+            </div>
+          </StepContent>
+        )}
+
+        {/* Step 7: Contact Preferences */}
+        {currentStep === 7 && (
           <StepContent>
             <FormField label="Contact Name" required>
               <input

@@ -1,5 +1,59 @@
 import { z } from 'zod';
 
+// ============================================
+// ENHANCED ONBOARDING DATA FOR FULFILLMENT
+// ============================================
+
+// Referral Sources
+export const referralSources = [
+  'Google Search',
+  'Social Media (Facebook, Instagram, LinkedIn)',
+  'Friend or Colleague Referral',
+  'Business Partner',
+  'Industry Event or Conference',
+  'Podcast or Webinar',
+  'Online Advertisement',
+  'Email Newsletter',
+  'Existing Client Referral',
+  'Other',
+] as const;
+
+// Business Categories (for GMB)
+export const businessCategories = [
+  'Fitness Center',
+  'Climbing Gym',
+  'Adventure Sports',
+  'Equipment Rental',
+  'Wellness Center',
+  'Personal Training',
+  'Sports Facility',
+  'Recreation Center',
+  'Tour Operator',
+  'Other',
+] as const;
+
+// Social Media Platforms
+export const socialPlatforms = [
+  'Facebook',
+  'Instagram',
+  'LinkedIn',
+  'TikTok',
+  'YouTube',
+  'Twitter/X',
+  'Pinterest',
+] as const;
+
+// Brand Style Preferences
+export const brandStyles = [
+  'Modern & Minimal',
+  'Bold & Energetic',
+  'Professional & Corporate',
+  'Friendly & Approachable',
+  'Luxurious & Premium',
+  'Rustic & Authentic',
+  'Tech-Forward & Innovative',
+] as const;
+
 // Industry Options
 export const industries = [
   'Adventure & Outdoor Recreation',
@@ -182,6 +236,8 @@ export const onboardingSchema = z.object({
     required_error: 'Please select budget range',
   }),
   additionalContext: z.string().max(1000).optional(),
+  referralSource: z.enum(referralSources).optional(),
+  referralCode: z.string().optional(),
 
   // Step 4: Service Preferences
   servicesInterested: z
@@ -192,7 +248,29 @@ export const onboardingSchema = z.object({
   }),
   specificNeeds: z.string().max(1000).optional(),
 
-  // Step 5: Contact Preferences
+  // Step 5: Branding & Content (NEW)
+  brandStyle: z.enum(brandStyles).optional(),
+  primaryColor: z.string().optional(),
+  secondaryColor: z.string().optional(),
+  logoUrl: z.string().optional(),
+  aboutBusiness: z.string().max(2000).optional(),
+  servicesDescription: z.string().max(2000).optional(),
+  uniqueValue: z.string().max(500).optional(),
+  targetAudience: z.string().max(500).optional(),
+
+  // Step 6: Online Presence (NEW)
+  businessCategory: z.enum(businessCategories).optional(),
+  businessHours: z.string().optional(),
+  businessDescription: z.string().max(750).optional(),
+  socialFacebook: z.string().optional(),
+  socialInstagram: z.string().optional(),
+  socialLinkedin: z.string().optional(),
+  socialTiktok: z.string().optional(),
+  socialYoutube: z.string().optional(),
+  socialTwitter: z.string().optional(),
+  googleMapsUrl: z.string().optional(),
+
+  // Step 7: Contact Preferences
   contactName: z.string().min(2, 'Please provide contact name'),
   contactEmail: z.string().email('Please provide valid email'),
   contactPhone: z.string().min(10, 'Please provide valid phone number'),
@@ -244,6 +322,12 @@ export function validateStep(step: number, data: Partial<OnboardingData>): boole
         }).parse(data);
         return true;
       case 5:
+        // Branding & Content - optional but validate format if provided
+        return true;
+      case 6:
+        // Online Presence - optional but validate format if provided
+        return true;
+      case 7:
         z.object({
           contactName: z.string().min(2),
           contactEmail: z.string().email(),

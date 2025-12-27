@@ -278,17 +278,23 @@ export const services: Service[] = [
   {
     id: 'ai-solutions',
     slug: 'ai-solutions',
-    title: 'AI & Automation Solutions',
+    title: 'AI Agents & Automation',
     shortTitle: 'AI Solutions',
-    description: "I've automated operations across dozens of my own companies. Let me show you how AI can eliminate busywork, reduce errors, and free you to focus on what actually grows your business.",
+    description: "I've automated operations across dozens of my own companies with AI agents that work 24/7. Let me show you how AI can eliminate busywork, reduce errors, and free you to focus on what actually grows your business.",
     icon: 'Bot',
     features: [
-      'AI chatbot implementation',
-      'Workflow automation',
-      'Process optimization',
-      'Custom AI tool development',
-      'Integration with existing systems',
-      'Training and support'
+      'AI chatbots for 24/7 customer support',
+      'Lead qualification bots that score and route leads',
+      'Smart appointment scheduling with natural language',
+      'FAQ automation with instant answers',
+      'Intelligent routing to the right team member',
+      'Voice AI for phone call handling',
+      'Email automation and smart responses',
+      'Document processing and data extraction',
+      'Custom AI workflow development',
+      'Multi-platform integration',
+      'Analytics and performance tracking',
+      'Ongoing training and optimization'
     ],
     pricing: {
       basePrice: 2500,
@@ -311,9 +317,10 @@ export const services: Service[] = [
       { step: 'Step 5', title: 'Training & Support', description: 'Ensure your team can use the new tools effectively', icon: 'GraduationCap', duration: 'Ongoing' }
     ],
     serviceCards: [
-      { title: 'AI Chatbots', tagline: '24/7 Customer Service', description: 'Intelligent chatbots that handle customer inquiries, book appointments, and qualify leads while you sleep.', icon: 'MessageSquare', highlights: ['Lead qualification', 'Appointment booking', 'FAQ automation'] },
-      { title: 'Workflow Automation', tagline: 'Eliminate Busywork', description: 'Automate repetitive tasks like data entry, email responses, and report generation. Let AI do the grunt work.', icon: 'Workflow', highlights: ['Email automation', 'Data entry bots', 'Report generation'] },
-      { title: 'Custom AI Tools', tagline: 'Built for Your Business', description: 'Need something specific? We build custom AI solutions that solve your unique business challenges.', icon: 'Wand2', highlights: ['Custom development', 'API integrations', 'Predictive analytics'] }
+      { title: 'AI Chatbots', tagline: '24/7 Customer Service', description: 'Intelligent AI agents that handle customer inquiries, qualify leads, book appointments, and answer FAQs—even at 3 AM. They learn your business and represent your brand perfectly.', icon: 'MessageSquare', highlights: ['Natural language understanding', 'Lead qualification', 'Appointment booking', 'Multi-language support'] },
+      { title: 'Voice AI Agents', tagline: 'Answer Every Call', description: 'AI-powered phone agents that answer calls, take messages, schedule appointments, and handle basic inquiries. Never miss a call or opportunity again.', icon: 'Phone', highlights: ['24/7 call answering', 'Appointment scheduling', 'Call routing', 'Message taking'] },
+      { title: 'Workflow Automation', tagline: 'Eliminate Busywork', description: 'Automate repetitive tasks like data entry, email responses, follow-ups, and report generation. AI agents handle the grunt work so your team can focus on high-value activities.', icon: 'Workflow', highlights: ['Email automation', 'Data entry bots', 'Report generation', 'Smart follow-ups'] },
+      { title: 'Custom AI Development', tagline: 'Built for Your Business', description: 'Need something specific? We build custom AI agents and workflows that solve your unique business challenges—from document processing to predictive analytics.', icon: 'Wand2', highlights: ['Custom agents', 'API integrations', 'Predictive analytics', 'Process automation'] }
     ],
     businessImpact: {
       headline: 'Your Competitors Are Already Using AI',
@@ -334,17 +341,24 @@ export const services: Service[] = [
   {
     id: 'crm-implementation',
     slug: 'crm-implementation',
-    title: 'CRM Implementation & Management',
+    title: 'CRM & Automation Platform',
     shortTitle: 'CRM',
-    description: "Every customer counts. I've implemented CRMs for businesses from solo operations to large teams—I'll design a system that actually gets used and turns leads into loyal customers.",
+    description: "Every customer counts. I've implemented complete business automation platforms for businesses from solo operations to large teams—I'll design a system that actually gets used and turns leads into loyal customers on autopilot.",
     icon: 'Users',
     features: [
-      'CRM platform selection',
-      'Custom setup and configuration',
-      'Data migration',
-      'Sales pipeline design',
-      'Team training',
-      'Ongoing optimization'
+      'Contact & lead management in one place',
+      'Visual sales pipeline with drag-and-drop',
+      'Automated email sequences and nurture campaigns',
+      'SMS marketing and appointment reminders',
+      'Self-booking appointment calendar',
+      'Review requests and reputation management',
+      'High-converting landing pages (no coding)',
+      'Lead capture forms and surveys',
+      'Payment processing and subscriptions',
+      'Workflow automation triggers',
+      'Unified inbox for all channels',
+      'Call tracking and recording',
+      'Real-time analytics dashboard'
     ],
     pricing: {
       basePrice: 1500,
@@ -367,15 +381,16 @@ export const services: Service[] = [
       { step: 'Step 5', title: 'Team Training', description: 'Ensure everyone knows how to use the system', icon: 'Users', duration: '1 week' }
     ],
     serviceCards: [
-      { title: 'Pipeline Design', tagline: 'Sales That Close', description: 'Custom sales pipelines that match how you actually sell. Track every lead from first contact to closed deal.', icon: 'GitBranch', highlights: ['Custom pipelines', 'Lead tracking', 'Deal forecasting'] },
-      { title: 'Automation Setup', tagline: 'Follow-Up on Autopilot', description: 'Automatic follow-up emails, task reminders, and lead scoring so no opportunity slips through the cracks.', icon: 'Zap', highlights: ['Email sequences', 'Task automation', 'Lead scoring'] },
-      { title: 'Integrations', tagline: 'Everything Connected', description: 'Connect your CRM to email, calendar, phone, and other tools you already use. One source of truth for customer data.', icon: 'Link', highlights: ['Email sync', 'Calendar integration', 'Phone logging'] }
+      { title: 'Pipeline & Contacts', tagline: 'All Leads in One Place', description: 'Visual sales pipelines with drag-and-drop. Track every lead from first contact to closed deal. Segment and tag contacts automatically based on behavior.', icon: 'GitBranch', highlights: ['Visual pipeline stages', 'Contact segmentation', 'Deal value tracking', 'Smart tagging'] },
+      { title: 'Marketing Automation', tagline: 'Campaigns on Autopilot', description: 'Automated email sequences, SMS campaigns, appointment reminders, and review requests. Nurture leads 24/7 without lifting a finger.', icon: 'Zap', highlights: ['Email sequences', 'SMS campaigns', 'Review automation', 'Appointment reminders'] },
+      { title: 'Unified Communications', tagline: 'One Inbox for Everything', description: 'Email, SMS, Facebook Messenger, Instagram DMs, Google Chat—all in one place. Never miss a message, respond faster, close more deals.', icon: 'Inbox', highlights: ['Unified inbox', 'Two-way texting', 'Social DMs', 'Call tracking'] },
+      { title: 'Funnels & Forms', tagline: 'Capture & Convert', description: 'Build high-converting landing pages, lead forms, and surveys without coding. Accept payments, book appointments, and capture leads 24/7.', icon: 'Target', highlights: ['Landing pages', 'Lead forms', 'Payment collection', 'Appointment booking'] }
     ],
     businessImpact: {
       headline: 'You Are Losing Leads Right Now',
-      subheadline: 'Without a proper CRM, you are forgetting follow-ups, losing track of deals, and leaving money on the table.',
-      painPoints: ['Leads fall through the cracks without proper tracking', 'No visibility into your sales pipeline', 'Wasting time on manual data entry'],
-      outcomes: [{ metric: '35%', label: 'Increase', description: 'In close rate' }, { metric: '2x', label: 'Faster', description: 'Lead response time' }, { metric: '100%', label: 'Visibility', description: 'Into your pipeline' }],
+      subheadline: 'Without a proper CRM and automation, you are forgetting follow-ups, losing track of deals, and leaving money on the table every single day.',
+      painPoints: ['Leads fall through the cracks without proper tracking', 'No visibility into your sales pipeline', 'Spending hours on manual follow-ups', 'Missing calls and messages across platforms'],
+      outcomes: [{ metric: '35%', label: 'Increase', description: 'In close rate' }, { metric: '10x', label: 'Faster', description: 'Lead response time' }, { metric: '100%', label: 'Visibility', description: 'Into your pipeline' }],
       testimonialQuote: 'Our sales team finally has a system that works. Close rate up 40% in 3 months.',
       testimonialAuthor: 'Tom H., Insurance Agency Owner'
     },
@@ -395,12 +410,18 @@ export const services: Service[] = [
     description: "Your website is your 24/7 salesperson. I've built sites for my own businesses that actually convert—not just look pretty. Let me create something that works as hard as you do.",
     icon: 'Globe',
     features: [
-      'Responsive design',
-      'SEO-optimized structure',
-      'Fast loading speeds',
-      'Mobile-first approach',
-      'Content management system',
-      'Ongoing maintenance and updates'
+      'Custom responsive design built for your brand',
+      'Mobile-first development (60%+ of traffic is mobile)',
+      'SEO optimization included from day one',
+      'Lightning fast loading (under 3 seconds)',
+      'Easy-to-use content management system',
+      'Google Analytics & heatmap tracking setup',
+      'Security (SSL, backups, firewall protection)',
+      'Contact forms and lead capture',
+      'Social media integration',
+      'Live chat widget ready',
+      'Maintenance packages available',
+      'Training so you can update content yourself'
     ],
     pricing: {
       basePrice: 3000,

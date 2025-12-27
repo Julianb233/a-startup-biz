@@ -90,6 +90,102 @@ CREATE TABLE IF NOT EXISTS book_call_submissions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Documents table (deliverables, forms, contracts)
+CREATE TABLE IF NOT EXISTS documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  order_id UUID REFERENCES orders(id) ON DELETE SET NULL,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(50) NOT NULL, -- 'deliverable', 'form', 'contract', 'invoice'
+  url TEXT,
+  file_size INTEGER,
+  mime_type VARCHAR(100),
+  status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'ready', 'viewed', 'downloaded'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Service progress tracking (milestones)
+CREATE TABLE IF NOT EXISTS service_progress (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+  milestone VARCHAR(255) NOT NULL,
+  description TEXT,
+  status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'in_progress', 'completed'
+  sort_order INTEGER DEFAULT 0,
+  completed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User action items (todos/tasks)
+CREATE TABLE IF NOT EXISTS action_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  order_id UUID REFERENCES orders(id) ON DELETE SET NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  priority VARCHAR(20) DEFAULT 'medium', -- 'low', 'medium', 'high', 'urgent'
+  due_date TIMESTAMP WITH TIME ZONE,
+  completed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Referral tracking
+CREATE TABLE IF NOT EXISTS referrals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  referrer_id UUID REFERENCES users(id) ON DELETE SET NULL, -- user who referred
+  referred_email VARCHAR(255) NOT NULL,
+  referred_user_id UUID REFERENCES users(id) ON DELETE SET NULL, -- null until they sign up
+  status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'signed_up', 'converted', 'paid'
+  source VARCHAR(100), -- 'link', 'email', 'manual'
+  commission_rate DECIMAL(5,2) DEFAULT 10.00,
+  commission_amount DECIMAL(10,2),
+  commission_paid BOOLEAN DEFAULT FALSE,
+  commission_paid_at TIMESTAMP WITH TIME ZONE,
+  converted_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Referral links
+CREATE TABLE IF NOT EXISTS referral_links (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  code VARCHAR(50) UNIQUE NOT NULL,
+  clicks INTEGER DEFAULT 0,
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Fulfillment tasks queue
+CREATE TABLE IF NOT EXISTS fulfillment_tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+  type VARCHAR(50) NOT NULL, -- 'website', 'crm', 'seo', 'content', 'branding'
+  status VARCHAR(50) DEFAULT 'queued', -- 'queued', 'in_progress', 'completed', 'blocked'
+  assignee VARCHAR(255),
+  blockers TEXT[],
+  automatable BOOLEAN DEFAULT FALSE,
+  notes TEXT,
+  started_at TIMESTAMP WITH TIME ZONE,
+  completed_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Admin notes (internal notes on orders/users)
+CREATE TABLE IF NOT EXISTS admin_notes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  entity_type VARCHAR(50) NOT NULL, -- 'user', 'order', 'consultation', 'referral'
+  entity_id UUID NOT NULL,
+  author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_consultations_user_id ON consultations(user_id);
@@ -99,6 +195,18 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_onboarding_status ON onboarding_submissions(status);
 CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_submissions(status);
 CREATE INDEX IF NOT EXISTS idx_book_call_status ON book_call_submissions(status);
+CREATE INDEX IF NOT EXISTS idx_documents_user_id ON documents(user_id);
+CREATE INDEX IF NOT EXISTS idx_documents_order_id ON documents(order_id);
+CREATE INDEX IF NOT EXISTS idx_service_progress_order_id ON service_progress(order_id);
+CREATE INDEX IF NOT EXISTS idx_action_items_user_id ON action_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_action_items_completed ON action_items(completed);
+CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
+CREATE INDEX IF NOT EXISTS idx_referrals_status ON referrals(status);
+CREATE INDEX IF NOT EXISTS idx_referral_links_user_id ON referral_links(user_id);
+CREATE INDEX IF NOT EXISTS idx_referral_links_code ON referral_links(code);
+CREATE INDEX IF NOT EXISTS idx_fulfillment_tasks_order_id ON fulfillment_tasks(order_id);
+CREATE INDEX IF NOT EXISTS idx_fulfillment_tasks_status ON fulfillment_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_admin_notes_entity ON admin_notes(entity_type, entity_id);
 
 -- Update timestamp trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -131,5 +239,35 @@ CREATE TRIGGER update_orders_updated_at
 DROP TRIGGER IF EXISTS update_onboarding_updated_at ON onboarding_submissions;
 CREATE TRIGGER update_onboarding_updated_at
     BEFORE UPDATE ON onboarding_submissions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_documents_updated_at ON documents;
+CREATE TRIGGER update_documents_updated_at
+    BEFORE UPDATE ON documents
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_service_progress_updated_at ON service_progress;
+CREATE TRIGGER update_service_progress_updated_at
+    BEFORE UPDATE ON service_progress
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_action_items_updated_at ON action_items;
+CREATE TRIGGER update_action_items_updated_at
+    BEFORE UPDATE ON action_items
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_referrals_updated_at ON referrals;
+CREATE TRIGGER update_referrals_updated_at
+    BEFORE UPDATE ON referrals
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_fulfillment_tasks_updated_at ON fulfillment_tasks;
+CREATE TRIGGER update_fulfillment_tasks_updated_at
+    BEFORE UPDATE ON fulfillment_tasks
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();

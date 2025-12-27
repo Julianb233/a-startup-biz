@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
+import NextStepsGuide from "@/components/next-steps-guide"
 import {
   Briefcase,
   Calendar,
@@ -26,21 +28,95 @@ import {
   Building2,
   Globe,
   CreditCard,
-  PartyPopper
+  PartyPopper,
+  Users,
+  Share2,
+  Gift,
+  Loader2
 } from "lucide-react"
 
-// Mock user data - will be replaced with real session/database
-const userData = {
-  name: "Alex",
-  email: "alex@example.com",
-  onboardingComplete: true, // Set to false to see onboarding prompt
-  location: "Orlando, FL"
+// Types
+interface DashboardData {
+  orders: Order[]
+  ordersWithProgress: OrderWithProgress[]
+  consultations: Consultation[]
+  documents: Document[]
+  actionItems: ActionItem[]
+  onboarding: OnboardingSubmission | null
+  referralStats: {
+    link: ReferralLink | null
+    stats: {
+      total: number
+      signed_up: number
+      converted: number
+      paid: number
+      total_earned: number
+    }
+  }
+  stats: {
+    activeOrders: number
+    completedOrders: number
+    pendingActions: number
+    upcomingConsultations: number
+    documentsReady: number
+  }
 }
 
-// Mock active services data
-const activeServices = [
+interface Order {
+  id: string
+  status: string
+  items: any
+  total: number
+  created_at: string
+}
+
+interface OrderWithProgress extends Order {
+  progress: ServiceProgress[]
+}
+
+interface ServiceProgress {
+  id: string
+  milestone: string
+  status: string
+  completed_at: string | null
+}
+
+interface Consultation {
+  id: string
+  status: string
+  scheduled_at: string | null
+  service_type: string
+}
+
+interface Document {
+  id: string
+  name: string
+  type: string
+  status: string
+}
+
+interface ActionItem {
+  id: string
+  title: string
+  description: string | null
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  due_date: string | null
+}
+
+interface OnboardingSubmission {
+  id: string
+  status: string
+}
+
+interface ReferralLink {
+  code: string
+  clicks: number
+}
+
+// Mock data for fallback when database is empty
+const mockActiveServices = [
   {
-    id: 1,
+    id: "1",
     name: "Business Formation Package",
     status: "completed",
     progress: 100,
@@ -49,7 +125,7 @@ const activeServices = [
     color: "green"
   },
   {
-    id: 2,
+    id: "2",
     name: "Website Development",
     status: "in_progress",
     progress: 65,
@@ -59,7 +135,7 @@ const activeServices = [
     color: "blue"
   },
   {
-    id: 3,
+    id: "3",
     name: "Clarity Call - Strategy",
     status: "scheduled",
     progress: 0,
@@ -69,51 +145,48 @@ const activeServices = [
   }
 ]
 
-// Mock action items
-const actionItems = [
+const mockActionItems = [
   {
-    id: 1,
+    id: "1",
     title: "Complete business questionnaire",
     description: "Help us understand your brand better",
     type: "form",
-    priority: "high",
+    priority: "high" as const,
     icon: FileSignature,
     href: "/onboarding/intake",
     dueDate: "Due in 2 days"
   },
   {
-    id: 2,
+    id: "2",
     title: "Upload logo files",
     description: "PNG and SVG formats preferred",
     type: "upload",
-    priority: "medium",
+    priority: "medium" as const,
     icon: Upload,
     href: "/dashboard/documents",
     dueDate: "Due in 5 days"
   },
   {
-    id: 3,
+    id: "3",
     title: "Schedule strategy call",
     description: "Discuss your website goals",
     type: "schedule",
-    priority: "medium",
+    priority: "medium" as const,
     icon: Calendar,
     href: "/book-call",
     dueDate: "This week"
   }
 ]
 
-// Mock documents ready
-const documentsReady = [
-  { id: 1, name: "LLC Certificate of Formation", type: "Legal Document" },
-  { id: 2, name: "Operating Agreement", type: "Legal Document" },
-  { id: 3, name: "EIN Confirmation Letter", type: "Tax Document" }
+const mockDocumentsReady = [
+  { id: "1", name: "LLC Certificate of Formation", type: "Legal Document" },
+  { id: "2", name: "Operating Agreement", type: "Legal Document" },
+  { id: "3", name: "EIN Confirmation Letter", type: "Tax Document" }
 ]
 
-// Mock journey milestones
-const journeyMilestones = [
+const mockJourneyMilestones = [
   {
-    id: 1,
+    id: "1",
     title: "Started Your Journey",
     description: "Signed up for Business Formation",
     date: "Dec 1, 2024",
@@ -121,7 +194,7 @@ const journeyMilestones = [
     icon: Rocket
   },
   {
-    id: 2,
+    id: "2",
     title: "LLC Formed",
     description: "Business officially registered",
     date: "Dec 10, 2024",
@@ -129,7 +202,7 @@ const journeyMilestones = [
     icon: Building2
   },
   {
-    id: 3,
+    id: "3",
     title: "EIN Received",
     description: "Tax ID confirmed by IRS",
     date: "Dec 15, 2024",
@@ -137,7 +210,7 @@ const journeyMilestones = [
     icon: FileText
   },
   {
-    id: 4,
+    id: "4",
     title: "Website Development",
     description: "Building your online presence",
     date: "In Progress",
@@ -145,7 +218,7 @@ const journeyMilestones = [
     icon: Globe
   },
   {
-    id: 5,
+    id: "5",
     title: "Launch Ready",
     description: "Your business goes live",
     date: "Coming Soon",
@@ -154,17 +227,16 @@ const journeyMilestones = [
   }
 ]
 
-// Recommended next services
 const recommendedServices = [
   {
-    id: 1,
+    id: "1",
     name: "Bookkeeping Setup",
     description: "Get your finances organized from day one",
     price: "$299",
     href: "/services/bookkeeping-setup"
   },
   {
-    id: 2,
+    id: "2",
     name: "Brand Identity Package",
     description: "Logo, colors, and brand guidelines",
     price: "$799",
@@ -172,7 +244,6 @@ const recommendedServices = [
   }
 ]
 
-// Local resource highlight
 const featuredResource = {
   name: "Central Florida SCORE",
   type: "Free Mentorship",
@@ -181,45 +252,144 @@ const featuredResource = {
 }
 
 export default function DashboardPage() {
+  const { data: session } = useSession()
   const [showAllActions, setShowAllActions] = useState(false)
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const completedServices = activeServices.filter(s => s.status === "completed").length
-  const inProgressServices = activeServices.filter(s => s.status !== "completed").length
-  const pendingActions = actionItems.length
+  const userName = session?.user?.name?.split(" ")[0] || "there"
+
+  // Fetch dashboard data
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("/api/dashboard")
+        if (response.ok) {
+          const data = await response.json()
+          setDashboardData(data)
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  // Determine if we should use real data or mock data
+  const hasRealData = dashboardData && (
+    dashboardData.orders.length > 0 ||
+    dashboardData.actionItems.length > 0 ||
+    dashboardData.consultations.length > 0
+  )
+
+  // Use real data if available, otherwise fall back to mock
+  const activeServices = hasRealData
+    ? dashboardData.ordersWithProgress.map((order, index) => {
+        const serviceName = order.items?.[0]?.name || `Service #${index + 1}`
+        const totalMilestones = order.progress?.length || 4
+        const completedMilestones = order.progress?.filter(p => p.status === 'completed').length || 0
+        const progress = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0
+
+        return {
+          id: order.id,
+          name: serviceName,
+          status: order.status === 'completed' ? 'completed' :
+                  order.status === 'processing' ? 'in_progress' : 'scheduled',
+          progress,
+          icon: order.status === 'completed' ? Building2 : Globe,
+          completedDate: order.status === 'completed' ? new Date(order.created_at).toLocaleDateString() : undefined,
+          nextMilestone: order.progress?.find(p => p.status === 'in_progress')?.milestone,
+          estimatedCompletion: "Soon",
+          color: order.status === 'completed' ? 'green' : order.status === 'processing' ? 'blue' : 'purple'
+        }
+      })
+    : mockActiveServices
+
+  const actionItems = hasRealData && dashboardData.actionItems.length > 0
+    ? dashboardData.actionItems.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description || "",
+        type: "task",
+        priority: item.priority,
+        icon: item.priority === 'urgent' ? AlertCircle : item.priority === 'high' ? Bell : FileSignature,
+        href: "/dashboard",
+        dueDate: item.due_date ? new Date(item.due_date).toLocaleDateString() : "No due date"
+      }))
+    : mockActionItems
+
+  const documentsReady = hasRealData && dashboardData.documents.length > 0
+    ? dashboardData.documents
+        .filter(d => d.status === 'ready')
+        .map(d => ({
+          id: d.id,
+          name: d.name,
+          type: d.type
+        }))
+    : mockDocumentsReady
+
+  const stats = hasRealData
+    ? dashboardData.stats
+    : {
+        activeOrders: mockActiveServices.filter(s => s.status !== 'completed').length,
+        completedOrders: mockActiveServices.filter(s => s.status === 'completed').length,
+        pendingActions: mockActionItems.length,
+        upcomingConsultations: 1,
+        documentsReady: mockDocumentsReady.length
+      }
+
+  const hasOnboarded = hasRealData ? !!dashboardData.onboarding : true
+  const onboarding = hasRealData ? dashboardData.onboarding : null
+
+  const upcomingConsultations = hasRealData
+    ? dashboardData.consultations.filter(c =>
+        c.status === 'scheduled' && c.scheduled_at && new Date(c.scheduled_at) > new Date()
+      )
+    : []
+
+  const referralStats = hasRealData
+    ? dashboardData.referralStats
+    : { link: null, stats: { total: 0, signed_up: 0, converted: 0, paid: 0, total_earned: 0 } }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#ff6a1a]" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
-      {/* Onboarding Prompt - Show if not complete */}
-      {!userData.onboardingComplete && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl p-6 text-white shadow-lg"
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white/20 rounded-lg">
-                <AlertCircle className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-montserrat font-bold text-lg">Complete Your Onboarding</h3>
-                <p className="text-white/90">
-                  Finish your intake form so we can get started on your services right away.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/onboarding/intake"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-orange-600 rounded-lg font-semibold hover:bg-orange-50 transition-colors whitespace-nowrap"
-            >
-              Complete Now
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </motion.div>
-      )}
+      {/* Next Steps Guidance */}
+      <NextStepsGuide
+        hasOnboarded={hasOnboarded}
+        onboarding={onboarding}
+        activeOrders={activeServices.filter(s => s.status !== 'completed').map(s => ({
+          id: s.id,
+          status: s.status,
+          items: [{ name: s.name }],
+          created_at: new Date()
+        }))}
+        pendingActions={actionItems.map(a => ({
+          id: a.id,
+          title: a.title,
+          description: a.description,
+          priority: a.priority,
+          due_date: null
+        }))}
+        upcomingConsultations={upcomingConsultations.map(c => ({
+          id: c.id,
+          status: c.status,
+          scheduled_at: c.scheduled_at ? new Date(c.scheduled_at) : null,
+          service_type: c.service_type
+        }))}
+        userName={userName}
+      />
 
-      {/* Welcome Banner */}
+      {/* Welcome Stats Banner */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -230,15 +400,15 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-5 w-5" />
               <span className="text-sm font-semibold uppercase tracking-wider opacity-90">
-                Welcome Back
+                Dashboard Overview
               </span>
             </div>
             <h1 className="font-montserrat text-3xl font-bold mb-2">
-              Hi, {userData.name}!
+              Hi, {userName}!
             </h1>
             <p className="text-orange-100 text-lg max-w-xl">
-              {inProgressServices > 0
-                ? `You have ${inProgressServices} service${inProgressServices > 1 ? "s" : ""} in progress. Let's keep building your business!`
+              {stats.activeOrders > 0
+                ? `You have ${stats.activeOrders} service${stats.activeOrders > 1 ? "s" : ""} in progress. Let's keep building your business!`
                 : "Ready to take your business to the next level?"}
             </p>
           </div>
@@ -246,15 +416,15 @@ export default function DashboardPage() {
           {/* Quick Stats in Banner */}
           <div className="flex gap-6">
             <div className="text-center">
-              <p className="text-3xl font-bold">{completedServices}</p>
+              <p className="text-3xl font-bold">{stats.completedOrders}</p>
               <p className="text-sm text-orange-100">Completed</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold">{inProgressServices}</p>
+              <p className="text-3xl font-bold">{stats.activeOrders}</p>
               <p className="text-sm text-orange-100">In Progress</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold">{pendingActions}</p>
+              <p className="text-3xl font-bold">{stats.pendingActions}</p>
               <p className="text-sm text-orange-100">Action Items</p>
             </div>
           </div>
@@ -321,7 +491,7 @@ export default function DashboardPage() {
                       {service.status === "in_progress" && (
                         <>
                           <div className="flex justify-between text-sm mb-2">
-                            <span className="text-gray-600">{service.nextMilestone}</span>
+                            <span className="text-gray-600">{service.nextMilestone || "Working on it..."}</span>
                             <span className="font-medium text-gray-900">{service.progress}%</span>
                           </div>
                           <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -348,13 +518,28 @@ export default function DashboardPage() {
                       {service.status === "scheduled" && (
                         <p className="text-sm text-purple-600 flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          {service.scheduledDate}
+                          Scheduled
                         </p>
                       )}
                     </div>
                   </div>
                 </motion.div>
               ))}
+
+              {activeServices.length === 0 && (
+                <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                  <Briefcase className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="font-montserrat font-semibold text-gray-900 mb-2">No Active Services</h3>
+                  <p className="text-gray-600 mb-4">Start your business journey today!</p>
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#ff6a1a] text-white rounded-lg font-semibold hover:bg-[#ea580c] transition-colors"
+                  >
+                    Browse Services
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
@@ -365,7 +550,7 @@ export default function DashboardPage() {
             </h2>
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
               <div className="relative">
-                {journeyMilestones.map((milestone, index) => (
+                {mockJourneyMilestones.map((milestone, index) => (
                   <div key={milestone.id} className="flex gap-4 pb-8 last:pb-0">
                     {/* Timeline Line */}
                     <div className="flex flex-col items-center">
@@ -380,7 +565,7 @@ export default function DashboardPage() {
                           milestone.status === "upcoming" ? "text-gray-400" : "text-white"
                         }`} />
                       </div>
-                      {index < journeyMilestones.length - 1 && (
+                      {index < mockJourneyMilestones.length - 1 && (
                         <div className={`w-0.5 flex-1 mt-2 ${
                           milestone.status === "completed" ? "bg-green-300" : "bg-gray-200"
                         }`} />
@@ -416,6 +601,34 @@ export default function DashboardPage() {
 
         {/* Right Column - Actions & Widgets */}
         <div className="space-y-6">
+          {/* Referral Widget */}
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white">
+            <div className="flex items-center gap-2 mb-3">
+              <Gift className="h-5 w-5" />
+              <h3 className="font-montserrat font-bold">Refer & Earn</h3>
+            </div>
+            <p className="text-sm text-white/90 mb-4">
+              Share your referral link and earn 10% commission on every purchase!
+            </p>
+            <div className="bg-white/20 rounded-lg p-3 mb-4">
+              <div className="flex items-center justify-between text-sm">
+                <span>Total Referrals</span>
+                <span className="font-bold">{referralStats.stats.total}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm mt-1">
+                <span>Earned</span>
+                <span className="font-bold">${referralStats.stats.total_earned.toFixed(2)}</span>
+              </div>
+            </div>
+            <Link
+              href="/dashboard/referrals"
+              className="inline-flex items-center justify-center gap-2 w-full px-4 py-2 bg-white text-indigo-600 rounded-lg text-sm font-semibold hover:bg-indigo-50 transition-colors"
+            >
+              <Share2 className="h-4 w-4" />
+              Get Referral Link
+            </Link>
+          </div>
+
           {/* Action Items */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
@@ -437,10 +650,10 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-start gap-3">
                     <div className={`p-2 rounded-lg ${
-                      item.priority === "high" ? "bg-red-100" : "bg-gray-100"
+                      item.priority === "high" || item.priority === "urgent" ? "bg-red-100" : "bg-gray-100"
                     }`}>
                       <item.icon className={`h-4 w-4 ${
-                        item.priority === "high" ? "text-red-600" : "text-gray-600"
+                        item.priority === "high" || item.priority === "urgent" ? "text-red-600" : "text-gray-600"
                       }`} />
                     </div>
                     <div className="flex-1 min-w-0">

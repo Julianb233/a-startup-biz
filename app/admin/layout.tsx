@@ -11,6 +11,10 @@ import {
   Briefcase,
   Menu,
   X,
+  Calendar,
+  Package,
+  UserCheck,
+  BarChart3,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -29,14 +33,29 @@ const navItems = [
     icon: ShoppingCart,
   },
   {
+    name: 'Consultations',
+    href: '/admin/consultations',
+    icon: Calendar,
+  },
+  {
     name: 'Users',
     href: '/admin/users',
     icon: Users,
   },
   {
-    name: 'Services',
-    href: '/admin/services',
-    icon: Briefcase,
+    name: 'Fulfillment',
+    href: '/admin/fulfillment',
+    icon: Package,
+  },
+  {
+    name: 'Referrals',
+    href: '/admin/referrals',
+    icon: UserCheck,
+  },
+  {
+    name: 'Analytics',
+    href: '/admin/analytics',
+    icon: BarChart3,
   },
   {
     name: 'Settings',
