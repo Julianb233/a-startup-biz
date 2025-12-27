@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import { Montserrat, Lato } from "next/font/google"
+import { Toaster } from "sonner"
 import SmoothScroll from "@/components/smooth-scroll"
 import { AuthProvider } from "@/components/auth-provider"
 import { ChatbotProvider } from "@/components/chatbot-provider"
@@ -150,6 +151,12 @@ export default function RootLayout({
               <SmoothScroll>{children}</SmoothScroll>
               <SalesChatbot />
               <CartDrawer />
+              <Toaster
+                position="top-right"
+                richColors
+                closeButton
+                theme="light"
+              />
             </CartProvider>
           </ChatbotProvider>
         </AuthProvider>

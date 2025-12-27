@@ -36,6 +36,7 @@ import ServiceTimeline from "./service-timeline"
 import BusinessImpactSection from "./business-impact-section"
 import ServiceFAQ from "./service-faq"
 import ServiceCalculator from "./service-calculator"
+import AddToCartButton from "./add-to-cart-button"
 import { getCalculatorConfig } from "@/lib/calculator-config"
 
 const iconMap: Record<string, any> = {
@@ -254,9 +255,16 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
 
                 {/* CTA Buttons */}
                 <div className="space-y-3 mb-8">
+                  <AddToCartButton
+                    slug={service.slug}
+                    name={service.title}
+                    price={service.pricing.basePrice}
+                    className="w-full"
+                  />
+
                   <Link
                     href={`/contact?service=${service.slug}`}
-                    className="w-full flex items-center justify-center gap-2 bg-[#ff6a1a] text-white px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#e55f17] transition-all shadow-md hover:shadow-lg"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-[#ff6a1a] border-2 border-[#ff6a1a] px-6 py-4 rounded-xl font-bold text-lg hover:bg-[#ff6a1a] hover:text-white transition-all shadow-md hover:shadow-lg"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     Get Started
@@ -548,15 +556,24 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <Link
-                  href={`/contact?service=${service.slug}`}
-                  className="flex items-center gap-2 bg-[#ff6a1a] text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-[#e55f17] transition-all shadow-md whitespace-nowrap"
-                  style={{ fontFamily: 'Montserrat, sans-serif' }}
-                >
-                  Get Started
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                {/* CTA Buttons */}
+                <div className="flex items-center gap-2">
+                  <AddToCartButton
+                    slug={service.slug}
+                    name={service.title}
+                    price={service.pricing.basePrice}
+                    variant="icon"
+                    showToast={true}
+                  />
+                  <Link
+                    href={`/contact?service=${service.slug}`}
+                    className="flex items-center gap-2 bg-[#ff6a1a] text-white px-4 py-3 rounded-xl font-bold text-sm hover:bg-[#e55f17] transition-all shadow-md whitespace-nowrap"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    Get Started
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             </div>
           </motion.div>

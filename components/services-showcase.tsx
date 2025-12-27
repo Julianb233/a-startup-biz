@@ -19,12 +19,15 @@ import {
   GraduationCap,
 } from "lucide-react";
 import Link from "next/link";
+import AddToCartButton from "./add-to-cart-button";
 
 interface Service {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   href: string;
+  slug: string;
+  price: number;
 }
 
 const services: Service[] = [
@@ -34,6 +37,8 @@ const services: Service[] = [
     description:
       "Fast and compliant EIN registration for your business entity with IRS-certified processing.",
     href: "/services/ein-filing",
+    slug: "ein-filing",
+    price: 160,
   },
   {
     icon: Scale,
@@ -41,6 +46,8 @@ const services: Service[] = [
     description:
       "Comprehensive business legal support including contracts, compliance, and entity formation.",
     href: "/services/legal-services",
+    slug: "legal-services",
+    price: 500,
   },
   {
     icon: Calculator,
@@ -48,6 +55,8 @@ const services: Service[] = [
     description:
       "Professional accounting services to keep your finances accurate and tax-ready year-round.",
     href: "/services/accounting-services",
+    slug: "accounting-services",
+    price: 500,
   },
   {
     icon: BookOpen,
@@ -55,6 +64,8 @@ const services: Service[] = [
     description:
       "Daily bookkeeping and financial record management to maintain clean, organized books.",
     href: "/services/bookkeeping",
+    slug: "bookkeeping",
+    price: 300,
   },
   {
     icon: Bot,
@@ -62,6 +73,8 @@ const services: Service[] = [
     description:
       "Custom AI implementation and automation to streamline operations and boost productivity.",
     href: "/services/ai-solutions",
+    slug: "ai-solutions",
+    price: 2500,
   },
   {
     icon: Users,
@@ -69,6 +82,8 @@ const services: Service[] = [
     description:
       "Complete CRM setup and integration to manage customer relationships effectively.",
     href: "/services/crm-implementation",
+    slug: "crm-implementation",
+    price: 1500,
   },
   {
     icon: Globe,
@@ -76,6 +91,8 @@ const services: Service[] = [
     description:
       "Modern, responsive websites built with cutting-edge technology and optimized for conversions.",
     href: "/services/website-development",
+    slug: "website-development",
+    price: 3000,
   },
   {
     icon: TrendingUp,
@@ -83,6 +100,8 @@ const services: Service[] = [
     description:
       "Data-driven marketing strategies to grow your brand and reach your target audience.",
     href: "/services/marketing-strategy",
+    slug: "marketing-strategy",
+    price: 1500,
   },
   {
     icon: Lightbulb,
@@ -90,6 +109,8 @@ const services: Service[] = [
     description:
       "Strategic planning and consulting to accelerate growth and achieve your business goals.",
     href: "/services/business-strategy",
+    slug: "business-strategy",
+    price: 2000,
   },
   {
     icon: UserCheck,
@@ -97,6 +118,8 @@ const services: Service[] = [
     description:
       "Complete HR management including hiring, onboarding, compliance, and employee relations.",
     href: "/services/hr-solutions",
+    slug: "hr-solutions",
+    price: 800,
   },
   {
     icon: Server,
@@ -104,6 +127,8 @@ const services: Service[] = [
     description:
       "Comprehensive IT support, infrastructure management, and cybersecurity solutions.",
     href: "/services/it-services",
+    slug: "it-services",
+    price: 1000,
   },
   {
     icon: Share2,
@@ -111,6 +136,8 @@ const services: Service[] = [
     description:
       "Social media management and content creation to build engagement and brand awareness.",
     href: "/services/social-media",
+    slug: "social-media",
+    price: 1200,
   },
   {
     icon: Search,
@@ -118,6 +145,8 @@ const services: Service[] = [
     description:
       "Search engine optimization to improve rankings and drive organic traffic to your site.",
     href: "/services/seo-services",
+    slug: "seo-services",
+    price: 1000,
   },
   {
     icon: Headphones,
@@ -125,6 +154,8 @@ const services: Service[] = [
     description:
       "Skilled virtual assistants to handle administrative tasks and support daily operations.",
     href: "/services/virtual-assistants",
+    slug: "virtual-assistants",
+    price: 25,
   },
   {
     icon: GraduationCap,
@@ -132,6 +163,8 @@ const services: Service[] = [
     description:
       "One-on-one coaching and mentorship to develop leadership skills and business acumen.",
     href: "/services/business-coaching",
+    slug: "business-coaching",
+    price: 500,
   },
 ];
 
@@ -257,71 +290,88 @@ function ServiceCard({
 
   return (
     <motion.div variants={item} className="group h-full">
-      <Link href={service.href} className="block h-full">
-        <motion.div
-          whileHover={{
-            y: -8,
-            transition: { duration: 0.3, ease: "easeOut" },
-          }}
-          className="relative h-full bg-white rounded-xl border-2 border-[#c0c0c0]/30 p-6 transition-all duration-300 hover:border-[#ff6a1a]/50 hover:shadow-xl hover:shadow-[#ff6a1a]/10 overflow-hidden"
-        >
-          {/* Hover gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/0 via-[#ff6a1a]/0 to-[#ff6a1a]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="relative h-full">
+        <Link href={service.href} className="block h-full">
+          <motion.div
+            whileHover={{
+              y: -8,
+              transition: { duration: 0.3, ease: "easeOut" },
+            }}
+            className="relative h-full bg-white rounded-xl border-2 border-[#c0c0c0]/30 p-6 transition-all duration-300 hover:border-[#ff6a1a]/50 hover:shadow-xl hover:shadow-[#ff6a1a]/10 overflow-hidden"
+          >
+            {/* Hover gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/0 via-[#ff6a1a]/0 to-[#ff6a1a]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          {/* Corner accent */}
-          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#ff6a1a]/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Corner accent */}
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#ff6a1a]/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          <div className="relative z-10">
-            {/* Icon container */}
-            <motion.div
-              whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-              transition={{ duration: 0.5 }}
-              className="w-14 h-14 mb-5 rounded-lg bg-gradient-to-br from-[#ff6a1a]/10 to-[#ff6a1a]/5 flex items-center justify-center group-hover:from-[#ff6a1a] group-hover:to-[#ea580c] transition-all duration-300"
-            >
-              <Icon className="w-7 h-7 text-[#ff6a1a] group-hover:text-white transition-colors duration-300" />
-            </motion.div>
-
-            {/* Content */}
-            <h3 className="text-xl font-bold text-black mb-3 group-hover:text-[#ff6a1a] transition-colors duration-300">
-              {service.title}
-            </h3>
-
-            <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">
-              {service.description}
-            </p>
-
-            {/* Learn More Link */}
-            <div className="flex items-center gap-2 text-[#ff6a1a] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
-              <span>Learn More</span>
-              <motion.svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                animate={{
-                  x: [0, 4, 0],
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  ease: "easeInOut",
-                }}
+            <div className="relative z-10">
+              {/* Icon container */}
+              <motion.div
+                whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                transition={{ duration: 0.5 }}
+                className="w-14 h-14 mb-5 rounded-lg bg-gradient-to-br from-[#ff6a1a]/10 to-[#ff6a1a]/5 flex items-center justify-center group-hover:from-[#ff6a1a] group-hover:to-[#ea580c] transition-all duration-300"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </motion.svg>
-            </div>
-          </div>
+                <Icon className="w-7 h-7 text-[#ff6a1a] group-hover:text-white transition-colors duration-300" />
+              </motion.div>
 
-          {/* Bottom border accent */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff6a1a] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </motion.div>
-      </Link>
+              {/* Content */}
+              <h3 className="text-xl font-bold text-black mb-3 group-hover:text-[#ff6a1a] transition-colors duration-300">
+                {service.title}
+              </h3>
+
+              <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">
+                {service.description}
+              </p>
+
+              {/* Price and Actions */}
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm font-semibold text-[#ff6a1a]">
+                  From ${service.price.toLocaleString()}
+                </div>
+                <div className="flex items-center gap-2 text-[#ff6a1a] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                  <span>Learn More</span>
+                  <motion.svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    animate={{
+                      x: [0, 4, 0],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      repeatType: "loop",
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </motion.svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom border accent */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ff6a1a] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </motion.div>
+        </Link>
+
+        {/* Add to Cart Button - Floating */}
+        <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <AddToCartButton
+            slug={service.slug}
+            name={service.title}
+            price={service.price}
+            variant="icon"
+          />
+        </div>
+      </div>
     </motion.div>
   );
 }
