@@ -81,7 +81,7 @@ export default function Header() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-24">
             {/* Logo */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -96,9 +96,9 @@ export default function Header() {
                 <Image
                   src="/logo.webp"
                   alt="A Startup Biz"
-                  width={180}
-                  height={50}
-                  className="h-10 w-auto object-contain"
+                  width={360}
+                  height={100}
+                  className="h-20 w-auto object-contain"
                   priority
                 />
               </a>
@@ -211,9 +211,9 @@ export default function Header() {
                   <Image
                     src="/logo.webp"
                     alt="A Startup Biz"
-                    width={180}
-                    height={50}
-                    className="h-10 w-auto object-contain"
+                    width={360}
+                    height={100}
+                    className="h-20 w-auto object-contain"
                   />
                 </a>
               </motion.div>

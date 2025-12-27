@@ -26,6 +26,7 @@ export interface Service {
   category: 'formation' | 'financial' | 'technology' | 'marketing' | 'operations' | 'growth';
   popular?: boolean;
   featured?: boolean;
+  heroImage?: string; // Unsplash image URL for service hero
 }
 
 export const services: Service[] = [
@@ -34,7 +35,7 @@ export const services: Service[] = [
     slug: 'ein-filing',
     title: 'EIN Filing Service',
     shortTitle: 'EIN Filing',
-    description: 'Fast and reliable Employer Identification Number (EIN) filing with the IRS. Get your federal tax ID in days, not weeks.',
+    description: "Don't navigate IRS paperwork alone. I've filed EINs for over 100 of my own businesses and know exactly what it takes to get your federal tax ID fast—without the headaches or costly mistakes.",
     icon: 'FileText',
     features: [
       'Same-day application submission',
@@ -51,14 +52,15 @@ export const services: Service[] = [
     },
     category: 'formation',
     popular: true,
-    featured: true
+    featured: true,
+    heroImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80'
   },
   {
     id: 'legal-services',
     slug: 'legal-services',
     title: 'Business Legal Services',
     shortTitle: 'Legal Services',
-    description: 'Comprehensive legal support for startups and small businesses, from entity formation to contract review and compliance.',
+    description: "I've structured over 100 businesses—LLCs, corporations, partnerships—and I'll guide you through the legal maze so you're protected from day one. No confusing jargon, just clear direction.",
     icon: 'Scale',
     features: [
       'Entity formation (LLC, Corporation, Partnership)',
@@ -79,14 +81,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'formation',
-    featured: true
+    featured: true,
+    heroImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&q=80'
   },
   {
     id: 'accounting-services',
     slug: 'accounting-services',
     title: 'Professional Accounting Services',
     shortTitle: 'Accounting',
-    description: 'Full-service accounting solutions including tax preparation, financial statements, and strategic financial planning.',
+    description: "Your numbers tell a story—let me help you read it. With decades of managing finances across 100+ ventures, I'll show you exactly where your money's going and how to keep more of it.",
     icon: 'Calculator',
     features: [
       'Monthly financial statements',
@@ -107,14 +110,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'financial',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=1200&q=80'
   },
   {
     id: 'bookkeeping',
     slug: 'bookkeeping',
     title: 'Bookkeeping & Payroll Services',
     shortTitle: 'Bookkeeping',
-    description: 'Accurate bookkeeping and payroll management to keep your finances organized and compliant.',
+    description: "Messy books killed more businesses than I can count. I've built systems that keep every dollar tracked across my ventures—now let me set you up for financial clarity and peace of mind.",
     icon: 'BookOpen',
     features: [
       'Daily transaction recording',
@@ -134,14 +138,15 @@ export const services: Service[] = [
       }
     },
     category: 'financial',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80'
   },
   {
     id: 'ai-solutions',
     slug: 'ai-solutions',
     title: 'AI & Automation Solutions',
     shortTitle: 'AI Solutions',
-    description: 'Custom AI integrations and automation workflows to streamline operations and boost productivity.',
+    description: "I've automated operations across dozens of my own companies. Let me show you how AI can eliminate busywork, reduce errors, and free you to focus on what actually grows your business.",
     icon: 'Bot',
     features: [
       'AI chatbot implementation',
@@ -162,14 +167,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'technology',
-    featured: true
+    featured: true,
+    heroImage: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80'
   },
   {
     id: 'crm-implementation',
     slug: 'crm-implementation',
     title: 'CRM Implementation & Management',
     shortTitle: 'CRM',
-    description: 'Complete CRM setup, customization, and training to help you manage customer relationships effectively.',
+    description: "Every customer counts. I've implemented CRMs for businesses from solo operations to large teams—I'll design a system that actually gets used and turns leads into loyal customers.",
     icon: 'Users',
     features: [
       'CRM platform selection',
@@ -190,14 +196,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'technology',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80'
   },
   {
     id: 'website-development',
     slug: 'website-development',
     title: 'Website Design & Development',
     shortTitle: 'Web Development',
-    description: 'Custom website design and development that converts visitors into customers, built with modern technology.',
+    description: "Your website is your 24/7 salesperson. I've built sites for my own businesses that actually convert—not just look pretty. Let me create something that works as hard as you do.",
     icon: 'Globe',
     features: [
       'Responsive design',
@@ -218,14 +225,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'technology',
-    featured: true
+    featured: true,
+    heroImage: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&q=80'
   },
   {
     id: 'marketing-strategy',
     slug: 'marketing-strategy',
     title: 'Marketing Strategy & Execution',
     shortTitle: 'Marketing',
-    description: 'Data-driven marketing strategies and campaigns to attract, engage, and convert your ideal customers.',
+    description: "I've marketed everything from local services to nationwide brands. Forget guesswork—I'll show you exactly what's working right now and help you reach customers who are ready to buy.",
     icon: 'TrendingUp',
     features: [
       'Market research and analysis',
@@ -246,14 +254,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'marketing',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=1200&q=80'
   },
   {
     id: 'business-strategy',
     slug: 'business-strategy',
     title: 'Business Strategy Consulting',
     shortTitle: 'Strategy',
-    description: 'Strategic planning and execution support to help you achieve your business goals and scale effectively.',
+    description: "46+ years of starting, growing, and scaling businesses—that's what you get access to. I'll help you see the gaps, seize the opportunities, and build a roadmap that actually works.",
     icon: 'Target',
     features: [
       'Business plan development',
@@ -274,14 +283,15 @@ export const services: Service[] = [
       customQuote: true
     },
     category: 'growth',
-    featured: true
+    featured: true,
+    heroImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80'
   },
   {
     id: 'hr-solutions',
     slug: 'hr-solutions',
     title: 'HR Solutions & Employee Management',
     shortTitle: 'HR Solutions',
-    description: 'Complete human resources support including hiring, onboarding, compliance, and employee management.',
+    description: "Hiring the right people is everything. I've built teams from scratch across 100+ businesses—let me help you find, onboard, and retain the talent that will grow with you.",
     icon: 'Briefcase',
     features: [
       'Employee handbook creation',
@@ -301,14 +311,15 @@ export const services: Service[] = [
       },
       customQuote: true
     },
-    category: 'operations'
+    category: 'operations',
+    heroImage: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80'
   },
   {
     id: 'it-services',
     slug: 'it-services',
     title: 'IT Services & Support',
     shortTitle: 'IT Services',
-    description: 'Comprehensive IT infrastructure setup, management, and support to keep your business running smoothly.',
+    description: "Technology should work for you, not against you. I've set up IT infrastructure for businesses of all sizes—let me make sure your systems are secure, reliable, and ready to scale.",
     icon: 'Server',
     features: [
       'Network setup and security',
@@ -328,14 +339,15 @@ export const services: Service[] = [
       },
       customQuote: true
     },
-    category: 'technology'
+    category: 'technology',
+    heroImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80'
   },
   {
     id: 'social-media',
     slug: 'social-media',
     title: 'Social Media Management',
     shortTitle: 'Social Media',
-    description: 'Full-service social media management to build your brand, engage your audience, and drive results.',
+    description: "Social media built my brands before it was mainstream. I'll show you what actually works today—not vanity metrics, but real engagement that drives real business results.",
     icon: 'Share2',
     features: [
       'Content creation and scheduling',
@@ -355,14 +367,15 @@ export const services: Service[] = [
       }
     },
     category: 'marketing',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&q=80'
   },
   {
     id: 'seo-services',
     slug: 'seo-services',
     title: 'SEO & Search Marketing',
     shortTitle: 'SEO',
-    description: 'Proven SEO strategies to improve your search rankings, drive organic traffic, and increase conversions.',
+    description: "Getting found online is no accident. I've ranked my own businesses on page one—now let me help you get discovered by customers who are actively searching for what you offer.",
     icon: 'Search',
     features: [
       'Keyword research and strategy',
@@ -382,14 +395,15 @@ export const services: Service[] = [
       }
     },
     category: 'marketing',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=1200&q=80'
   },
   {
     id: 'virtual-assistants',
     slug: 'virtual-assistants',
     title: 'Virtual Assistant Services',
     shortTitle: 'Virtual Assistants',
-    description: 'Skilled virtual assistants to handle administrative tasks, customer service, and day-to-day operations.',
+    description: "Time is your most valuable asset. I run most of my businesses as an absentee owner using VAs—let me connect you with trained support so you can focus on what moves the needle.",
     icon: 'UserCheck',
     features: [
       'Email and calendar management',
@@ -409,14 +423,15 @@ export const services: Service[] = [
       }
     },
     category: 'operations',
-    popular: true
+    popular: true,
+    heroImage: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80'
   },
   {
     id: 'business-coaching',
     slug: 'business-coaching',
     title: 'Business Coaching & Mentorship',
     shortTitle: 'Coaching',
-    description: 'One-on-one coaching and mentorship to help you overcome challenges, make better decisions, and grow your business.',
+    description: "Having a mentor who's been there changes everything. I've made every mistake, learned every lesson—now I'm in your corner, helping you avoid the pitfalls and accelerate your success.",
     icon: 'MessageCircle',
     features: [
       'Weekly coaching sessions',
@@ -436,14 +451,15 @@ export const services: Service[] = [
       }
     },
     category: 'growth',
-    featured: true
+    featured: true,
+    heroImage: 'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?w=1200&q=80'
   },
   {
     id: 'content-creation',
     slug: 'content-creation',
     title: 'Content Creation & Copywriting',
     shortTitle: 'Content Creation',
-    description: 'Professional content creation and copywriting services to tell your story and engage your audience.',
+    description: "Words that sell—that's what we create. I've written copy that's moved millions in products. Let me help you communicate your value in a way that resonates and converts.",
     icon: 'PenTool',
     features: [
       'Blog posts and articles',
@@ -462,14 +478,15 @@ export const services: Service[] = [
         max: 3500
       }
     },
-    category: 'marketing'
+    category: 'marketing',
+    heroImage: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&q=80'
   },
   {
     id: 'business-analytics',
     slug: 'business-analytics',
     title: 'Business Analytics & Reporting',
     shortTitle: 'Analytics',
-    description: 'Data analytics and business intelligence solutions to make informed decisions and track performance.',
+    description: "You can't improve what you don't measure. I've built data-driven decision systems across my ventures—let me help you see exactly what's working and where the opportunities are hiding.",
     icon: 'BarChart3',
     features: [
       'Custom dashboard creation',
@@ -489,7 +506,8 @@ export const services: Service[] = [
       },
       customQuote: true
     },
-    category: 'growth'
+    category: 'growth',
+    heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80'
   }
 ];
 

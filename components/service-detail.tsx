@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import {
   FileText,
   Scale,
@@ -70,8 +71,40 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-orange-50 to-white">
+      {/* Hero Image Section */}
+      {service.heroImage && (
+        <section className="relative h-[40vh] min-h-[300px] max-h-[500px] overflow-hidden">
+          <Image
+            src={service.heroImage}
+            alt={service.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center px-4"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#ff6a1a]/90 rounded-full mb-4">
+                {Icon && <Icon className="w-5 h-5 text-white" />}
+                <span className="text-white font-semibold text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
+                </span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {service.title}
+              </h1>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Main Content Section */}
+      <section className={`${service.heroImage ? 'pt-12' : 'pt-32'} pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-orange-50 to-white`}>
         <div className="max-w-7xl mx-auto">
           {/* Back Button */}
           <motion.div
@@ -109,10 +142,12 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                 )}
               </div>
 
-              {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                {service.title}
-              </h1>
+              {/* Title - Only show if no hero image */}
+              {!service.heroImage && (
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {service.title}
+                </h1>
+              )}
 
               {/* Description */}
               <p className="text-xl text-gray-600 mb-8 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -239,6 +274,59 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               ))}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Why Work With Tory Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Why Work With <span className="text-[#ff6a1a]">Tory?</span>
+            </h2>
+            <p className="text-lg text-white/80 max-w-3xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              I'm not a consultant who read about business in books. I've actually done it—over 100 times.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "46+ Years Experience",
+                description: "I started my first business at age 11. That's nearly five decades of real-world entrepreneurial experience."
+              },
+              {
+                title: "100+ Businesses Started",
+                description: "Not theories. Not case studies. Actual businesses I've built, grown, and many I still run as an absentee owner."
+              },
+              {
+                title: "Your Partner, Not a Vendor",
+                description: "I'm in your corner. When you work with me, you get a mentor who's been there and genuinely wants to see you win."
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white/5 border border-white/10 rounded-2xl p-8"
+              >
+                <h3 className="text-xl font-bold text-[#ff6a1a] mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {item.title}
+                </h3>
+                <p className="text-white/70" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
