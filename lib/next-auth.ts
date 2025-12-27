@@ -2,8 +2,10 @@ import type { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 
-// In-memory user store for demo purposes
-// In production, this would be replaced with a database query
+// TODO: SECURITY CRITICAL - Replace with database storage before production
+// WARNING: In-memory user store is for demo/development only
+// Users will be lost on server restart. Not suitable for production.
+// See: SECURITY_AUDIT_REPORT.md - Issue #11
 const users = [
   {
     id: "1",
@@ -75,7 +77,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || "your-secret-key-change-in-production",
+  secret: process.env.NEXTAUTH_SECRET,
 }
 
 // Helper function to add a new user (for registration)

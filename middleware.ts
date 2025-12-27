@@ -15,7 +15,7 @@ export default withAuth(
   }
 )
 
-// Only protect dashboard routes - all other routes are public
+// Protect dashboard and admin routes - all other routes are public
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
 }

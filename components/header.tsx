@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import { UserMenu } from "./user-menu"
+import CartButton from "./cart-button"
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -135,6 +136,11 @@ export default function Header() {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-4"
             >
+              {/* Cart Button */}
+              <div className="hidden sm:block">
+                <CartButton />
+              </div>
+
               {/* User Menu - Shows Sign In/Get Started when logged out, User avatar when logged in */}
               <div className="hidden sm:block">
                 <UserMenu />

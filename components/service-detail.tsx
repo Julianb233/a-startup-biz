@@ -35,6 +35,8 @@ import ServiceBenefitCards from "./service-benefit-cards"
 import ServiceTimeline from "./service-timeline"
 import BusinessImpactSection from "./business-impact-section"
 import ServiceFAQ from "./service-faq"
+import ServiceCalculator from "./service-calculator"
+import { getCalculatorConfig } from "@/lib/calculator-config"
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -63,6 +65,7 @@ interface ServiceDetailProps {
 export default function ServiceDetail({ service }: ServiceDetailProps) {
   const Icon = iconMap[service.icon]
   const [showStickyCTA, setShowStickyCTA] = useState(false)
+  const calculatorConfig = getCalculatorConfig(service.slug)
 
   const priceDisplay = service.pricing.customQuote
     ? "Custom Quote"
@@ -297,6 +300,11 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
       {/* Service Benefit Cards Section */}
       {service.serviceCards && service.serviceCards.length > 0 && (
         <ServiceBenefitCards cards={service.serviceCards} serviceTitle={service.shortTitle} />
+      )}
+
+      {/* Value Calculator Section */}
+      {calculatorConfig && (
+        <ServiceCalculator config={calculatorConfig} serviceSlug={service.slug} />
       )}
 
       {/* Features Section */}
