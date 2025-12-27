@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter, usePathname } from "next/navigation"
+import Image from "next/image"
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -61,9 +62,10 @@ export default function Header() {
 
   const navigationLinks = [
     { label: "Home", href: "/" },
-    { label: "Services", href: "#services" },
-    { label: "About", href: "#about" },
-    { label: "Contact", href: "#contact" },
+    { label: "Services", href: "/services" },
+    { label: "About", href: "/about" },
+    { label: "FAQs", href: "/faqs" },
+    { label: "Contact", href: "/contact" },
   ]
 
   return (
@@ -91,9 +93,14 @@ export default function Header() {
                 onClick={(e) => handleNavClick(e, "/")}
                 className="flex items-center gap-2 group"
               >
-                <span className="text-2xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  A Startup Biz
-                </span>
+                <Image
+                  src="/logo.webp"
+                  alt="A Startup Biz"
+                  width={180}
+                  height={50}
+                  className="h-10 w-auto object-contain"
+                  priority
+                />
               </a>
             </motion.div>
 
@@ -129,8 +136,8 @@ export default function Header() {
             >
               {/* CTA Button */}
               <motion.a
-                href="#contact"
-                onClick={(e) => handleNavClick(e, "#contact")}
+                href="/contact"
+                onClick={(e) => handleNavClick(e, "/contact")}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="hidden sm:flex items-center px-6 py-2.5 bg-[#ff6a1a] text-white font-semibold text-[15px] rounded-md hover:bg-[#e55f17] transition-all shadow-sm"
@@ -201,9 +208,13 @@ export default function Header() {
                   onClick={(e) => handleNavClick(e, "/")}
                   className="flex items-center"
                 >
-                  <span className="text-2xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    A Startup Biz
-                  </span>
+                  <Image
+                    src="/logo.webp"
+                    alt="A Startup Biz"
+                    width={180}
+                    height={50}
+                    className="h-10 w-auto object-contain"
+                  />
                 </a>
               </motion.div>
 
@@ -237,8 +248,8 @@ export default function Header() {
                 className="mt-8 space-y-4"
               >
                 <a
-                  href="#contact"
-                  onClick={(e) => handleNavClick(e, "#contact")}
+                  href="/contact"
+                  onClick={(e) => handleNavClick(e, "/contact")}
                   className="block px-6 py-3 bg-[#ff6a1a] text-white font-semibold text-base rounded-md hover:bg-[#e55f17] transition-all text-center shadow-sm"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
