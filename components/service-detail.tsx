@@ -29,6 +29,9 @@ import {
   Zap
 } from "lucide-react"
 import { Service } from "@/lib/service-data"
+import ServiceBenefitCards from "./service-benefit-cards"
+import ServiceTimeline from "./service-timeline"
+import BusinessImpactSection from "./business-impact-section"
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -238,6 +241,11 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
         </div>
       </section>
 
+      {/* Service Benefit Cards Section */}
+      {service.serviceCards && service.serviceCards.length > 0 && (
+        <ServiceBenefitCards cards={service.serviceCards} serviceTitle={service.shortTitle} />
+      )}
+
       {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
@@ -276,6 +284,16 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
           </motion.div>
         </div>
       </section>
+
+      {/* Service Timeline Section */}
+      {service.timeline && service.timeline.length > 0 && (
+        <ServiceTimeline timeline={service.timeline} serviceTitle={service.shortTitle} />
+      )}
+
+      {/* Business Impact Section */}
+      {service.businessImpact && (
+        <BusinessImpactSection impact={service.businessImpact} serviceTitle={service.shortTitle} />
+      )}
 
       {/* Why Work With Tory Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black">

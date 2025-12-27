@@ -40,14 +40,14 @@ const services: Service[] = [
     title: "Legal Services",
     description:
       "Comprehensive business legal support including contracts, compliance, and entity formation.",
-    href: "/services/legal",
+    href: "/services/legal-services",
   },
   {
     icon: Calculator,
     title: "Accounting",
     description:
       "Professional accounting services to keep your finances accurate and tax-ready year-round.",
-    href: "/services/accounting",
+    href: "/services/accounting-services",
   },
   {
     icon: BookOpen,
@@ -68,42 +68,42 @@ const services: Service[] = [
     title: "CRM Implementation",
     description:
       "Complete CRM setup and integration to manage customer relationships effectively.",
-    href: "/services/crm",
+    href: "/services/crm-implementation",
   },
   {
     icon: Globe,
     title: "Website Development",
     description:
       "Modern, responsive websites built with cutting-edge technology and optimized for conversions.",
-    href: "/services/web-development",
+    href: "/services/website-development",
   },
   {
     icon: TrendingUp,
     title: "Marketing",
     description:
       "Data-driven marketing strategies to grow your brand and reach your target audience.",
-    href: "/services/marketing",
+    href: "/services/marketing-strategy",
   },
   {
     icon: Lightbulb,
     title: "Business Strategy",
     description:
       "Strategic planning and consulting to accelerate growth and achieve your business goals.",
-    href: "/services/strategy",
+    href: "/services/business-strategy",
   },
   {
     icon: UserCheck,
     title: "HR Solutions",
     description:
       "Complete HR management including hiring, onboarding, compliance, and employee relations.",
-    href: "/services/hr",
+    href: "/services/hr-solutions",
   },
   {
     icon: Server,
     title: "IT Services",
     description:
       "Comprehensive IT support, infrastructure management, and cybersecurity solutions.",
-    href: "/services/it",
+    href: "/services/it-services",
   },
   {
     icon: Share2,
@@ -117,7 +117,7 @@ const services: Service[] = [
     title: "SEO Services",
     description:
       "Search engine optimization to improve rankings and drive organic traffic to your site.",
-    href: "/services/seo",
+    href: "/services/seo-services",
   },
   {
     icon: Headphones,
@@ -131,7 +131,7 @@ const services: Service[] = [
     title: "Business Coaching",
     description:
       "One-on-one coaching and mentorship to develop leadership skills and business acumen.",
-    href: "/services/coaching",
+    href: "/services/business-coaching",
   },
 ];
 
