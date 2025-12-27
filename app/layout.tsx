@@ -5,7 +5,9 @@ import { Montserrat, Lato } from "next/font/google"
 import SmoothScroll from "@/components/smooth-scroll"
 import { AuthProvider } from "@/components/auth-provider"
 import { ChatbotProvider } from "@/components/chatbot-provider"
+import { CartProvider } from "@/lib/cart-context"
 import SalesChatbot from "@/components/sales-chatbot"
+import CartDrawer from "@/components/cart-drawer"
 import "./globals.css"
 
 const montserrat = Montserrat({
@@ -51,15 +53,9 @@ export const metadata: Metadata = {
     siteName: "A Startup Biz",
     images: [
       {
-        url: "/logo.webp",
-        width: 512,
-        height: 512,
-        alt: "A Startup Biz Logo - Business Consulting for Entrepreneurs",
-      },
-      {
-        url: "/images/logo-color.png",
-        width: 512,
-        height: 512,
+        url: "/images/og-image.png",
+        width: 1200,
+        height: 630,
         alt: "A Startup Biz - Business Consulting for Entrepreneurs",
       },
     ],
@@ -67,10 +63,10 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "A Startup Biz - Entrepreneur or Wantrepreneur?",
     description: "Transform your business idea into reality. Expert consulting for startups ready to take action.",
-    images: ["/logo.webp"],
+    images: ["/images/og-image.png"],
   },
   icons: {
     icon: [
@@ -150,8 +146,11 @@ export default function RootLayout({
       >
         <AuthProvider>
           <ChatbotProvider>
-            <SmoothScroll>{children}</SmoothScroll>
-            <SalesChatbot />
+            <CartProvider>
+              <SmoothScroll>{children}</SmoothScroll>
+              <SalesChatbot />
+              <CartDrawer />
+            </CartProvider>
           </ChatbotProvider>
         </AuthProvider>
         <Analytics />
