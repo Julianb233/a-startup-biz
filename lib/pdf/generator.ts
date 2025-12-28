@@ -16,7 +16,7 @@ import { formatCurrency, formatDate } from './types'
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: typeof autoTable
+    autoTable: (options: Parameters<typeof autoTable>[1]) => jsPDF
     lastAutoTable?: {
       finalY: number
     }
@@ -379,7 +379,8 @@ function addWatermark(doc: jsPDF, text: string) {
   const pageHeight = doc.internal.pageSize.getHeight()
 
   doc.saveGraphicsState()
-  doc.setGState(new doc.GState({ opacity: 0.1 }))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  doc.setGState(new (doc.GState as any)({ opacity: 0.1 }))
   doc.setTextColor(200, 200, 200)
   doc.setFontSize(60)
   doc.setFont('helvetica', 'bold')

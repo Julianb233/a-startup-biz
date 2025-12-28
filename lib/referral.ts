@@ -5,7 +5,7 @@
  * and code generation. Used by API routes and background jobs.
  */
 
-import { sql } from './db'
+import { sql, query } from './db'
 import {
   Referral,
   ReferralPayout,
@@ -371,7 +371,7 @@ export async function convertReferral(
 export async function getReferralStats(userId: string): Promise<ReferralStats> {
   try {
     // Use the database view for stats
-    const stats = await sql<ReferrerStatsRow[]>`
+    const stats = await query<ReferrerStatsRow>`
       SELECT * FROM referrer_stats
       WHERE referrer_id = ${userId}
     `
@@ -439,7 +439,7 @@ export async function getUserReferrals(
   limit: number = 50
 ): Promise<Referral[]> {
   try {
-    const referrals = await sql<Referral[]>`
+    const referrals = await query<Referral>`
       SELECT * FROM referrals
       WHERE referrer_id = ${userId}
       ORDER BY created_at DESC
@@ -465,7 +465,7 @@ export async function getUserPayouts(
   limit: number = 50
 ): Promise<ReferralPayout[]> {
   try {
-    const payouts = await sql<ReferralPayout[]>`
+    const payouts = await query<ReferralPayout>`
       SELECT * FROM referral_payouts
       WHERE referrer_id = ${userId}
       ORDER BY created_at DESC
@@ -559,7 +559,7 @@ export async function getPendingPayoutsReady(
     }
 
     // Get pending payouts
-    const payouts = await sql<ReferralPayout[]>`
+    const payouts = await query<ReferralPayout>`
       SELECT * FROM referral_payouts
       WHERE referrer_id = ${userId}
       AND status = 'pending'

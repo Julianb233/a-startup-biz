@@ -166,7 +166,7 @@ async function createQuotesTable() {
     `
 
     console.log('\n✅ Created tables:')
-    tables.forEach((t: { table_name: string }) => {
+    ;(tables as { table_name: string }[]).forEach((t) => {
       console.log(`   - ${t.table_name}`)
     })
 

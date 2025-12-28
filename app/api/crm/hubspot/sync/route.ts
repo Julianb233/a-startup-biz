@@ -18,8 +18,8 @@ import { withRateLimit } from '@/lib/rate-limit';
  */
 export async function POST(request: NextRequest) {
   try {
-    // Check rate limit
-    const rateLimitResponse = await withRateLimit(request, 'hubspot-sync');
+    // Check rate limit - using 'api' rate limiter for HubSpot sync
+    const rateLimitResponse = await withRateLimit(request, 'api');
     if (rateLimitResponse) {
       return rateLimitResponse;
     }

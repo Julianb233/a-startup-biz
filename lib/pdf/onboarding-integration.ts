@@ -3,7 +3,7 @@
  * Automatically generate quotes from onboarding submissions
  */
 
-import { sql } from '@/lib/db'
+import { sql, query } from '@/lib/db'
 import type { OnboardingSubmission } from '@/lib/db'
 import type { QuoteCreateInput, QuoteLineItem, CustomerInfo } from './types'
 import { generateQuotePDF } from './generator'
@@ -78,7 +78,7 @@ export async function generateQuoteFromOnboarding(
 ): Promise<{ success: boolean; quoteId?: string; error?: string }> {
   try {
     // Fetch onboarding submission
-    const [submission] = await sql<OnboardingSubmission[]>`
+    const [submission] = await query<OnboardingSubmission>`
       SELECT * FROM onboarding_submissions
       WHERE id = ${submissionId}
     `
@@ -168,7 +168,13 @@ export async function generateQuoteFromOnboarding(
       taxRate: options?.taxRate || 0,
       taxAmount: totals.taxAmount,
       total: totals.total,
-      terms: quoteInput.terms || DEFAULT_QUOTE_TERMS,
+      terms: {
+        paymentTerms: quoteInput.terms?.paymentTerms ?? DEFAULT_QUOTE_TERMS.paymentTerms,
+        deliveryTerms: quoteInput.terms?.deliveryTerms ?? DEFAULT_QUOTE_TERMS.deliveryTerms,
+        validityPeriod: quoteInput.terms?.validityPeriod ?? DEFAULT_QUOTE_TERMS.validityPeriod,
+        notes: quoteInput.terms?.notes ?? DEFAULT_QUOTE_TERMS.notes,
+        conditions: quoteInput.terms?.conditions ?? DEFAULT_QUOTE_TERMS.conditions,
+      },
       notes: quoteInput.notes,
       onboardingSubmissionId: submissionId,
       createdAt: new Date(),

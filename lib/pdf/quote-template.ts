@@ -13,7 +13,7 @@ import { formatCurrency, formatDate } from './types'
 // Extend jsPDF type
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: typeof autoTable
+    autoTable: (options: Parameters<typeof autoTable>[1]) => jsPDF
     lastAutoTable?: {
       finalY: number
     }
@@ -67,9 +67,10 @@ export const TEMPLATE_LAYOUT = {
 /**
  * Enhanced header with gradient background
  */
-export function addEnhancedHeader(doc: jsPDF, quote: Quote, options?: PDFGenerationOptions) {
+export function addEnhancedHeader(doc: jsPDF, quote: Quote, _options?: PDFGenerationOptions) {
   const pageWidth = doc.internal.pageSize.getWidth()
-  const colors = options?.colorScheme || BRAND_COLORS
+  // Always use brand colors for RGB values (colorScheme only has hex strings)
+  const colors = BRAND_COLORS
 
   // Gradient background effect (simulated with multiple rectangles)
   const gradientSteps = 5
@@ -77,10 +78,12 @@ export function addEnhancedHeader(doc: jsPDF, quote: Quote, options?: PDFGenerat
   for (let i = 0; i < gradientSteps; i++) {
     const alpha = 1 - (i * 0.15)
     doc.setFillColor(colors.primaryRGB[0], colors.primaryRGB[1], colors.primaryRGB[2])
-    doc.setGState(new doc.GState({ opacity: alpha }))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    doc.setGState(new (doc.GState as any)({ opacity: alpha }))
     doc.rect(0, (i * headerHeight) / gradientSteps, pageWidth, headerHeight / gradientSteps, 'F')
   }
-  doc.setGState(new doc.GState({ opacity: 1 }))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  doc.setGState(new (doc.GState as any)({ opacity: 1 }))
 
   // Company name with shadow effect
   doc.setTextColor(BRAND_COLORS.whiteRGB[0], BRAND_COLORS.whiteRGB[1], BRAND_COLORS.whiteRGB[2])
@@ -88,9 +91,11 @@ export function addEnhancedHeader(doc: jsPDF, quote: Quote, options?: PDFGenerat
   doc.setFont('helvetica', 'bold')
 
   // Shadow
-  doc.setGState(new doc.GState({ opacity: 0.3 }))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  doc.setGState(new (doc.GState as any)({ opacity: 0.3 }))
   doc.text(quote.company.name, 15.5, 20.5)
-  doc.setGState(new doc.GState({ opacity: 1 }))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  doc.setGState(new (doc.GState as any)({ opacity: 1 }))
 
   // Main text
   doc.text(quote.company.name, 15, 20)
@@ -471,7 +476,8 @@ export function addProfessionalWatermark(doc: jsPDF, text: string = 'DRAFT') {
   const pageHeight = doc.internal.pageSize.getHeight()
 
   doc.saveGraphicsState()
-  doc.setGState(new doc.GState({ opacity: 0.08 }))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  doc.setGState(new (doc.GState as any)({ opacity: 0.08 }))
   doc.setTextColor(BRAND_COLORS.primaryRGB[0], BRAND_COLORS.primaryRGB[1], BRAND_COLORS.primaryRGB[2])
   doc.setFontSize(70)
   doc.setFont('helvetica', 'bold')

@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
     // Get client IP and user agent for analytics
     const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0] ||
                      request.headers.get('x-real-ip') ||
-                     null;
-    const userAgent = request.headers.get('user-agent') || null;
+                     undefined;
+    const userAgent = request.headers.get('user-agent') || undefined;
 
     // Map the frontend form data to database schema
     const submissionData = {
@@ -97,8 +97,8 @@ export async function POST(request: NextRequest) {
         priorityLevel: validatedData.priorityLevel,
       }),
       source: 'onboarding_form',
-      ipAddress,
-      userAgent,
+      ipAddress: ipAddress ?? undefined,
+      userAgent: userAgent ?? undefined,
       referralCode: validatedData.referralCode,
       completionPercentage: 100, // Assuming complete submission
     };

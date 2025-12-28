@@ -216,7 +216,7 @@ async function createBookingsTables() {
 
     console.log('\n✅ Migration completed successfully!\n')
     console.log('📋 Created tables:')
-    tables.forEach((t: { table_name: string; column_count: number }) => {
+    ;(tables as { table_name: string; column_count: number }[]).forEach((t) => {
       console.log(`   - ${t.table_name} (${t.column_count} columns)`)
     })
 
@@ -230,7 +230,7 @@ async function createBookingsTables() {
     `
 
     console.log('\n📋 Created indexes:')
-    indexes.forEach((idx: { tablename: string; indexname: string }) => {
+    ;(indexes as { tablename: string; indexname: string }[]).forEach((idx) => {
       console.log(`   - ${idx.tablename}.${idx.indexname}`)
     })
 

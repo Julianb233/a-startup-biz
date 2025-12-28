@@ -46,7 +46,7 @@ async function setupDatabase() {
     `
 
     console.log("\n📋 Tables created:")
-    tables.forEach((t: { table_name: string }) => {
+    ;(tables as { table_name: string }[]).forEach((t) => {
       console.log(`   - ${t.table_name}`)
     })
 

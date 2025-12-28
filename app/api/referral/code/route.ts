@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
+          referralCode: null,
           message: 'User ID required. Please authenticate or provide userId parameter.',
         } satisfies GetReferralCodeResponse,
         { status: 401 }
@@ -66,6 +67,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
+          referralCode: null,
           message: 'Unauthorized: Cannot access other user referral data.',
         } satisfies GetReferralCodeResponse,
         { status: 403 }

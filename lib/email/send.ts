@@ -23,7 +23,7 @@ export async function sendEmailWithTemplate(
 ): Promise<EmailSendResult> {
   try {
     // Render React component to HTML
-    const html = render(component);
+    const html = await render(component);
 
     // Send email with rendered HTML
     return sendEmail({
