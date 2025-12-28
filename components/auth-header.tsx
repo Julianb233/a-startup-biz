@@ -6,7 +6,7 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
-} from "@clerk/nextjs"
+} from "@/components/clerk-safe"
 
 export function AuthHeader() {
   return (

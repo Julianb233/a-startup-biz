@@ -84,8 +84,25 @@ export default function CTASection() {
     setSubmitStatus('idle');
 
     try {
-      // Simulate API call - replace with actual endpoint
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          businessStage: formData.businessType,
+          services: [],
+          message: formData.message,
+          source: 'cta_section',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
 
       setSubmitStatus('success');
       setFormData({
@@ -97,6 +114,7 @@ export default function CTASection() {
       });
       setErrors({});
     } catch (error) {
+      console.error('CTA form error:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);

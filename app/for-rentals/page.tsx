@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Shield, CheckCircle, TrendingUp, Users, Bike, Waves, Mountain, DollarSign, FileCheck, Zap, ThumbsUp, ArrowRight } from "lucide-react"
+import { Shield, CheckCircle, TrendingUp, Users, Bike, Waves, Mountain, DollarSign, FileCheck, Zap, ThumbsUp, ArrowRight, Loader2 } from "lucide-react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { useState } from "react"
@@ -495,11 +495,40 @@ function CTASection() {
     rentalType: "",
     message: ""
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Form submission logic here
-    console.log("Form submitted:", formData)
+    setIsSubmitting(true)
+    setSubmitStatus("idle")
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.businessName,
+          services: [formData.rentalType ? `Rental Insurance - ${formData.rentalType}` : "Rental Insurance"],
+          message: formData.message || `Rental business inquiry for ${formData.businessName}. Rental type: ${formData.rentalType}`,
+          source: "for_rentals_demo_request",
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to submit")
+      }
+
+      setSubmitStatus("success")
+      setFormData({ name: "", email: "", businessName: "", rentalType: "", message: "" })
+    } catch (error) {
+      console.error("Form submission error:", error)
+      setSubmitStatus("error")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -530,64 +559,110 @@ function CTASection() {
           viewport={{ once: true }}
           className="bg-teal-800/50 backdrop-blur-sm rounded-2xl border border-teal-500/20 p-8 md:p-12"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {submitStatus === "success" ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-12"
+            >
+              <div className="w-20 h-20 bg-teal-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-10 h-10 text-teal-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Demo Request Received!</h3>
+              <p className="text-slate-300 mb-6">
+                Thanks for your interest! We'll reach out within 24 hours to schedule your personalized demo.
+              </p>
+              <button
+                onClick={() => setSubmitStatus("idle")}
+                className="text-teal-400 hover:text-teal-300 font-semibold"
+              >
+                Submit another request
+              </button>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input
+                  type="text"
+                  placeholder="Your Name *"
+                  required
+                  disabled={isSubmitting}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
+                />
+                <input
+                  type="email"
+                  placeholder="Email Address *"
+                  required
+                  disabled={isSubmitting}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
+                />
+              </div>
               <input
                 type="text"
-                placeholder="Your Name *"
+                placeholder="Business Name *"
                 required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                disabled={isSubmitting}
+                value={formData.businessName}
+                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
               />
-              <input
-                type="email"
-                placeholder="Email Address *"
+              <select
+                value={formData.rentalType}
+                onChange={(e) => setFormData({ ...formData, rentalType: e.target.value })}
+                className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
                 required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                disabled={isSubmitting}
+              >
+                <option value="">Select Rental Type *</option>
+                <option value="bikes">Bike Rentals</option>
+                <option value="water-sports">Kayak / Paddleboard / Water Sports</option>
+                <option value="ski-snowboard">Ski / Snowboard Rentals</option>
+                <option value="adventure-gear">Adventure Gear / Camping</option>
+                <option value="specialty">Specialty Equipment</option>
+                <option value="other">Other</option>
+              </select>
+              <textarea
+                placeholder="Tell us about your rental business and average transaction volume..."
+                rows={4}
+                disabled={isSubmitting}
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
               />
-            </div>
-            <input
-              type="text"
-              placeholder="Business Name *"
-              required
-              value={formData.businessName}
-              onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-              className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <select
-              value={formData.rentalType}
-              onChange={(e) => setFormData({ ...formData, rentalType: e.target.value })}
-              className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500"
-              required
-            >
-              <option value="">Select Rental Type *</option>
-              <option value="bikes">Bike Rentals</option>
-              <option value="water-sports">Kayak / Paddleboard / Water Sports</option>
-              <option value="ski-snowboard">Ski / Snowboard Rentals</option>
-              <option value="adventure-gear">Adventure Gear / Camping</option>
-              <option value="specialty">Specialty Equipment</option>
-              <option value="other">Other</option>
-            </select>
-            <textarea
-              placeholder="Tell us about your rental business and average transaction volume..."
-              rows={4}
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full px-6 py-4 rounded-lg bg-white text-slate-900 font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-teal-500 text-white font-black uppercase px-8 py-5 rounded-full text-lg tracking-wider hover:bg-teal-400 transition-colors shadow-xl flex items-center justify-center gap-2"
-            >
-              Request a Demo
-              <ArrowRight className="w-5 h-5" />
-            </motion.button>
-          </form>
+
+              {submitStatus === "error" && (
+                <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+                  <p className="text-red-300 text-sm">
+                    Something went wrong. Please try again or contact us directly.
+                  </p>
+                </div>
+              )}
+
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+                whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+                className="w-full bg-teal-500 text-white font-black uppercase px-8 py-5 rounded-full text-lg tracking-wider hover:bg-teal-400 transition-colors shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    Request a Demo
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </motion.button>
+            </form>
+          )}
 
           <div className="mt-8 text-center">
             <p className="text-slate-400 text-sm">

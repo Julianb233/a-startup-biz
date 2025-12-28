@@ -1,40 +1,24 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useUser, RedirectToSignIn } from "@/components/clerk-safe"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
-  redirectTo?: string
 }
 
-export function ProtectedRoute({
-  children,
-  redirectTo = "/login",
-}: ProtectedRouteProps) {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const { isLoaded, isSignedIn } = useUser()
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push(redirectTo)
-    }
-  }, [status, router, redirectTo])
-
-  if (status === "loading") {
+  if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#ff6a1a]"></div>
-          <p className="mt-4 text-gray-600 font-montserrat">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ff6a1a]"></div>
       </div>
     )
   }
 
-  if (status === "unauthenticated") {
-    return null
+  if (!isSignedIn) {
+    return <RedirectToSignIn />
   }
 
   return <>{children}</>

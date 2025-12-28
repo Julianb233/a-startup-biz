@@ -69,33 +69,25 @@ export function ExitIntentModal() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    const webhookUrl = process.env.NEXT_PUBLIC_FORM_WEBHOOK_URL
-
-    const payload = {
-      type: "exit-intent-lead",
-      name: formData.name,
-      email: formData.email,
-      offer: "AI Readiness Assessment",
-      submittedAt: new Date().toISOString(),
-      source: "wizard-of-ai-exit-intent",
-    }
-
     try {
-      if (webhookUrl) {
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        })
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: "Requested AI Readiness Assessment via exit intent popup",
+          services: ["AI Readiness Assessment"],
+          source: "exit_intent_modal",
+        }),
+      })
 
-        if (!response.ok) {
-          throw new Error("Failed to submit form")
-        }
-      } else {
-        // Fallback: log to console if no webhook configured
-        console.log("Exit intent form submitted (no webhook configured):", payload)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to submit form")
       }
 
       setSubmitStatus("success")

@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/next-auth"
+import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { resources, categories, type Resource } from "@/lib/resources-data"
 import {
@@ -36,9 +35,9 @@ function getFileIcon(type: Resource["type"]) {
 }
 
 export default async function ResourcesPage() {
-  const session = await getServerSession(authOptions)
+  const { userId } = await auth()
 
-  if (!session) {
+  if (!userId) {
     redirect("/login")
   }
 

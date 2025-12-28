@@ -493,27 +493,37 @@ export async function getAllConsultations(filters?: {
   return { consultations, total: parseInt(countResult[0]?.count || '0') }
 }
 
+export interface UserWithStats extends User {
+  order_count: number
+  total_spent: number
+}
+
 export async function getAllUsers(filters?: {
   role?: string
   search?: string
   limit?: number
   offset?: number
-}): Promise<{ users: User[], total: number }> {
+}): Promise<{ users: UserWithStats[], total: number, stats: { all: number, admin: number, user: number } }> {
   const limit = filters?.limit || 50
   const offset = filters?.offset || 0
 
-  let users: User[]
+  let users: UserWithStats[]
   let countResult: any[]
 
   if (filters?.search) {
     const searchTerm = `%${filters.search}%`
     users = await sql`
-      SELECT id, email, name, role, created_at, updated_at
-      FROM users
-      WHERE email ILIKE ${searchTerm} OR name ILIKE ${searchTerm}
-      ORDER BY created_at DESC
+      SELECT
+        u.id, u.email, u.name, u.role, u.created_at, u.updated_at,
+        COALESCE(COUNT(o.id), 0)::int as order_count,
+        COALESCE(SUM(o.total), 0)::numeric as total_spent
+      FROM users u
+      LEFT JOIN orders o ON u.id = o.user_id
+      WHERE u.email ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm}
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
       LIMIT ${limit} OFFSET ${offset}
-    ` as unknown as User[]
+    ` as unknown as UserWithStats[]
 
     countResult = await sql`
       SELECT COUNT(*) as count FROM users
@@ -521,30 +531,57 @@ export async function getAllUsers(filters?: {
     ` as unknown as any[]
   } else if (filters?.role) {
     users = await sql`
-      SELECT id, email, name, role, created_at, updated_at
-      FROM users
-      WHERE role = ${filters.role}
-      ORDER BY created_at DESC
+      SELECT
+        u.id, u.email, u.name, u.role, u.created_at, u.updated_at,
+        COALESCE(COUNT(o.id), 0)::int as order_count,
+        COALESCE(SUM(o.total), 0)::numeric as total_spent
+      FROM users u
+      LEFT JOIN orders o ON u.id = o.user_id
+      WHERE u.role = ${filters.role}
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
       LIMIT ${limit} OFFSET ${offset}
-    ` as unknown as User[]
+    ` as unknown as UserWithStats[]
 
     countResult = await sql`
       SELECT COUNT(*) as count FROM users WHERE role = ${filters.role}
     ` as unknown as any[]
   } else {
     users = await sql`
-      SELECT id, email, name, role, created_at, updated_at
-      FROM users
-      ORDER BY created_at DESC
+      SELECT
+        u.id, u.email, u.name, u.role, u.created_at, u.updated_at,
+        COALESCE(COUNT(o.id), 0)::int as order_count,
+        COALESCE(SUM(o.total), 0)::numeric as total_spent
+      FROM users u
+      LEFT JOIN orders o ON u.id = o.user_id
+      GROUP BY u.id
+      ORDER BY u.created_at DESC
       LIMIT ${limit} OFFSET ${offset}
-    ` as unknown as User[]
+    ` as unknown as UserWithStats[]
 
     countResult = await sql`
       SELECT COUNT(*) as count FROM users
     ` as unknown as any[]
   }
 
-  return { users, total: parseInt(countResult[0]?.count || '0') }
+  // Get role counts for stats
+  const roleStats = await sql`
+    SELECT
+      COUNT(*) FILTER (WHERE role = 'admin')::int as admin_count,
+      COUNT(*) FILTER (WHERE role = 'user')::int as user_count,
+      COUNT(*)::int as total_count
+    FROM users
+  ` as unknown as any[]
+
+  return {
+    users,
+    total: parseInt(countResult[0]?.count || '0'),
+    stats: {
+      all: roleStats[0]?.total_count || 0,
+      admin: roleStats[0]?.admin_count || 0,
+      user: roleStats[0]?.user_count || 0,
+    }
+  }
 }
 
 export async function getRecentOrders(limit = 10): Promise<Order[]> {
@@ -964,5 +1001,214 @@ export async function updateOnboardingStatus(
     WHERE id = ${submissionId}
     RETURNING *
   ` as unknown as OnboardingSubmission[]
+  return result[0] || null
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const result = await sql`
+    SELECT * FROM users WHERE email = ${email} LIMIT 1
+  ` as unknown as User[]
+  return result[0] || null
+}
+
+export async function getUserById(userId: string): Promise<User | null> {
+  const result = await sql`
+    SELECT * FROM users WHERE id = ${userId} LIMIT 1
+  ` as unknown as User[]
+  return result[0] || null
+}
+
+export async function createUser(data: {
+  email: string
+  name?: string
+  role?: string
+}): Promise<User | null> {
+  const result = await sql`
+    INSERT INTO users (email, name, role)
+    VALUES (${data.email}, ${data.name || null}, ${data.role || 'user'})
+    ON CONFLICT (email) DO UPDATE SET
+      name = COALESCE(EXCLUDED.name, users.name),
+      updated_at = NOW()
+    RETURNING *
+  ` as unknown as User[]
+  return result[0] || null
+}
+
+// ============================================
+// ORDER MANAGEMENT
+// ============================================
+
+interface CreateOrderData {
+  userId?: string
+  items: Array<{ name: string; price: number; quantity: number; slug?: string }>
+  subtotal: number
+  discount?: number
+  total: number
+  paymentIntentId?: string
+  paymentMethod?: string
+  status?: string
+  customerEmail?: string | null
+  customerName?: string | null
+  customerPhone?: string | null
+}
+
+export async function createOrder(data: CreateOrderData): Promise<Order | null> {
+  const result = await sql`
+    INSERT INTO orders (
+      user_id,
+      items,
+      subtotal,
+      discount,
+      total,
+      payment_intent_id,
+      payment_method,
+      status
+    ) VALUES (
+      ${data.userId || null},
+      ${JSON.stringify(data.items)},
+      ${data.subtotal},
+      ${data.discount || 0},
+      ${data.total},
+      ${data.paymentIntentId || null},
+      ${data.paymentMethod || 'card'},
+      ${data.status || 'pending'}
+    )
+    RETURNING *
+  ` as unknown as Order[]
+  return result[0] || null
+}
+
+export async function getOrderByPaymentIntent(paymentIntentId: string): Promise<Order | null> {
+  const result = await sql`
+    SELECT * FROM orders WHERE payment_intent_id = ${paymentIntentId} LIMIT 1
+  ` as unknown as Order[]
+  return result[0] || null
+}
+
+// ============================================
+// CONTACT SUBMISSIONS
+// ============================================
+
+export interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  company: string | null
+  business_stage: string | null
+  services: string[]
+  message: string
+  status: 'new' | 'contacted' | 'qualified' | 'converted' | 'closed'
+  source: string
+  ip_address: string | null
+  user_agent: string | null
+  created_at: Date
+  updated_at: Date
+}
+
+export async function createContactSubmission(data: {
+  name: string
+  email: string
+  phone?: string
+  company?: string
+  businessStage?: string
+  services?: string[]
+  message: string
+  source?: string
+  ipAddress?: string
+  userAgent?: string
+}): Promise<ContactSubmission> {
+  const result = await sql`
+    INSERT INTO contact_submissions (
+      name,
+      email,
+      phone,
+      company,
+      business_stage,
+      services,
+      message,
+      source,
+      ip_address,
+      user_agent,
+      status
+    ) VALUES (
+      ${data.name},
+      ${data.email},
+      ${data.phone || null},
+      ${data.company || null},
+      ${data.businessStage || null},
+      ${data.services || []},
+      ${data.message},
+      ${data.source || 'contact_form'},
+      ${data.ipAddress || null},
+      ${data.userAgent || null},
+      'new'
+    )
+    RETURNING *
+  ` as unknown as ContactSubmission[]
+  return result[0]
+}
+
+export async function getContactSubmissionByEmail(email: string): Promise<ContactSubmission | null> {
+  const results = await sql`
+    SELECT * FROM contact_submissions
+    WHERE email = ${email}
+    ORDER BY created_at DESC
+    LIMIT 1
+  ` as unknown as ContactSubmission[]
+  return results[0] || null
+}
+
+export async function getAllContactSubmissions(filters?: {
+  status?: string
+  limit?: number
+  offset?: number
+}): Promise<{ submissions: ContactSubmission[], total: number }> {
+  const limit = filters?.limit || 50
+  const offset = filters?.offset || 0
+
+  let submissions: ContactSubmission[]
+  let countResult: any[]
+
+  if (filters?.status) {
+    submissions = await sql`
+      SELECT * FROM contact_submissions
+      WHERE status = ${filters.status}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as ContactSubmission[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM contact_submissions WHERE status = ${filters.status}
+    ` as unknown as any[]
+  } else {
+    submissions = await sql`
+      SELECT * FROM contact_submissions
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as ContactSubmission[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM contact_submissions
+    ` as unknown as any[]
+  }
+
+  return { submissions, total: parseInt(countResult[0]?.count || '0') }
+}
+
+export async function updateContactStatus(
+  submissionId: string,
+  status: 'new' | 'contacted' | 'qualified' | 'converted' | 'closed'
+): Promise<ContactSubmission | null> {
+  const result = await sql`
+    UPDATE contact_submissions
+    SET status = ${status}, updated_at = NOW()
+    WHERE id = ${submissionId}
+    RETURNING *
+  ` as unknown as ContactSubmission[]
   return result[0] || null
 }

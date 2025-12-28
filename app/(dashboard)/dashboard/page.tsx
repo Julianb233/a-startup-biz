@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { useSession } from "next-auth/react"
+import { useUser } from "@clerk/nextjs"
 import NextStepsGuide from "@/components/next-steps-guide"
 import {
   Briefcase,
@@ -252,12 +252,12 @@ const featuredResource = {
 }
 
 export default function DashboardPage() {
-  const { data: session } = useSession()
+  const { user } = useUser()
   const [showAllActions, setShowAllActions] = useState(false)
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const userName = session?.user?.name?.split(" ")[0] || "there"
+  const userName = user?.firstName || "there"
 
   // Fetch dashboard data
   useEffect(() => {

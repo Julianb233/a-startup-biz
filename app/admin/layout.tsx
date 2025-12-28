@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import { checkRole, requireAuth } from '@/lib/auth';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/clerk-server-safe';
 import Link from 'next/link';
-import { UserButton } from '@clerk/nextjs';
+import { AdminUserButton } from './admin-user-button';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -116,7 +116,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           {/* User info at bottom */}
           <div className="border-t border-gray-700 p-4">
             <div className="flex items-center space-x-3">
-              <UserButton afterSignOutUrl="/" />
+              <AdminUserButton />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
                   {userName}

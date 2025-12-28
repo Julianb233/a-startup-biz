@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ShoppingCart, Check, AlertCircle, X, Loader2, Trash2 } from 'lucide-react'
+import { ShoppingCart, Check, AlertCircle, X, Loader2, Trash2, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 
 // Validation schema
@@ -19,12 +19,33 @@ const checkoutSchema = z.object({
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>
 
+// Loading fallback for Suspense
+function CheckoutLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+    </div>
+  )
+}
+
+// Main checkout page wrapper with Suspense
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<CheckoutLoading />}>
+      <CheckoutContent />
+    </Suspense>
+  )
+}
+
+function CheckoutContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { items, total, clearCart, removeItem, updateQuantity } = useCart()
+  const canceled = searchParams.get('canceled') === 'true'
 
   const {
     register,
@@ -48,25 +69,50 @@ export default function CheckoutPage() {
 
   const onSubmit = async (data: CheckoutFormData) => {
     setIsSubmitting(true)
+    setError(null)
 
     try {
-      // Simulate API call to process order
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Log order data (in production, this would be sent to your backend)
-      console.log('Order submitted:', {
-        customer: data,
-        items,
-        total,
-        timestamp: new Date().toISOString(),
+      // Create Stripe checkout session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            slug: item.slug,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            description: `${item.name} - Business Service`,
+          })),
+          customerEmail: data.email,
+          customerName: data.name,
+          metadata: {
+            phone: data.phone,
+            company: data.company || '',
+          },
+        }),
       })
 
-      // Clear cart and show success
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create checkout session')
+      }
+
+      // Clear cart before redirecting
       clearCart()
-      setShowSuccess(true)
-    } catch (error) {
-      console.error('Order submission failed:', error)
-      alert('Failed to submit order. Please try again.')
+
+      // Redirect to Stripe checkout
+      if (result.url) {
+        window.location.href = result.url
+      } else {
+        throw new Error('No checkout URL received')
+      }
+    } catch (err) {
+      console.error('Checkout error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to process checkout. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -216,7 +262,29 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Billing Information Card (Placeholder) */}
+              {/* Canceled Notice */}
+              {canceled && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-yellow-800 font-montserrat">Payment Canceled</p>
+                    <p className="text-yellow-700 text-sm font-lato">Your payment was canceled. Your cart has been preserved - you can try again when ready.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Notice */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-800 font-montserrat">Checkout Error</p>
+                    <p className="text-red-700 text-sm font-lato">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Payment Information Card */}
               <div className="bg-white rounded-xl shadow-premium p-6 border border-gray-100">
                 <h2 className="text-2xl font-bold text-black font-montserrat mb-4 flex items-center gap-2">
                   <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
@@ -224,10 +292,24 @@ export default function CheckoutPage() {
                   </div>
                   Payment Information
                 </h2>
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                  <p className="text-orange-800 font-lato text-sm">
-                    <strong className="font-montserrat">Note:</strong> After submitting your order, our team will contact you via email to arrange payment and begin work on your services.
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <CreditCard className="w-6 h-6 text-gray-700" />
+                    <span className="font-semibold text-gray-900 font-montserrat">Secure Payment via Stripe</span>
+                  </div>
+                  <p className="text-gray-600 font-lato text-sm mb-4">
+                    After clicking "Proceed to Payment", you'll be redirected to Stripe's secure checkout to complete your purchase.
                   </p>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Check className="w-4 h-4 text-green-500" />
+                      256-bit encryption
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Check className="w-4 h-4 text-green-500" />
+                      PCI compliant
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -240,12 +322,12 @@ export default function CheckoutPage() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Processing...
+                    Redirecting to payment...
                   </>
                 ) : (
                   <>
-                    <Check className="w-5 h-5" />
-                    Complete Order
+                    <CreditCard className="w-5 h-5" />
+                    Proceed to Payment
                   </>
                 )}
               </button>

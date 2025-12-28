@@ -6,9 +6,17 @@ import {
   getAllOnboardingSubmissions,
   updateOnboardingStatus
 } from '@/lib/db-queries';
+import { sendEmail, onboardingSubmittedEmail, adminNewOnboardingEmail, ADMIN_EMAIL } from '@/lib/email';
+import { withRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check rate limit
+    const rateLimitResponse = await withRateLimit(request, 'onboarding');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
     const body = await request.json();
 
     // Validate the data against our schema
@@ -95,12 +103,51 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // TODO: In production, you should also:
-    // - Send welcome email to client
-    // - Notify sales team via email/Slack
-    // - Create calendar event for follow-up
-    // - Add to CRM system (HubSpot, Salesforce, etc.)
-    // - Generate intake document PDF
+    // Send confirmation email to client
+    try {
+      const emailContent = onboardingSubmittedEmail({
+        customerName: validatedData.contactName || validatedData.companyName,
+        businessName: validatedData.companyName,
+      });
+
+      await sendEmail({
+        to: validatedData.contactEmail,
+        subject: emailContent.subject,
+        html: emailContent.html,
+      });
+
+      console.log(`Onboarding confirmation email sent to ${validatedData.contactEmail}`);
+    } catch (emailError) {
+      // Don't fail the request if email fails
+      console.error('Failed to send onboarding confirmation email:', emailError);
+    }
+
+    // Send admin notification email
+    try {
+      const adminEmailContent = adminNewOnboardingEmail({
+        submissionId: submission.id,
+        businessName: submissionData.businessName,
+        businessType: submissionData.businessType,
+        contactEmail: submissionData.contactEmail,
+        contactPhone: submissionData.contactPhone,
+        timeline: submissionData.timeline,
+        budgetRange: submissionData.budgetRange,
+        goals: submissionData.goals,
+        challenges: submissionData.challenges,
+      });
+
+      await sendEmail({
+        to: ADMIN_EMAIL,
+        subject: adminEmailContent.subject,
+        html: adminEmailContent.html,
+        replyTo: validatedData.contactEmail,
+      });
+
+      console.log(`Admin notification sent for onboarding from ${validatedData.contactEmail}`);
+    } catch (adminEmailError) {
+      // Don't fail the request if admin email fails
+      console.error('Failed to send admin onboarding notification:', adminEmailError);
+    }
 
     return NextResponse.json(
       {

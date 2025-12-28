@@ -1,15 +1,21 @@
 "use client"
 
-import { useSession } from "next-auth/react"
+import { useUser, useAuth as useClerkAuth } from "@/components/clerk-safe"
 
 export function useAuth() {
-  const { data: session, status } = useSession()
+  const { user, isLoaded, isSignedIn } = useUser()
+  const { signOut } = useClerkAuth()
 
   return {
-    user: session?.user,
-    session,
-    isAuthenticated: status === "authenticated",
-    isLoading: status === "loading",
-    isUnauthenticated: status === "unauthenticated",
+    user: user ? {
+      id: user.id,
+      name: user.fullName || user.firstName || "User",
+      email: user.primaryEmailAddress?.emailAddress,
+      image: user.imageUrl,
+    } : null,
+    isAuthenticated: !!isSignedIn,
+    isLoading: !isLoaded,
+    isUnauthenticated: isLoaded && !isSignedIn,
+    signOut,
   }
 }

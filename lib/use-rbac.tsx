@@ -10,7 +10,7 @@
  * on the server for actual security.
  */
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@/components/clerk-safe';
 import { useMemo } from 'react';
 
 /**

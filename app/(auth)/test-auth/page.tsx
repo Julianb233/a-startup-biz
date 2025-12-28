@@ -1,95 +1,90 @@
 "use client"
 
-import { useAuth } from "@/hooks/use-auth"
-import { signOut } from "next-auth/react"
+import { useUser, useClerk, SignedIn, SignedOut } from "@/components/clerk-safe"
 import Link from "next/link"
 
 export default function TestAuthPage() {
-  const { user, isAuthenticated, isLoading } = useAuth()
+  const { user, isLoaded, isSignedIn } = useUser()
+  const { signOut } = useClerk()
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#ff6a1a]"></div>
-          <p className="mt-4 text-gray-600 font-montserrat">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ff6a1a]"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <h1 className="text-3xl font-bold text-black font-montserrat mb-6">
-            Authentication Test Page
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-50 px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-black font-montserrat">
+            Auth <span className="text-[#ff6a1a]">Test</span>
           </h1>
+          <p className="mt-2 text-gray-600 font-lato">
+            Testing Clerk authentication
+          </p>
+        </div>
 
-          {isAuthenticated ? (
-            <div className="space-y-6">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-green-800 font-semibold font-montserrat">
-                  ✓ You are authenticated!
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <SignedIn>
+            <div className="space-y-4">
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                <p className="font-semibold">Authenticated!</p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Name:</span> {user?.fullName || user?.firstName || "N/A"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">Email:</span> {user?.primaryEmailAddress?.emailAddress || "N/A"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">User ID:</span> {user?.id || "N/A"}
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <h2 className="text-xl font-semibold text-gray-900 font-montserrat">
-                  User Information
-                </h2>
-                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                  <p className="font-lato">
-                    <span className="font-semibold">Name:</span> {user?.name}
-                  </p>
-                  <p className="font-lato">
-                    <span className="font-semibold">Email:</span> {user?.email}
-                  </p>
-                  <p className="font-lato">
-                    <span className="font-semibold">User ID:</span> {user?.id}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
+              <div className="flex gap-3 pt-4">
                 <Link
-                  href="/"
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-3 px-4 rounded-lg transition-colors font-montserrat text-center"
+                  href="/dashboard"
+                  className="flex-1 text-center bg-[#ff6a1a] hover:bg-[#ea580c] text-white font-bold py-3 px-4 rounded-lg transition-all"
                 >
-                  Go to Home
+                  Dashboard
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors font-montserrat"
+                  onClick={() => signOut({ redirectUrl: "/" })}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition-all"
                 >
                   Sign Out
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-yellow-800 font-semibold font-montserrat">
-                  ⚠ You are not authenticated
-                </p>
+          </SignedIn>
+
+          <SignedOut>
+            <div className="space-y-4">
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg">
+                <p className="font-semibold">Not authenticated</p>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <Link
                   href="/login"
-                  className="flex-1 bg-[#ff6a1a] hover:bg-[#ea580c] text-white font-bold py-3 px-4 rounded-lg transition-colors font-montserrat text-center"
+                  className="flex-1 text-center bg-[#ff6a1a] hover:bg-[#ea580c] text-white font-bold py-3 px-4 rounded-lg transition-all"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/register"
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-3 px-4 rounded-lg transition-colors font-montserrat text-center"
+                  className="flex-1 text-center bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition-all"
                 >
-                  Create Account
+                  Register
                 </Link>
               </div>
             </div>
-          )}
+          </SignedOut>
         </div>
       </div>
     </div>

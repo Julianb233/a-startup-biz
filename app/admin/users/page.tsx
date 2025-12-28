@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Search,
   UserPlus,
@@ -12,73 +12,114 @@ import {
   Shield,
   User as UserIcon,
   Users as UsersIcon,
+  Loader2,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
-import {
-  mockUsers,
-  formatCurrency,
-  formatDate,
-  getRoleColor,
-  type User,
-} from '@/lib/admin-data';
+import { formatCurrency, formatDate, getRoleColor } from '@/lib/admin-data';
+
+interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  created_at: string;
+  updated_at: string;
+  order_count: number;
+  total_spent: number;
+}
+
+interface Stats {
+  all: number;
+  admin: number;
+  user: number;
+}
 
 export default function UsersPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [stats, setStats] = useState<Stats>({ all: 0, admin: 0, user: 0 });
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<User['role'] | 'all'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
-  // Filter and search users
-  const filteredUsers = useMemo(() => {
-    let filtered = mockUsers;
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
 
-    // Role filter
-    if (roleFilter !== 'all') {
-      filtered = filtered.filter((user) => user.role === roleFilter);
+    try {
+      const params = new URLSearchParams({
+        limit: usersPerPage.toString(),
+        offset: ((currentPage - 1) * usersPerPage).toString(),
+      });
+
+      if (searchQuery) {
+        params.set('search', searchQuery);
+      }
+      if (roleFilter !== 'all') {
+        params.set('role', roleFilter);
+      }
+
+      const response = await fetch(`/api/admin/users?${params.toString()}`);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please sign in to access this page');
+        }
+        if (response.status === 403) {
+          throw new Error('You do not have permission to view users');
+        }
+        throw new Error('Failed to fetch users');
+      }
+
+      const data = await response.json();
+      setUsers(data.users || []);
+      setTotal(data.total || 0);
+      setStats(data.stats || { all: 0, admin: 0, user: 0 });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setUsers([]);
+    } finally {
+      setIsLoading(false);
     }
+  }, [currentPage, searchQuery, roleFilter, usersPerPage]);
 
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (user) =>
-          user.name.toLowerCase().includes(query) ||
-          user.email.toLowerCase().includes(query)
-      );
-    }
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
-    return filtered;
-  }, [roleFilter, searchQuery]);
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = startIndex + usersPerPage;
-  const currentUsers = filteredUsers.slice(startIndex, endIndex);
-
-  // Stats by role
-  const stats = {
-    all: mockUsers.length,
-    admin: mockUsers.filter((u) => u.role === 'admin').length,
-    moderator: mockUsers.filter((u) => u.role === 'moderator').length,
-    user: mockUsers.filter((u) => u.role === 'user').length,
-  };
+  const totalPages = Math.ceil(total / usersPerPage);
 
   const roleTabs: Array<{
     label: string;
-    value: User['role'] | 'all';
+    value: 'all' | 'admin' | 'user';
     count: number;
     icon: typeof UsersIcon;
   }> = [
     { label: 'All Users', value: 'all', count: stats.all, icon: UsersIcon },
     { label: 'Admins', value: 'admin', count: stats.admin, icon: Shield },
-    {
-      label: 'Moderators',
-      value: 'moderator',
-      count: stats.moderator,
-      icon: UserIcon,
-    },
     { label: 'Users', value: 'user', count: stats.user, icon: UserIcon },
   ];
+
+  // Calculate averages from current data
+  const avgOrders = users.length > 0
+    ? (users.reduce((sum, u) => sum + (u.order_count || 0), 0) / users.length).toFixed(1)
+    : '0';
+  const avgSpent = users.length > 0
+    ? users.reduce((sum, u) => sum + (Number(u.total_spent) || 0), 0) / users.length
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -90,11 +131,38 @@ export default function UsersPage() {
             Manage user accounts and permissions
           </p>
         </div>
-        <button className="flex items-center space-x-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors">
-          <UserPlus className="h-4 w-4" />
-          <span>Add User</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={fetchUsers}
+            disabled={isLoading}
+            className="flex items-center space-x-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <button className="flex items-center space-x-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors">
+            <UserPlus className="h-4 w-4" />
+            <span>Add User</span>
+          </button>
+        </div>
       </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="text-sm font-medium text-red-800">Error loading users</h3>
+            <p className="text-sm text-red-700 mt-1">{error}</p>
+            <button
+              onClick={fetchUsers}
+              className="text-sm text-red-600 hover:text-red-800 font-medium mt-2"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Role Tabs */}
       <div className="flex space-x-1 overflow-x-auto rounded-lg bg-gray-100 p-1">
@@ -137,10 +205,7 @@ export default function UsersPage() {
           type="text"
           placeholder="Search users by name or email..."
           value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full rounded-lg border border-gray-300 pl-10 pr-4 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
         />
       </div>
@@ -165,12 +230,7 @@ export default function UsersPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600">Avg Orders</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {(
-                  mockUsers.reduce((sum, u) => sum + u.orderCount, 0) /
-                  mockUsers.length
-                ).toFixed(1)}
-              </p>
+              <p className="text-2xl font-bold text-gray-900">{avgOrders}</p>
             </div>
           </div>
         </div>
@@ -182,10 +242,7 @@ export default function UsersPage() {
             <div>
               <p className="text-sm font-medium text-gray-600">Avg Spent</p>
               <p className="text-2xl font-bold text-gray-900">
-                {formatCurrency(
-                  mockUsers.reduce((sum, u) => sum + u.totalSpent, 0) /
-                    mockUsers.length
-                )}
+                {formatCurrency(avgSpent)}
               </p>
             </div>
           </div>
@@ -224,27 +281,31 @@ export default function UsersPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Total Spent
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Last Active
-                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {currentUsers.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-orange-600 mx-auto" />
+                    <p className="mt-2 text-sm text-gray-500">Loading users...</p>
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={6}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No users found matching your criteria
+                    {error ? 'Unable to load users' : 'No users found matching your criteria'}
                   </td>
                 </tr>
               ) : (
-                currentUsers.map((user) => {
-                  const roleColors = getRoleColor(user.role);
+                users.map((user) => {
+                  const roleColors = getRoleColor(user.role as any);
                   return (
                     <tr
                       key={user.id}
@@ -255,16 +316,18 @@ export default function UsersPage() {
                           <div className="h-10 w-10 flex-shrink-0">
                             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
                               <span className="text-sm font-medium text-white">
-                                {user.name
+                                {(user.name || user.email)
                                   .split(' ')
                                   .map((n) => n[0])
-                                  .join('')}
+                                  .slice(0, 2)
+                                  .join('')
+                                  .toUpperCase()}
                               </span>
                             </div>
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {user.name}
+                              {user.name || 'No name'}
                             </div>
                             <div className="flex items-center text-sm text-gray-500">
                               <Mail className="mr-1 h-3 w-3" />
@@ -283,21 +346,18 @@ export default function UsersPage() {
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center text-sm text-gray-500">
                           <Calendar className="mr-1 h-4 w-4" />
-                          {formatDate(user.registeredAt)}
+                          {formatDate(new Date(user.created_at))}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {user.orderCount}
+                          {user.order_count || 0}
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         <div className="text-sm font-semibold text-gray-900">
-                          {formatCurrency(user.totalSpent)}
+                          {formatCurrency(Number(user.total_spent) || 0)}
                         </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {formatDate(user.lastActive)}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                         <button className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -317,28 +377,40 @@ export default function UsersPage() {
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <div className="flex items-center text-sm text-gray-700">
               Showing{' '}
-              <span className="font-medium mx-1">{startIndex + 1}</span> to{' '}
               <span className="font-medium mx-1">
-                {Math.min(endIndex, filteredUsers.length)}
+                {(currentPage - 1) * usersPerPage + 1}
               </span>{' '}
-              of{' '}
-              <span className="font-medium mx-1">{filteredUsers.length}</span>{' '}
-              results
+              to{' '}
+              <span className="font-medium mx-1">
+                {Math.min(currentPage * usersPerPage, total)}
+              </span>{' '}
+              of <span className="font-medium mx-1">{total}</span> results
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
+                disabled={currentPage === 1 || isLoading}
                 className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
               <div className="flex space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  let page: number;
+                  if (totalPages <= 5) {
+                    page = i + 1;
+                  } else if (currentPage <= 3) {
+                    page = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    page = totalPages - 4 + i;
+                  } else {
+                    page = currentPage - 2 + i;
+                  }
+                  return (
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
+                      disabled={isLoading}
                       className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
                         currentPage === page
                           ? 'bg-orange-600 text-white'
@@ -347,14 +419,12 @@ export default function UsersPage() {
                     >
                       {page}
                     </button>
-                  )
-                )}
+                  );
+                })}
               </div>
               <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages || isLoading}
                 className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
