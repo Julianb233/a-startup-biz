@@ -1,7 +1,17 @@
-import { neon } from "@neondatabase/serverless"
+import { neon, NeonQueryFunction } from "@neondatabase/serverless"
 
 // Create a SQL client for querying the database
-export const sql = neon(process.env.DATABASE_URL!)
+// Handle missing DATABASE_URL gracefully for build-time
+const createDbClient = (): NeonQueryFunction<false, false> => {
+  if (!process.env.DATABASE_URL) {
+    // Return a mock during build time
+    console.warn('DATABASE_URL not set - database queries will fail at runtime')
+    return (async () => []) as unknown as NeonQueryFunction<false, false>
+  }
+  return neon(process.env.DATABASE_URL)
+}
+
+export const sql = createDbClient()
 
 // Helper function for type-safe queries
 export async function query<T>(queryString: TemplateStringsArray, ...values: unknown[]): Promise<T[]> {
