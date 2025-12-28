@@ -23,10 +23,10 @@ import {
   addProfessionalWatermark,
 } from './quote-template'
 
-// Extend jsPDF type
+// Extend jsPDF type to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: typeof autoTable
+    autoTable: (options: Parameters<typeof autoTable>[1]) => jsPDF
     lastAutoTable?: {
       finalY: number
     }

@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { sql } from '@/lib/db'
+import { sql, query } from '@/lib/db'
 import { generateQuotePDF } from '@/lib/pdf/generator'
 import type { Quote as DBQuote } from '@/lib/db'
 import type { Quote, QuoteUpdateInput } from '@/lib/pdf/types'
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Fetch quote from database
-    const [quote] = await sql<DBQuote[]>`
+    const [quote] = await query<DBQuote>`
       SELECT * FROM quotes
       WHERE id = ${id}
     `
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           `attachment; filename="quote_${quote.quote_number}.pdf"`
         )
 
-        return new NextResponse(pdfResult.pdfBuffer, {
+        return new NextResponse(pdfResult.pdfBuffer ? new Uint8Array(pdfResult.pdfBuffer) : null, {
           status: 200,
           headers,
         })
@@ -130,7 +130,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // Fetch existing quote
-    const [existingQuote] = await sql<DBQuote[]>`
+    const [existingQuote] = await query<DBQuote>`
       SELECT * FROM quotes
       WHERE id = ${id}
     `
@@ -198,15 +198,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       updates.quote_data = quoteData as any
     }
 
-    // Build update query
-    const updateFields = Object.entries(updates)
-      .map(([key]) => `${key} = $${key}`)
-      .join(', ')
-
-    if (updateFields) {
+    // Build update query - update fields explicitly
+    if (Object.keys(updates).length > 0) {
       const [updatedQuote] = await sql`
         UPDATE quotes
-        SET ${sql(updates)}
+        SET
+          status = COALESCE(${updates.status ?? null}, status),
+          pdf_url = COALESCE(${updates.pdf_url ?? null}, pdf_url),
+          quote_data = COALESCE(${updates.quote_data ? JSON.stringify(updates.quote_data) : null}::jsonb, quote_data),
+          subtotal = COALESCE(${updates.subtotal ?? null}, subtotal),
+          tax_amount = COALESCE(${updates.tax_amount ?? null}, tax_amount),
+          total = COALESCE(${updates.total ?? null}, total),
+          updated_at = NOW()
         WHERE id = ${id}
         RETURNING *
       `
@@ -262,7 +265,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if quote exists
-    const [existingQuote] = await sql<DBQuote[]>`
+    const [existingQuote] = await query<DBQuote>`
       SELECT * FROM quotes
       WHERE id = ${id}
     `
