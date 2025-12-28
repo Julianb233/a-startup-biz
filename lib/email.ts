@@ -1094,3 +1094,153 @@ export async function sendConsultationConfirmation(data: {
     html: emailContent.html,
   })
 }
+
+// ============================================
+// PARTNER PROGRAM EMAIL TEMPLATES
+// ============================================
+
+export function partnerAccountCreatedEmail(data: {
+  partnerName: string
+  status: 'active' | 'pending'
+  commissionRate: number
+  loginUrl?: string
+}) {
+  const isActive = data.status === 'active'
+  const loginUrl = data.loginUrl || 'https://astartupbiz.com/partner-portal'
+
+  return {
+    subject: isActive ? 'Welcome to the Partner Program!' : 'Your Partner Application is Under Review',
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #ff6a1a; margin: 0; font-size: 28px;">A Startup Biz Partner Program</h1>
+            </div>
+
+            <!-- Main Card -->
+            <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff6a1a, #ea580c); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 28px;">🤝</span>
+                </div>
+                <h2 style="color: #333; margin: 0 0 10px;">
+                  ${isActive ? 'Welcome to the Partner Program!' : 'Your Partner Application is Under Review'}
+                </h2>
+              </div>
+
+              <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                Hi ${data.partnerName},
+              </p>
+
+              <p style="color: #666; line-height: 1.6; margin-bottom: 30px;">
+                ${isActive
+                  ? 'Great news! Your partner account has been created and activated. You can now start referring clients and earning commissions.'
+                  : 'Your partner application has been submitted and is currently under review. We\'ll notify you once your account is approved.'}
+              </p>
+
+              <!-- Account Details -->
+              <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <h3 style="color: #333; margin: 0 0 15px; font-size: 16px;">Account Details</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; color: #666; width: 40%;">Partner Name:</td>
+                    <td style="padding: 8px 0; color: #333; font-weight: 600;">${data.partnerName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #666;">Status:</td>
+                    <td style="padding: 8px 0;">
+                      <span style="color: ${isActive ? '#10b981' : '#f59e0b'}; background: ${isActive ? '#d1fae5' : '#fef3c7'}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 700;">
+                        ${isActive ? 'Active' : 'Pending Approval'}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #666;">Commission Rate:</td>
+                    <td style="padding: 8px 0; color: #333; font-weight: 600;">${data.commissionRate}%</td>
+                  </tr>
+                </table>
+              </div>
+
+              ${isActive ? `
+                <!-- Active Partner - Getting Started -->
+                <div style="background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <p style="margin: 0; color: #065f46;">
+                    <strong style="color: #064e3b;">You're all set!</strong> Log in to your partner portal to access your unique referral link and start tracking your commissions.
+                  </p>
+                </div>
+
+                <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="color: #333; margin: 0 0 15px; font-size: 16px;">Getting Started</h3>
+                  <ol style="margin: 0; padding-left: 20px; color: #666; line-height: 1.8;">
+                    <li>Log in to your partner portal</li>
+                    <li>Get your unique referral link</li>
+                    <li>Share it with your network</li>
+                    <li>Track your leads and commissions in real-time</li>
+                  </ol>
+                </div>
+
+                <div style="text-align: center;">
+                  <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #ff6a1a, #ea580c); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">Access Partner Portal</a>
+                </div>
+              ` : `
+                <!-- Pending Partner - What's Next -->
+                <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <p style="margin: 0; color: #92400e;">
+                    <strong style="color: #78350f;">What's Next?</strong> Our team is reviewing your application. You'll receive an email notification once your account is approved.
+                  </p>
+                </div>
+
+                <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="color: #333; margin: 0 0 15px; font-size: 16px;">Review Timeline</h3>
+                  <ul style="margin: 0; padding-left: 20px; color: #666; line-height: 1.8;">
+                    <li>Review typically takes 1-2 business days</li>
+                    <li>You'll be notified via email once approved</li>
+                    <li>Questions? Contact our partner team</li>
+                  </ul>
+                </div>
+              `}
+
+              <p style="color: #999; font-size: 14px; text-align: center; margin-top: 30px;">
+                Questions about the partner program?{' '}
+                <a href="mailto:partners@astartupbiz.com" style="color: #ff6a1a; text-decoration: none;">
+                  Contact our partner team
+                </a>
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; color: #999; font-size: 14px;">
+              <p>© ${new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}
+
+/**
+ * Send partner account created email
+ */
+export async function sendPartnerAccountCreated(data: {
+  email: string
+  partnerName: string
+  status: 'active' | 'pending'
+  commissionRate: number
+  loginUrl?: string
+}) {
+  const emailContent = partnerAccountCreatedEmail(data)
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}

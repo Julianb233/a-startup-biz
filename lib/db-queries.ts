@@ -1446,3 +1446,106 @@ export async function createPartner(data: {
   ` as unknown as Partner[]
   return result[0]
 }
+
+// ============================================
+// PARTNER-ONBOARDING INTEGRATION
+// ============================================
+
+/**
+ * Convert an onboarding submission to a partner account
+ */
+export async function createPartnerFromOnboarding(
+  onboardingId: string,
+  commissionRate: number = 10.00
+): Promise<string> {
+  const result = await sql`
+    SELECT create_partner_from_onboarding(
+      ${onboardingId}::UUID,
+      ${commissionRate}::DECIMAL
+    ) as partner_id
+  ` as unknown as { partner_id: string }[]
+
+  if (!result || result.length === 0) {
+    throw new Error('Failed to create partner from onboarding')
+  }
+
+  return result[0].partner_id
+}
+
+/**
+ * Link an existing partner to an onboarding submission
+ */
+export async function linkPartnerToOnboarding(
+  partnerId: string,
+  onboardingId: string
+): Promise<boolean> {
+  const result = await sql`
+    SELECT link_partner_to_onboarding(
+      ${partnerId}::UUID,
+      ${onboardingId}::UUID
+    ) as success
+  ` as unknown as { success: boolean }[]
+
+  return result[0]?.success || false
+}
+
+/**
+ * Get partner with onboarding details
+ */
+export async function getPartnerWithOnboarding(partnerId: string) {
+  const result = await sql`
+    SELECT * FROM partner_onboarding_details
+    WHERE partner_id = ${partnerId}
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+/**
+ * Get onboarding with partner info
+ */
+export async function getOnboardingWithPartner(onboardingId: string) {
+  const result = await sql`
+    SELECT * FROM onboarding_with_partner_info
+    WHERE onboarding_id = ${onboardingId}
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+/**
+ * Check if onboarding can be converted to partner
+ */
+export async function canConvertToPartner(onboardingId: string): Promise<{
+  canConvert: boolean
+  reason?: string
+  existingPartnerId?: string
+}> {
+  const result = await sql`
+    SELECT
+      id,
+      partner_account_created,
+      partner_id
+    FROM onboarding_submissions
+    WHERE id = ${onboardingId}
+  ` as unknown as any[]
+
+  if (!result || result.length === 0) {
+    return {
+      canConvert: false,
+      reason: 'Onboarding submission not found'
+    }
+  }
+
+  const submission = result[0]
+
+  if (submission.partner_account_created && submission.partner_id) {
+    return {
+      canConvert: false,
+      reason: 'Partner account already exists',
+      existingPartnerId: submission.partner_id
+    }
+  }
+
+  return { canConvert: true }
+}
