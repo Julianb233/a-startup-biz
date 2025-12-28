@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@/lib/clerk-server-safe';
 import { sql } from '@/lib/db-queries';
 import { sendEmail, partnerAccountCreatedEmail, ADMIN_EMAIL } from '@/lib/email';
 
@@ -25,7 +25,7 @@ import { sendEmail, partnerAccountCreatedEmail, ADMIN_EMAIL } from '@/lib/email'
 export async function POST(request: NextRequest) {
   try {
     // Check authentication (admin only for now)
-    const { userId } = auth();
+    const { userId } = await auth();
 
     if (!userId) {
       return NextResponse.json(
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
 
     if (!userId) {
       return NextResponse.json(
