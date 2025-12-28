@@ -615,3 +615,482 @@ export function adminNewOrderEmail(data: {
     `,
   }
 }
+
+// ============================================
+// NOTIFICATION EMAIL TEMPLATE
+// ============================================
+
+export function notificationEmail(data: {
+  recipientName: string
+  title: string
+  message: string
+  actionUrl?: string
+  actionText?: string
+}) {
+  return {
+    subject: data.title,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #ff6a1a; margin: 0; font-size: 28px;">A Startup Biz</h1>
+            </div>
+
+            <!-- Main Card -->
+            <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 28px;">🔔</span>
+                </div>
+                <h2 style="color: #333; margin: 0 0 10px;">${data.title}</h2>
+              </div>
+
+              <p style="color: #666; line-height: 1.6; margin-bottom: 30px; white-space: pre-line;">
+                Hi ${data.recipientName},
+
+                ${data.message}
+              </p>
+
+              ${data.actionUrl && data.actionText ? `
+                <div style="text-align: center; margin-top: 30px;">
+                  <a href="${data.actionUrl}" style="display: inline-block; background: linear-gradient(135deg, #ff6a1a, #ea580c); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">${data.actionText}</a>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; color: #999; font-size: 14px;">
+              <p>Questions? Reply to this email or contact us at support@astartupbiz.com</p>
+              <p style="margin-top: 10px;">© ${new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}
+
+// ============================================
+// BOOKING EMAIL TEMPLATES
+// ============================================
+
+export function bookingConfirmationEmail(data: {
+  customerName: string
+  bookingId: string
+  serviceType: string
+  date: string
+  time: string
+  timezone: string
+  meetingLink?: string
+  notes?: string
+}) {
+  return {
+    subject: `Booking Confirmed - ${data.serviceType}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #ff6a1a; margin: 0; font-size: 28px;">A Startup Biz</h1>
+            </div>
+
+            <!-- Main Card -->
+            <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 28px;">✓</span>
+                </div>
+                <h2 style="color: #333; margin: 0 0 10px;">Booking Confirmed!</h2>
+                <p style="color: #666; margin: 0;">Your appointment has been scheduled</p>
+              </div>
+
+              <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                Hi ${data.customerName}, your ${data.serviceType} appointment has been confirmed.
+              </p>
+
+              <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <p style="margin: 0 0 10px; color: #666; font-size: 14px;">Booking ID</p>
+                <p style="margin: 0 0 20px; color: #333; font-weight: 600; font-size: 12px; font-family: monospace;">${data.bookingId}</p>
+
+                <p style="margin: 0 0 10px; color: #666; font-size: 14px;">📆 Date & Time</p>
+                <p style="margin: 0 0 5px; color: #333; font-weight: 600;">${data.date}</p>
+                <p style="margin: 0 0 20px; color: #333; font-weight: 600;">${data.time}</p>
+
+                <p style="margin: 0 0 10px; color: #666; font-size: 14px;">🌍 Timezone</p>
+                <p style="margin: 0; color: #333; font-weight: 600;">${data.timezone}</p>
+              </div>
+
+              ${data.meetingLink ? `
+                <div style="background: #fff8f5; border: 1px solid #ffe0d0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="margin: 0 0 15px; color: #333; font-size: 16px;">Meeting Link</h3>
+                  <a href="${data.meetingLink}" style="color: #ff6a1a; word-break: break-all;">${data.meetingLink}</a>
+                </div>
+              ` : ''}
+
+              ${data.notes ? `
+                <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="margin: 0 0 15px; color: #333; font-size: 16px;">Notes</h3>
+                  <p style="margin: 0; color: #666; line-height: 1.6;">${data.notes}</p>
+                </div>
+              ` : ''}
+
+              <div style="background: #fff8f5; border: 1px solid #ffe0d0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <p style="margin: 0; color: #666;">
+                  <strong style="color: #333;">📧 You will receive a reminder 24 hours before your appointment.</strong>
+                </p>
+              </div>
+
+              <div style="text-align: center;">
+                <a href="https://astartupbiz.com/dashboard/bookings/${data.bookingId}" style="display: inline-block; background: linear-gradient(135deg, #ff6a1a, #ea580c); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">View Booking Details</a>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; color: #999; font-size: 14px;">
+              <p>Need to reschedule or cancel? <a href="https://astartupbiz.com/dashboard/bookings/${data.bookingId}" style="color: #ff6a1a;">Manage your booking</a></p>
+              <p style="margin-top: 10px;">© ${new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}
+
+export function bookingReminderEmail(data: {
+  customerName: string
+  bookingId: string
+  serviceType: string
+  date: string
+  time: string
+  timezone: string
+  meetingLink?: string
+  notes?: string
+}) {
+  return {
+    subject: `Reminder: ${data.serviceType} Appointment Tomorrow`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #ff6a1a; margin: 0; font-size: 28px;">A Startup Biz</h1>
+            </div>
+
+            <!-- Main Card -->
+            <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 28px;">⏰</span>
+                </div>
+                <h2 style="color: #333; margin: 0 0 10px;">Appointment Reminder</h2>
+                <p style="color: #666; margin: 0;">Your appointment is coming up soon!</p>
+              </div>
+
+              <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                Hi ${data.customerName}, this is a friendly reminder about your upcoming ${data.serviceType} appointment.
+              </p>
+
+              <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <p style="margin: 0 0 10px; color: #92400e; font-size: 14px; font-weight: 600;">📆 SCHEDULED FOR:</p>
+                <p style="margin: 0 0 5px; color: #92400e; font-weight: 700; font-size: 18px;">${data.date}</p>
+                <p style="margin: 0; color: #92400e; font-weight: 700; font-size: 18px;">${data.time}</p>
+              </div>
+
+              ${data.meetingLink ? `
+                <div style="background: #fff8f5; border: 1px solid #ffe0d0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="margin: 0 0 15px; color: #333; font-size: 16px;">🔗 Meeting Link</h3>
+                  <a href="${data.meetingLink}" style="color: #ff6a1a; word-break: break-all; font-weight: 600;">${data.meetingLink}</a>
+                </div>
+              ` : ''}
+
+              ${data.notes ? `
+                <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="margin: 0 0 15px; color: #333; font-size: 16px;">📝 Notes</h3>
+                  <p style="margin: 0; color: #666; line-height: 1.6;">${data.notes}</p>
+                </div>
+              ` : ''}
+
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="https://astartupbiz.com/dashboard/bookings/${data.bookingId}" style="display: inline-block; background: linear-gradient(135deg, #ff6a1a, #ea580c); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; margin-right: 10px;">View Details</a>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; color: #999; font-size: 14px;">
+              <p>Need to reschedule? <a href="https://astartupbiz.com/dashboard/bookings/${data.bookingId}" style="color: #ff6a1a;">Manage your booking</a></p>
+              <p style="margin-top: 10px;">© ${new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}
+
+export function bookingCancellationEmail(data: {
+  customerName: string
+  bookingId: string
+  serviceType: string
+  date: string
+  time: string
+  cancellationReason?: string
+}) {
+  return {
+    subject: `Booking Cancelled - ${data.serviceType}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #ff6a1a; margin: 0; font-size: 28px;">A Startup Biz</h1>
+            </div>
+
+            <!-- Main Card -->
+            <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-size: 28px;">✕</span>
+                </div>
+                <h2 style="color: #333; margin: 0 0 10px;">Booking Cancelled</h2>
+                <p style="color: #666; margin: 0;">Your appointment has been cancelled</p>
+              </div>
+
+              <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                Hi ${data.customerName}, your ${data.serviceType} appointment has been cancelled.
+              </p>
+
+              <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <p style="margin: 0 0 10px; color: #666; font-size: 14px;">Cancelled Appointment:</p>
+                <p style="margin: 0 0 5px; color: #333; font-weight: 600;">${data.date}</p>
+                <p style="margin: 0; color: #333; font-weight: 600;">${data.time}</p>
+              </div>
+
+              ${data.cancellationReason ? `
+                <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                  <h3 style="margin: 0 0 15px; color: #333; font-size: 16px;">Reason</h3>
+                  <p style="margin: 0; color: #666; line-height: 1.6;">${data.cancellationReason}</p>
+                </div>
+              ` : ''}
+
+              <div style="background: #fff8f5; border: 1px solid #ffe0d0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <p style="margin: 0; color: #666;">
+                  <strong style="color: #333;">Need to book a new appointment?</strong> We're here to help you whenever you're ready.
+                </p>
+              </div>
+
+              <div style="text-align: center;">
+                <a href="https://astartupbiz.com/booking" style="display: inline-block; background: linear-gradient(135deg, #ff6a1a, #ea580c); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600;">Book New Appointment</a>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; color: #999; font-size: 14px;">
+              <p>Questions? Reply to this email or contact us at ${SUPPORT_EMAIL}</p>
+              <p style="margin-top: 10px;">© ${new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }
+}
+
+// ============================================
+// UTILITY FUNCTIONS FOR COMMON EMAIL TASKS
+// ============================================
+
+/**
+ * Send booking confirmation email
+ */
+export async function sendBookingConfirmation(data: {
+  email: string
+  customerName: string
+  bookingId: string
+  serviceType: string
+  date: string
+  time: string
+  timezone: string
+  meetingLink?: string
+  notes?: string
+}) {
+  const emailContent = bookingConfirmationEmail(data)
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send booking reminder email (24 hours before)
+ */
+export async function sendBookingReminder(data: {
+  email: string
+  customerName: string
+  bookingId: string
+  serviceType: string
+  date: string
+  time: string
+  timezone: string
+  meetingLink?: string
+  notes?: string
+}) {
+  const emailContent = bookingReminderEmail(data)
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send booking cancellation email
+ */
+export async function sendBookingCancellation(data: {
+  email: string
+  customerName: string
+  bookingId: string
+  serviceType: string
+  date: string
+  time: string
+  cancellationReason?: string
+}) {
+  const emailContent = bookingCancellationEmail(data)
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send onboarding confirmation email
+ * Convenience wrapper around sendEmail + onboardingSubmittedEmail template
+ */
+export async function sendOnboardingConfirmation(data: {
+  customerName: string
+  businessName: string
+  email: string
+}) {
+  const emailContent = onboardingSubmittedEmail({
+    customerName: data.customerName,
+    businessName: data.businessName,
+  })
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send welcome email to new user
+ * Convenience wrapper around sendEmail + welcomeEmail template
+ */
+export async function sendWelcomeEmail(data: {
+  name: string
+  email: string
+}) {
+  const emailContent = welcomeEmail(data)
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send notification email
+ * Convenience wrapper for generic notifications
+ */
+export async function sendNotification(data: {
+  to: string | string[]
+  recipientName: string
+  title: string
+  message: string
+  actionUrl?: string
+  actionText?: string
+}) {
+  const emailContent = notificationEmail({
+    recipientName: data.recipientName,
+    title: data.title,
+    message: data.message,
+    actionUrl: data.actionUrl,
+    actionText: data.actionText,
+  })
+
+  return sendEmail({
+    to: data.to,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send order confirmation email
+ * Convenience wrapper around sendEmail + orderConfirmationEmail template
+ */
+export async function sendOrderConfirmation(data: {
+  email: string
+  customerName: string
+  orderId: string
+  items: Array<{ name: string; price: number; quantity: number }>
+  total: number
+}) {
+  const emailContent = orderConfirmationEmail(data)
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send consultation booked confirmation
+ * Convenience wrapper around sendEmail + consultationBookedEmail template
+ */
+export async function sendConsultationConfirmation(data: {
+  email: string
+  customerName: string
+  serviceType: string
+  scheduledAt?: Date
+  date?: string
+  time?: string
+}) {
+  const emailContent = consultationBookedEmail(data)
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}

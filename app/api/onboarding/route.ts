@@ -22,6 +22,12 @@ export async function POST(request: NextRequest) {
     // Validate the data against our schema
     const validatedData = onboardingSchema.parse(body);
 
+    // Get client IP and user agent for analytics
+    const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+                     request.headers.get('x-real-ip') ||
+                     null;
+    const userAgent = request.headers.get('user-agent') || null;
+
     // Map the frontend form data to database schema
     const submissionData = {
       businessName: validatedData.companyName,
@@ -33,23 +39,37 @@ export async function POST(request: NextRequest) {
       contactPhone: validatedData.contactPhone,
       timeline: validatedData.timeline,
       budgetRange: validatedData.budgetRange,
-      additionalInfo: JSON.stringify({
+      // Store complete form data in JSONB for rich querying
+      formData: {
+        companyName: validatedData.companyName,
         companySize: validatedData.companySize,
         revenueRange: validatedData.revenueRange,
         yearsInBusiness: validatedData.yearsInBusiness,
-        servicesInterested: validatedData.servicesInterested,
-        priorityLevel: validatedData.priorityLevel,
+        website: validatedData.website,
+        industry: validatedData.industry,
+        businessGoals: validatedData.businessGoals,
+        primaryChallenge: validatedData.primaryChallenge,
+        timeline: validatedData.timeline,
         currentTools: validatedData.currentTools,
         teamSize: validatedData.teamSize,
+        budgetRange: validatedData.budgetRange,
+        additionalContext: validatedData.additionalContext,
         referralSource: validatedData.referralSource,
+        referralCode: validatedData.referralCode,
+        servicesInterested: validatedData.servicesInterested,
+        priorityLevel: validatedData.priorityLevel,
+        specificNeeds: validatedData.specificNeeds,
         brandStyle: validatedData.brandStyle,
         primaryColor: validatedData.primaryColor,
         secondaryColor: validatedData.secondaryColor,
         logoUrl: validatedData.logoUrl,
         aboutBusiness: validatedData.aboutBusiness,
         servicesDescription: validatedData.servicesDescription,
+        uniqueValue: validatedData.uniqueValue,
+        targetAudience: validatedData.targetAudience,
         businessCategory: validatedData.businessCategory,
         businessHours: validatedData.businessHours,
+        businessDescription: validatedData.businessDescription,
         socialMedia: {
           facebook: validatedData.socialFacebook,
           instagram: validatedData.socialInstagram,
@@ -58,13 +78,29 @@ export async function POST(request: NextRequest) {
           youtube: validatedData.socialYoutube,
           twitter: validatedData.socialTwitter,
         },
+        googleMapsUrl: validatedData.googleMapsUrl,
         contactName: validatedData.contactName,
+        contactEmail: validatedData.contactEmail,
+        contactPhone: validatedData.contactPhone,
         bestTimeToCall: validatedData.bestTimeToCall,
-        website: validatedData.website,
-        uniqueValue: validatedData.uniqueValue,
-        targetAudience: validatedData.targetAudience,
-        additionalContext: validatedData.additionalContext,
+        timezone: validatedData.timezone,
+        communicationPreference: validatedData.communicationPreference,
+        additionalNotes: validatedData.additionalNotes,
+        selectedPlan: validatedData.selectedPlan,
+        paymentMethod: validatedData.paymentMethod,
+      },
+      // Keep legacy field for backward compatibility
+      additionalInfo: JSON.stringify({
+        companySize: validatedData.companySize,
+        revenueRange: validatedData.revenueRange,
+        servicesInterested: validatedData.servicesInterested,
+        priorityLevel: validatedData.priorityLevel,
       }),
+      source: 'onboarding_form',
+      ipAddress,
+      userAgent,
+      referralCode: validatedData.referralCode,
+      completionPercentage: 100, // Assuming complete submission
     };
 
     let submission;
@@ -147,6 +183,60 @@ export async function POST(request: NextRequest) {
     } catch (adminEmailError) {
       // Don't fail the request if admin email fails
       console.error('Failed to send admin onboarding notification:', adminEmailError);
+    }
+
+    // Sync to HubSpot CRM (non-blocking)
+    if (process.env.HUBSPOT_API_KEY) {
+      try {
+        const { upsertContact } = await import('@/lib/hubspot/contacts');
+        const { createDealFromOnboarding } = await import('@/lib/hubspot/deals');
+
+        const hubspotData = {
+          contactEmail: validatedData.contactEmail,
+          contactName: validatedData.contactName,
+          contactPhone: validatedData.contactPhone,
+          companyName: validatedData.companyName,
+          website: validatedData.website,
+          industry: validatedData.industry,
+          businessGoals: validatedData.businessGoals,
+          primaryChallenge: validatedData.primaryChallenge,
+          timeline: validatedData.timeline,
+          budgetRange: validatedData.budgetRange,
+          servicesInterested: validatedData.servicesInterested,
+          priorityLevel: validatedData.priorityLevel,
+          referralSource: validatedData.referralSource,
+          referralCode: validatedData.referralCode,
+          socialFacebook: validatedData.socialFacebook,
+          socialInstagram: validatedData.socialInstagram,
+          socialLinkedin: validatedData.socialLinkedin,
+          socialTwitter: validatedData.socialTwitter,
+          socialYoutube: validatedData.socialYoutube,
+          socialTiktok: validatedData.socialTiktok,
+          companySize: validatedData.companySize,
+          revenueRange: validatedData.revenueRange,
+          yearsInBusiness: validatedData.yearsInBusiness,
+          bestTimeToCall: validatedData.bestTimeToCall,
+          timezone: validatedData.timezone,
+          communicationPreference: validatedData.communicationPreference,
+          additionalContext: validatedData.additionalContext,
+        };
+
+        const { contact, created } = await upsertContact(hubspotData);
+        console.log(`Contact ${created ? 'created' : 'updated'} in HubSpot: ${contact.id}`);
+
+        // Create deal if qualified (has budget or priority)
+        if (validatedData.budgetRange || validatedData.priorityLevel) {
+          const deal = await createDealFromOnboarding(hubspotData, contact.id, {
+            autoQualify: true,
+          });
+          console.log(`Deal created in HubSpot: ${deal.id}`);
+        }
+      } catch (hubspotError) {
+        // Don't fail the request if HubSpot sync fails
+        console.error('Failed to sync to HubSpot (non-fatal):', hubspotError);
+      }
+    } else {
+      console.log('HubSpot API key not configured - skipping CRM sync');
     }
 
     return NextResponse.json(

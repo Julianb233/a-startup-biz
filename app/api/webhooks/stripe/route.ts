@@ -162,9 +162,7 @@ export async function POST(request: Request) {
   }
 }
 
-// Disable body parsing for webhook (we need raw body for signature verification)
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+// App Router uses request.text() for raw body - no config needed
+// Route Segment Config for Next.js App Router
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'

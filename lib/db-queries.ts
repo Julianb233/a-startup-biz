@@ -137,7 +137,13 @@ export interface OnboardingSubmission {
   timeline: string | null
   budget_range: string | null
   additional_info: string | null
+  form_data: Record<string, any> | null
   status: 'submitted' | 'reviewed' | 'in_progress' | 'completed'
+  source: string | null
+  ip_address: string | null
+  user_agent: string | null
+  referral_code: string | null
+  completion_percentage: number
   created_at: Date
   updated_at: Date
 }
@@ -905,6 +911,12 @@ export async function createOnboardingSubmission(data: {
   timeline?: string
   budgetRange?: string
   additionalInfo?: string
+  formData?: Record<string, any>
+  source?: string
+  ipAddress?: string
+  userAgent?: string
+  referralCode?: string
+  completionPercentage?: number
 }): Promise<OnboardingSubmission> {
   const result = await sql`
     INSERT INTO onboarding_submissions (
@@ -919,6 +931,12 @@ export async function createOnboardingSubmission(data: {
       timeline,
       budget_range,
       additional_info,
+      form_data,
+      source,
+      ip_address,
+      user_agent,
+      referral_code,
+      completion_percentage,
       status
     )
     VALUES (
@@ -933,6 +951,12 @@ export async function createOnboardingSubmission(data: {
       ${data.timeline || null},
       ${data.budgetRange || null},
       ${data.additionalInfo || null},
+      ${data.formData ? JSON.stringify(data.formData) : null},
+      ${data.source || 'onboarding_form'},
+      ${data.ipAddress || null},
+      ${data.userAgent || null},
+      ${data.referralCode || null},
+      ${data.completionPercentage || 100},
       'submitted'
     )
     RETURNING *
@@ -1211,4 +1235,211 @@ export async function updateContactStatus(
     RETURNING *
   ` as unknown as ContactSubmission[]
   return result[0] || null
+}
+
+// ============================================
+// PARTNER PORTAL QUERIES
+// ============================================
+
+export interface Partner {
+  id: string
+  user_id: string
+  company_name: string
+  status: 'pending' | 'active' | 'suspended' | 'inactive'
+  commission_rate: number
+  total_referrals: number
+  total_earnings: number
+  paid_earnings: number
+  pending_earnings: number
+  rank: string | null
+  created_at: Date
+  updated_at: Date
+}
+
+export interface PartnerLead {
+  id: string
+  partner_id: string
+  client_name: string
+  client_email: string
+  client_phone: string | null
+  service: string
+  status: 'pending' | 'contacted' | 'qualified' | 'converted' | 'lost'
+  commission: number
+  commission_paid: boolean
+  created_at: Date
+  converted_at: Date | null
+}
+
+export async function getPartnerByUserId(userId: string): Promise<Partner | null> {
+  const result = await sql`
+    SELECT * FROM partners WHERE user_id = ${userId} LIMIT 1
+  ` as unknown as Partner[]
+  return result[0] || null
+}
+
+export async function getPartnerStats(partnerId: string) {
+  const [partner, leadsStats, earningsStats] = await Promise.all([
+    sql`SELECT * FROM partners WHERE id = ${partnerId}` as unknown as Partner[],
+    sql`
+      SELECT
+        COUNT(*) as total,
+        COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
+        COUNT(CASE WHEN status = 'contacted' THEN 1 END) as contacted,
+        COUNT(CASE WHEN status = 'qualified' THEN 1 END) as qualified,
+        COUNT(CASE WHEN status = 'converted' THEN 1 END) as converted,
+        COUNT(CASE WHEN status = 'lost' THEN 1 END) as lost
+      FROM partner_leads
+      WHERE partner_id = ${partnerId}
+    `,
+    sql`
+      SELECT
+        COALESCE(SUM(commission), 0) as total_commission,
+        COALESCE(SUM(CASE WHEN commission_paid THEN commission ELSE 0 END), 0) as paid_commission,
+        COALESCE(SUM(CASE WHEN NOT commission_paid AND status = 'converted' THEN commission ELSE 0 END), 0) as pending_commission,
+        COALESCE(SUM(CASE WHEN created_at >= DATE_TRUNC('month', CURRENT_DATE) THEN commission ELSE 0 END), 0) as this_month_earnings,
+        COALESCE(SUM(CASE WHEN created_at >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month') AND created_at < DATE_TRUNC('month', CURRENT_DATE) THEN commission ELSE 0 END), 0) as last_month_earnings
+      FROM partner_leads
+      WHERE partner_id = ${partnerId} AND status = 'converted'
+    `
+  ])
+
+  return {
+    partner: partner[0] || null,
+    leads: (leadsStats as any[])[0],
+    earnings: (earningsStats as any[])[0]
+  }
+}
+
+export async function getPartnerLeads(
+  partnerId: string,
+  filters?: {
+    status?: string
+    limit?: number
+    offset?: number
+  }
+): Promise<{ leads: PartnerLead[], total: number }> {
+  const limit = filters?.limit || 50
+  const offset = filters?.offset || 0
+
+  let leads: PartnerLead[]
+  let countResult: any[]
+
+  if (filters?.status) {
+    leads = await sql`
+      SELECT * FROM partner_leads
+      WHERE partner_id = ${partnerId} AND status = ${filters.status}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as PartnerLead[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM partner_leads
+      WHERE partner_id = ${partnerId} AND status = ${filters.status}
+    ` as unknown as any[]
+  } else {
+    leads = await sql`
+      SELECT * FROM partner_leads
+      WHERE partner_id = ${partnerId}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as PartnerLead[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM partner_leads
+      WHERE partner_id = ${partnerId}
+    ` as unknown as any[]
+  }
+
+  return { leads, total: parseInt(countResult[0]?.count || '0') }
+}
+
+export async function createPartnerLead(data: {
+  partnerId: string
+  clientName: string
+  clientEmail: string
+  clientPhone?: string
+  service: string
+  commission: number
+}): Promise<PartnerLead> {
+  const result = await sql`
+    INSERT INTO partner_leads (
+      partner_id,
+      client_name,
+      client_email,
+      client_phone,
+      service,
+      commission,
+      status
+    ) VALUES (
+      ${data.partnerId},
+      ${data.clientName},
+      ${data.clientEmail},
+      ${data.clientPhone || null},
+      ${data.service},
+      ${data.commission},
+      'pending'
+    )
+    RETURNING *
+  ` as unknown as PartnerLead[]
+  return result[0]
+}
+
+export async function updatePartnerLeadStatus(
+  leadId: string,
+  partnerId: string,
+  status: 'pending' | 'contacted' | 'qualified' | 'converted' | 'lost'
+): Promise<PartnerLead | null> {
+  if (status === 'converted') {
+    const result = await sql`
+      UPDATE partner_leads
+      SET status = ${status}, converted_at = NOW()
+      WHERE id = ${leadId} AND partner_id = ${partnerId}
+      RETURNING *
+    ` as unknown as PartnerLead[]
+    return result[0] || null
+  }
+
+  const result = await sql`
+    UPDATE partner_leads
+    SET status = ${status}
+    WHERE id = ${leadId} AND partner_id = ${partnerId}
+    RETURNING *
+  ` as unknown as PartnerLead[]
+  return result[0] || null
+}
+
+export async function getPartnerCommissions(partnerId: string) {
+  const result = await sql`
+    SELECT
+      COALESCE(SUM(commission), 0) as total_earned,
+      COALESCE(SUM(CASE WHEN NOT commission_paid AND status = 'converted' THEN commission ELSE 0 END), 0) as pending_commission,
+      COALESCE(SUM(CASE WHEN commission_paid THEN commission ELSE 0 END), 0) as paid_commission,
+      COALESCE(SUM(CASE WHEN created_at >= DATE_TRUNC('month', CURRENT_DATE) AND status = 'converted' THEN commission ELSE 0 END), 0) as this_month_earnings,
+      COALESCE(SUM(CASE WHEN created_at >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month') AND created_at < DATE_TRUNC('month', CURRENT_DATE) AND status = 'converted' THEN commission ELSE 0 END), 0) as last_month_earnings,
+      COALESCE(AVG(CASE WHEN status = 'converted' THEN commission END), 0) as average_commission
+    FROM partner_leads
+    WHERE partner_id = ${partnerId}
+  ` as unknown as any[]
+
+  return result[0] || {
+    total_earned: 0,
+    pending_commission: 0,
+    paid_commission: 0,
+    this_month_earnings: 0,
+    last_month_earnings: 0,
+    average_commission: 0
+  }
+}
+
+export async function createPartner(data: {
+  userId: string
+  companyName: string
+  commissionRate?: number
+}): Promise<Partner> {
+  const result = await sql`
+    INSERT INTO partners (user_id, company_name, commission_rate, status)
+    VALUES (${data.userId}, ${data.companyName}, ${data.commissionRate || 10}, 'pending')
+    RETURNING *
+  ` as unknown as Partner[]
+  return result[0]
 }

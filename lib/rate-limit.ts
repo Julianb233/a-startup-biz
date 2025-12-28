@@ -70,6 +70,16 @@ export const rateLimiters = {
         prefix: 'ratelimit:onboarding',
       })
     : null,
+
+  // Email: 10 requests per hour
+  email: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:email',
+      })
+    : null,
 }
 
 // In-memory rate limiting for development
@@ -109,6 +119,7 @@ const configs: Record<RateLimitType, RateLimitConfig> = {
   checkout: { maxRequests: 5, windowMs: 60000 },
   contact: { maxRequests: 3, windowMs: 600000 },
   onboarding: { maxRequests: 5, windowMs: 600000 },
+  email: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
 }
 
 // Get client IP from request

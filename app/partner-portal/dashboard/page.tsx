@@ -1,323 +1,238 @@
-"use client"
+import { redirect } from 'next/navigation'
+import { requireAuth } from '@/lib/auth'
+import PartnerDashboard from '@/components/partner/PartnerDashboard'
+import LeadTable from '@/components/partner/LeadTable'
+import { ArrowRight, Plus, FileText } from 'lucide-react'
+import Link from 'next/link'
 
-import { motion } from "framer-motion"
-import PartnerLayout from "@/components/partner-layout"
-import {
-  TrendingUp,
-  Users,
-  Clock,
-  CheckCircle,
-  DollarSign,
-  ArrowUpRight,
-  ArrowRight,
-  FileText,
-  Plus,
-} from "lucide-react"
+// Mock data fallback
+const mockStats = {
+  totalReferrals: 127,
+  pendingReferrals: 23,
+  completedReferrals: 94,
+  totalEarnings: 12450,
+  pendingEarnings: 2300,
+  paidEarnings: 10150,
+}
 
-export default function PartnerDashboard() {
-  const stats = [
-    {
-      label: "Total Referrals",
-      value: "127",
-      change: "+12%",
-      trend: "up",
-      icon: Users,
-      color: "from-blue-500 to-blue-600",
-    },
-    {
-      label: "Pending",
-      value: "23",
-      change: "5 this week",
-      trend: "neutral",
-      icon: Clock,
-      color: "from-yellow-500 to-yellow-600",
-    },
-    {
-      label: "Completed",
-      value: "94",
-      change: "+8%",
-      trend: "up",
-      icon: CheckCircle,
-      color: "from-green-500 to-green-600",
-    },
-    {
-      label: "Earnings",
-      value: "$12,450",
-      change: "+$1,200",
-      trend: "up",
-      icon: DollarSign,
-      color: "from-[#ff6a1a] to-[#e55f17]",
-    },
-  ]
+const mockLeads = [
+  {
+    id: '1',
+    clientName: 'Acme Ventures LLC',
+    clientEmail: 'contact@acme.com',
+    service: 'EIN Filing',
+    status: 'converted' as const,
+    commission: 150,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
+  },
+  {
+    id: '2',
+    clientName: 'Tech Startup Inc',
+    clientEmail: 'info@techstartup.com',
+    service: 'Legal Formation',
+    status: 'pending' as const,
+    commission: 300,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
+  },
+  {
+    id: '3',
+    clientName: 'Fitness Co',
+    clientEmail: 'hello@fitness.co',
+    service: 'Website Design',
+    status: 'qualified' as const,
+    commission: 500,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12),
+  },
+]
 
-  const recentReferrals = [
-    {
-      id: 1,
-      client: "Acme Ventures LLC",
-      service: "EIN Filing",
-      provider: "TaxPro Solutions",
-      status: "Completed",
-      commission: "$150",
-      date: "2024-01-15",
-    },
-    {
-      id: 2,
-      client: "Tech Startup Inc",
-      service: "Legal Formation",
-      provider: "LegalEase Partners",
-      status: "Pending",
-      commission: "$300",
-      date: "2024-01-14",
-    },
-    {
-      id: 3,
-      client: "Fitness Co",
-      service: "Website Design",
-      provider: "WebCraft Studios",
-      status: "In Progress",
-      commission: "$500",
-      date: "2024-01-13",
-    },
-    {
-      id: 4,
-      client: "Restaurant Group",
-      service: "Accounting Setup",
-      provider: "NumbersFirst CPA",
-      status: "Completed",
-      commission: "$200",
-      date: "2024-01-12",
-    },
-  ]
+async function getPartnerData(userId: string) {
+  try {
+    // Try to fetch real data from API
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const [statsRes, leadsRes] = await Promise.all([
+      fetch(`${baseUrl}/api/partner/stats`, {
+        cache: 'no-store',
+        headers: {
+          'x-user-id': userId,
+        },
+      }),
+      fetch(`${baseUrl}/api/partner/leads?limit=10`, {
+        cache: 'no-store',
+        headers: {
+          'x-user-id': userId,
+        },
+      }),
+    ])
 
-  const quickActions = [
-    {
-      label: "New Referral",
-      icon: Plus,
-      href: "/partner-portal/providers",
-      color: "bg-[#ff6a1a]",
-    },
-    {
-      label: "View Providers",
-      icon: Users,
-      href: "/partner-portal/providers",
-      color: "bg-blue-500",
-    },
-    {
-      label: "All Referrals",
-      icon: FileText,
-      href: "/partner-portal/referrals",
-      color: "bg-green-500",
-    },
-    {
-      label: "Earnings Report",
-      icon: DollarSign,
-      href: "/partner-portal/earnings",
-      color: "bg-purple-500",
-    },
-  ]
+    if (statsRes.ok && leadsRes.ok) {
+      const stats = await statsRes.json()
+      const leadsData = await leadsRes.json()
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Completed":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case "In Progress":
-        return "bg-blue-100 text-blue-800 border-blue-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
+      return {
+        stats: {
+          totalReferrals: stats.stats.totalReferrals,
+          pendingReferrals: stats.stats.pendingReferrals,
+          completedReferrals: stats.stats.completedReferrals,
+          totalEarnings: stats.stats.totalEarnings,
+          pendingEarnings: stats.stats.pendingEarnings,
+          paidEarnings: stats.stats.paidEarnings,
+        },
+        leads: leadsData.leads,
+        partner: stats.partner,
+      }
     }
+  } catch (error) {
+    console.error('Failed to fetch partner data:', error)
+  }
+
+  // Fallback to mock data
+  return {
+    stats: mockStats,
+    leads: mockLeads,
+    partner: null,
+  }
+}
+
+export default async function PartnerDashboardPage() {
+  // Ensure user is authenticated
+  const userId = await requireAuth('/partner-portal')
+
+  // Fetch partner data
+  const { stats, leads, partner } = await getPartnerData(userId)
+
+  // Check if partner application is pending
+  if (partner && partner.status === 'pending') {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md text-center">
+          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-8 h-8 text-yellow-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Application Pending
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Your partner application is currently under review. We will notify you once it has been approved.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#ff6a1a] text-white font-semibold rounded-lg hover:bg-[#e55f17] transition-colors"
+          >
+            Back to Home
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <PartnerLayout>
-      <div className="space-y-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, Partner!
-          </h1>
-          <p className="text-gray-600">
-            Here's what's happening with your referrals today.
-          </p>
-        </motion.div>
+    <div className="space-y-8">
+      {/* Dashboard Overview */}
+      <PartnerDashboard
+        stats={stats}
+        recentActivity={[
+          {
+            id: '1',
+            type: 'New Lead',
+            description: 'Acme Ventures LLC referred for EIN Filing',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+          },
+          {
+            id: '2',
+            type: 'Lead Converted',
+            description: 'Tech Startup Inc completed Legal Formation',
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
+          },
+        ]}
+      />
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div
-                      className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}
-                    >
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    {stat.trend === "up" && (
-                      <div className="flex items-center text-green-600 text-sm font-medium">
-                        <TrendingUp className="w-4 h-4 mr-1" />
-                        {stat.change}
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </p>
-                  {stat.trend === "neutral" && (
-                    <p className="text-xs text-gray-500 mt-1">{stat.change}</p>
-                  )}
-                </div>
-              </motion.div>
-            )
-          })}
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            href="/partner-portal/referrals"
+            className="flex items-center gap-3 p-4 rounded-lg border-2 border-gray-200 hover:border-[#ff6a1a] hover:bg-orange-50 transition-all group"
+          >
+            <div className="w-10 h-10 bg-[#ff6a1a] rounded-lg flex items-center justify-center">
+              <Plus className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 group-hover:text-[#ff6a1a] transition-colors">
+                New Referral
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#ff6a1a] transition-colors" />
+          </Link>
+
+          <Link
+            href="/partner-portal/providers"
+            className="flex items-center gap-3 p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all group"
+          >
+            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                View Providers
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+          </Link>
+
+          <Link
+            href="/partner-portal/referrals"
+            className="flex items-center gap-3 p-4 rounded-lg border-2 border-gray-200 hover:border-green-500 hover:bg-green-50 transition-all group"
+          >
+            <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                All Referrals
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-green-500 transition-colors" />
+          </Link>
+
+          <Link
+            href="/partner-portal/earnings"
+            className="flex items-center gap-3 p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 transition-all group"
+          >
+            <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                Earnings Report
+              </p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-colors" />
+          </Link>
         </div>
-
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-        >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => {
-              const Icon = action.icon
-              return (
-                <motion.a
-                  key={action.label}
-                  href={action.href}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-3 p-4 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all group"
-                >
-                  <div
-                    className={`w-10 h-10 ${action.color} rounded-lg flex items-center justify-center`}
-                  >
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-900 group-hover:text-[#ff6a1a] transition-colors">
-                      {action.label}
-                    </p>
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-[#ff6a1a] transition-colors" />
-                </motion.a>
-              )
-            })}
-          </div>
-        </motion.div>
-
-        {/* Recent Referrals */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-        >
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">
-              Recent Referrals
-            </h2>
-            <a
-              href="/partner-portal/referrals"
-              className="text-sm font-semibold text-[#ff6a1a] hover:text-[#e55f17] flex items-center gap-1"
-            >
-              View All
-              <ArrowUpRight className="w-4 h-4" />
-            </a>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Client
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Service
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Provider
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Commission
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {recentReferrals.map((referral, index) => (
-                  <motion.tr
-                    key={referral.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 + index * 0.05 }}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <p className="text-sm font-medium text-gray-900">
-                        {referral.client}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <p className="text-sm text-gray-600">
-                        {referral.service}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <p className="text-sm text-gray-600">
-                        {referral.provider}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
-                          referral.status
-                        )}`}
-                      >
-                        {referral.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <p className="text-sm font-semibold text-green-600">
-                        {referral.commission}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <p className="text-sm text-gray-500">{referral.date}</p>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
       </div>
-    </PartnerLayout>
+
+      {/* Recent Leads */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">
+            Recent Leads
+          </h2>
+          <Link
+            href="/partner-portal/referrals"
+            className="text-sm font-semibold text-[#ff6a1a] hover:text-[#e55f17] flex items-center gap-1"
+          >
+            View All
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <div className="p-6">
+          <LeadTable leads={leads.slice(0, 5)} />
+        </div>
+      </div>
+    </div>
   )
 }

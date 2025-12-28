@@ -52,7 +52,100 @@ export interface OnboardingSubmission {
   timeline: string
   budget_range: string
   additional_info: string | null
+  form_data: Record<string, any> | null
   status: 'submitted' | 'reviewed' | 'in_progress' | 'completed'
+  source: string | null
+  ip_address: string | null
+  user_agent: string | null
+  referral_code: string | null
+  completion_percentage: number
+  created_at: Date
+  updated_at: Date
+}
+
+export interface Quote {
+  id: string
+  user_id: string | null
+  onboarding_submission_id: string | null
+  quote_number: string
+  customer_email: string
+  customer_name: string
+  business_name: string
+  quote_data: Record<string, any>
+  pdf_url: string | null
+  pdf_storage_path: string | null
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired'
+  subtotal: number
+  tax_amount: number
+  discount_amount: number
+  total: number
+  issue_date: Date
+  expiry_date: Date
+  sent_at: Date | null
+  accepted_at: Date | null
+  rejected_at: Date | null
+  created_at: Date
+  updated_at: Date
+}
+
+export interface QuoteLineItem {
+  id: string
+  quote_id: string
+  description: string
+  category: string | null
+  quantity: number
+  unit_price: number
+  total: number
+  notes: string | null
+  sort_order: number
+  created_at: Date
+}
+
+export interface QuoteActivity {
+  id: string
+  quote_id: string
+  activity_type: string
+  description: string | null
+  performed_by: string | null
+  metadata: Record<string, any> | null
+  created_at: Date
+}
+
+// Calendar Booking types
+export interface CalendarBooking {
+  id: string
+  user_id: string
+  email: string
+  name: string
+  phone: string | null
+  service_type: string
+  start_time: Date
+  end_time: Date
+  timezone: string
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
+  notes: string | null
+  calendar_event_id: string | null
+  meeting_link: string | null
+  reminder_sent: boolean
+  notification_type: 'email' | 'sms' | 'both'
+  metadata: Record<string, any> | null
+  created_at: Date
+  updated_at: Date
+  cancelled_at: Date | null
+  cancellation_reason: string | null
+}
+
+export interface AvailabilityConfigDb {
+  id: string
+  user_id: string | null
+  working_hours: Record<string, any>
+  slot_duration: number
+  buffer_time: number
+  min_advance_notice: number
+  max_advance_days: number
+  timezone: string
+  excluded_dates: string[]
+  excluded_time_ranges: Record<string, any>[]
   created_at: Date
   updated_at: Date
 }
