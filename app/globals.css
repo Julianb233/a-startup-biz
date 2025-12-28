@@ -66,6 +66,20 @@
   --chart-4: var(--zinc-600);
   --chart-5: var(--orange-700);
   --radius: 0.5rem;
+
+  /* Lake Martin Theme - Light Mode Lake Colors */
+  --lake-martin-sky: #87ceeb;
+  --lake-martin-water: #4a90a4;
+  --lake-martin-shore: #8fbc8f;
+}
+
+/* Lake Martin Theme - Dark Mode Deep Blue Colors */
+:root {
+  --lake-martin-deep: #0f1f3a;
+  --lake-martin-midnight: #1a365d;
+  --lake-martin-dusk: #2c5282;
+  --lake-martin-twilight: #2d3748;
+  --lake-martin-starlight: #e2e8f0;
 }
 
 html,
@@ -75,26 +89,26 @@ body {
   max-width: 100vw;
 }
 
-/* Dark mode */
+/* Dark mode - Lake Martin Night Theme */
 .dark {
-  --background: var(--gray-950);
-  --foreground: var(--gray-50);
-  --card: var(--gray-900);
-  --card-foreground: var(--gray-50);
-  --popover: var(--gray-900);
-  --popover-foreground: var(--gray-50);
+  --background: var(--lake-martin-deep);
+  --foreground: var(--lake-martin-starlight);
+  --card: var(--lake-martin-midnight);
+  --card-foreground: var(--lake-martin-starlight);
+  --popover: var(--lake-martin-midnight);
+  --popover-foreground: var(--lake-martin-starlight);
   --primary: var(--orange-500);
   --primary-foreground: #ffffff;
-  --secondary: var(--zinc-700);
-  --secondary-foreground: var(--gray-50);
-  --muted: var(--gray-800);
-  --muted-foreground: var(--gray-400);
+  --secondary: var(--lake-martin-dusk);
+  --secondary-foreground: var(--lake-martin-starlight);
+  --muted: var(--lake-martin-twilight);
+  --muted-foreground: #94a3b8;
   --accent: var(--orange-600);
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
-  --destructive-foreground: var(--gray-50);
-  --border: var(--gray-700);
-  --input: var(--gray-700);
+  --destructive-foreground: var(--lake-martin-starlight);
+  --border: var(--lake-martin-dusk);
+  --input: var(--lake-martin-dusk);
   --ring: var(--orange-500);
 }
 
@@ -123,6 +137,16 @@ body {
   --color-zinc-500: var(--zinc-500);
   --color-zinc-600: var(--zinc-600);
   --color-zinc-700: var(--zinc-700);
+
+  /* Lake Martin Theme Colors */
+  --color-lake-martin-deep: var(--lake-martin-deep);
+  --color-lake-martin-midnight: var(--lake-martin-midnight);
+  --color-lake-martin-dusk: var(--lake-martin-dusk);
+  --color-lake-martin-twilight: var(--lake-martin-twilight);
+  --color-lake-martin-starlight: var(--lake-martin-starlight);
+  --color-lake-martin-sky: var(--lake-martin-sky);
+  --color-lake-martin-water: var(--lake-martin-water);
+  --color-lake-martin-shore: var(--lake-martin-shore);
 
   --color-gray-50: var(--gray-50);
   --color-gray-100: var(--gray-100);

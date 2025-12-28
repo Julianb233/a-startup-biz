@@ -111,21 +111,48 @@ function getStatusBadge(status: string) {
 export default async function AdminDashboard() {
   // Try to fetch real data, fallback to mock
   let stats = mockStats;
-  // Note: Using mock orders/consultations until we add user info joins to db-queries
-  const recentOrders: AdminOrder[] = mockOrders;
-  const upcomingConsultations: AdminConsultation[] = mockConsultations;
+  let recentOrders: AdminOrder[] = mockOrders;
+  let upcomingConsultations: AdminConsultation[] = mockConsultations;
 
   try {
-    const adminStats = await getAdminStats();
+    const [adminStats, dbOrders, dbConsultations] = await Promise.all([
+      getAdminStats(),
+      getRecentOrders(10),
+      getUpcomingConsultations(7)
+    ]);
+
     stats = adminStats;
-    // TODO: Add user info to getRecentOrders and getUpcomingConsultations
-    // const dbOrders = await getRecentOrders(10);
-    // const dbConsultations = await getUpcomingConsultations(7);
+
+    // Map database orders to AdminOrder format
+    if (dbOrders && dbOrders.length > 0) {
+      recentOrders = dbOrders.map((order: any) => ({
+        id: order.id,
+        user_name: order.user_name || 'Guest User',
+        user_email: order.user_email || 'N/A',
+        total: order.total,
+        status: order.status,
+        created_at: order.created_at,
+        items: order.items || [],
+      }));
+    }
+
+    // Map database consultations to AdminConsultation format
+    if (dbConsultations && dbConsultations.length > 0) {
+      upcomingConsultations = dbConsultations.map((consultation: any) => ({
+        id: consultation.id,
+        user_name: consultation.user_name || 'Guest User',
+        user_email: consultation.user_email || 'N/A',
+        service_type: consultation.service_type,
+        status: consultation.status,
+        scheduled_at: consultation.scheduled_at,
+        created_at: consultation.created_at,
+      }));
+    }
   } catch (error) {
-    console.log('Using mock data - database not available');
+    console.log('Using mock data - database not available:', error);
   }
 
-  // Display data (using mock until db has user info)
+  // Display data
   const displayOrders = recentOrders;
   const displayConsultations = upcomingConsultations;
 

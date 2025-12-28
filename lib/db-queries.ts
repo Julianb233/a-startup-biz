@@ -564,7 +564,7 @@ export async function getUpcomingConsultations(days = 7): Promise<Consultation[]
     LEFT JOIN users u ON c.user_id = u.id
     WHERE c.status = 'scheduled'
       AND c.scheduled_at > NOW()
-      AND c.scheduled_at < NOW() + INTERVAL '${days} days'
+      AND c.scheduled_at < NOW() + INTERVAL '1 day' * ${days}
     ORDER BY c.scheduled_at ASC
   ` as unknown as Consultation[]
 }

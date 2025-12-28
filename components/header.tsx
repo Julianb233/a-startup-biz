@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import { UserMenu } from "./user-menu"
 import CartButton from "./cart-button"
+import { ThemeToggle } from "./theme-toggle"
 
 const serviceCategories = [
   {
@@ -137,8 +138,8 @@ export default function Header() {
         transition={{ duration: 0.5 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-white shadow-[0_1px_3px_0_rgb(0,0,0,0.1),0_1px_2px_-1px_rgb(0,0,0,0.1)]"
-            : "bg-white border-b border-gray-100"
+            ? "bg-white dark:bg-[#1a365d] shadow-[0_1px_3px_0_rgb(0,0,0,0.1),0_1px_2px_-1px_rgb(0,0,0,0.1)]"
+            : "bg-white dark:bg-[#1a365d] border-b border-gray-100 dark:border-gray-700"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -181,7 +182,7 @@ export default function Header() {
                       transition={{ delay: 0.4 + index * 0.1 }}
                       onClick={() => setServicesOpen(!servicesOpen)}
                       className={`flex items-center gap-1 px-4 py-2 text-[15px] font-medium transition-colors rounded-md ${
-                        pathname?.startsWith('/services') ? 'text-[#ff6a1a]' : 'text-black hover:text-[#ff6a1a]'
+                        pathname?.startsWith('/services') ? 'text-[#ff6a1a]' : 'text-black dark:text-white hover:text-[#ff6a1a]'
                       }`}
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
@@ -257,7 +258,7 @@ export default function Header() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 + index * 0.1 }}
-                    className="px-4 py-2 text-[15px] font-medium text-black hover:text-[#ff6a1a] transition-colors rounded-md"
+                    className="px-4 py-2 text-[15px] font-medium text-black dark:text-white hover:text-[#ff6a1a] transition-colors rounded-md"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     {link.label}
@@ -273,6 +274,11 @@ export default function Header() {
               transition={{ delay: 0.3 }}
               className="flex items-center gap-4"
             >
+              {/* Theme Toggle */}
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
+
               {/* Cart Button */}
               <div className="hidden sm:block">
                 <CartButton />
@@ -286,7 +292,7 @@ export default function Header() {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="lg:hidden p-2 text-black hover:text-[#ff6a1a] rounded-md transition-all"
+                className="lg:hidden p-2 text-black dark:text-white hover:text-[#ff6a1a] rounded-md transition-all"
                 aria-label="Toggle menu"
               >
                 {menuOpen ? (
@@ -308,7 +314,7 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-white z-40 lg:hidden overflow-y-auto"
+            className="fixed inset-0 bg-white dark:bg-[#1a365d] z-40 lg:hidden overflow-y-auto"
             onClick={() => setMenuOpen(false)}
           >
             <motion.nav
@@ -367,7 +373,7 @@ export default function Header() {
                     >
                       <button
                         onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                        className="flex items-center justify-between w-full px-4 py-3 text-base font-medium text-black hover:text-[#ff6a1a] rounded-md transition-colors"
+                        className="flex items-center justify-between w-full px-4 py-3 text-base font-medium text-black dark:text-white hover:text-[#ff6a1a] rounded-md transition-colors"
                         style={{ fontFamily: 'Montserrat, sans-serif' }}
                       >
                         Services
@@ -455,6 +461,9 @@ export default function Header() {
                 }}
                 className="mt-8 space-y-4"
               >
+                <div className="flex justify-center">
+                  <ThemeToggle />
+                </div>
                 <div className="flex justify-center">
                   <UserMenu />
                 </div>

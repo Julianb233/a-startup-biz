@@ -7,6 +7,7 @@ import SmoothScroll from "@/components/smooth-scroll"
 import { AuthProvider } from "@/components/auth-provider"
 import { ChatbotProvider } from "@/components/chatbot-provider"
 import { CartProvider } from "@/lib/cart-context"
+import { ThemeProvider } from "@/components/theme-provider"
 import SalesChatbot from "@/components/sales-chatbot"
 import CartDrawer from "@/components/cart-drawer"
 import "./globals.css"
@@ -135,7 +136,7 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="en" className="bg-white overflow-x-hidden">
+    <html lang="en" className="overflow-x-hidden" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -143,23 +144,24 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`font-sans antialiased overflow-x-hidden bg-white ${montserrat.variable} ${lato.variable}`}
+        className={`font-sans antialiased overflow-x-hidden bg-white dark:bg-[#0f1f3a] ${montserrat.variable} ${lato.variable}`}
       >
-        <AuthProvider>
-          <ChatbotProvider>
-            <CartProvider>
-              <SmoothScroll>{children}</SmoothScroll>
-              <SalesChatbot />
-              <CartDrawer />
-              <Toaster
-                position="top-right"
-                richColors
-                closeButton
-                theme="light"
-              />
-            </CartProvider>
-          </ChatbotProvider>
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <AuthProvider>
+            <ChatbotProvider>
+              <CartProvider>
+                <SmoothScroll>{children}</SmoothScroll>
+                <SalesChatbot />
+                <CartDrawer />
+                <Toaster
+                  position="top-right"
+                  richColors
+                  closeButton
+                />
+              </CartProvider>
+            </ChatbotProvider>
+          </AuthProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>
