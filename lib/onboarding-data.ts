@@ -284,6 +284,10 @@ export const onboardingSchema = z.object({
     required_error: 'Please select communication preference',
   }),
   additionalNotes: z.string().max(1000).optional(),
+
+  // Step 8: Payment/Subscription (NEW)
+  selectedPlan: z.enum(['starter', 'growth', 'enterprise']).optional(),
+  paymentMethod: z.enum(['full', 'deposit']).optional(),
 });
 
 export type OnboardingData = z.infer<typeof onboardingSchema>;
@@ -336,6 +340,15 @@ export function validateStep(step: number, data: Partial<OnboardingData>): boole
           timezone: z.enum(timezones),
           communicationPreference: z.enum(communicationPreferences),
         }).parse(data);
+        return true;
+      case 8:
+        // Payment step - optional but validate if provided
+        if (data.selectedPlan) {
+          z.object({
+            selectedPlan: z.enum(['starter', 'growth', 'enterprise']),
+            paymentMethod: z.enum(['full', 'deposit']),
+          }).parse(data);
+        }
         return true;
       default:
         return false;

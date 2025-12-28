@@ -65,10 +65,26 @@ export function OnboardingWizard({
   const progressPercentage = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8">
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto px-4 py-4 sm:py-8">
+      {/* Mobile Progress Indicator */}
+      <div className="mb-6 sm:hidden">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <span className="font-medium">Step {currentStep} of {steps.length}</span>
+          <span>{Math.round(progressPercentage)}% Complete</span>
+        </div>
+        <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <motion.div
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-orange-600"
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Progress Bar */}
+      <div className="mb-8 hidden sm:block">
+        <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <motion.div
             className="absolute top-0 left-0 h-full bg-gradient-to-r from-orange-500 to-orange-600"
             initial={{ width: 0 }}
@@ -131,11 +147,11 @@ export function OnboardingWizard({
       </div>
 
       {/* Current Step Header */}
-      <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="mb-6 sm:mb-8 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
           {steps[currentStep - 1]?.title}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           {steps[currentStep - 1]?.description}
         </p>
       </div>
@@ -149,33 +165,33 @@ export function OnboardingWizard({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-8"
         >
           {children}
         </motion.div>
       </AnimatePresence>
 
       {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8">
+      <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-8">
         <button
           onClick={handleBack}
           disabled={currentStep === 1}
           className={cn(
-            'flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all',
+            'flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-medium transition-all order-2 sm:order-1',
             currentStep === 1
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-500'
+              ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+              : 'bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-orange-500 hover:text-orange-500'
           )}
         >
           <ChevronLeft className="w-5 h-5" />
-          Back
+          <span className="hidden sm:inline">Back</span>
         </button>
 
         <button
           onClick={handleNext}
           disabled={isSubmitting}
           className={cn(
-            'flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all',
+            'flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg font-medium transition-all order-1 sm:order-2',
             'bg-gradient-to-r from-orange-500 to-orange-600 text-white',
             'hover:from-orange-600 hover:to-orange-700',
             'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -185,16 +201,18 @@ export function OnboardingWizard({
           {isSubmitting ? (
             <>
               <span className="animate-spin">⏳</span>
-              Submitting...
+              <span className="hidden sm:inline">Submitting...</span>
             </>
           ) : isLastStep ? (
             <>
-              Complete Onboarding
+              <span className="hidden sm:inline">Complete Onboarding</span>
+              <span className="sm:hidden">Complete</span>
               <Check className="w-5 h-5" />
             </>
           ) : (
             <>
-              Next Step
+              <span className="hidden sm:inline">Next Step</span>
+              <span className="sm:hidden">Next</span>
               <ChevronRight className="w-5 h-5" />
             </>
           )}
@@ -203,7 +221,7 @@ export function OnboardingWizard({
 
       {/* Auto-save Indicator */}
       <div className="mt-4 text-center">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
           ✓ Progress automatically saved
         </p>
       </div>

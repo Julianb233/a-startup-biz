@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   OnboardingWizard,
   StepContent,
@@ -10,8 +12,11 @@ import {
   CheckboxGroup,
   RadioGroup,
 } from '@/components/onboarding/onboarding-wizard';
+import { PaymentStep } from '@/components/onboarding/payment-step';
+import { SubmittingOverlay } from '@/components/onboarding/loading-states';
 import {
   type OnboardingData,
+  onboardingSchema,
   industries,
   companySizes,
   revenueRanges,
@@ -41,6 +46,8 @@ import {
   Linkedin,
   Twitter,
   Youtube,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 
 const STEPS = [
@@ -78,6 +85,11 @@ const STEPS = [
     id: 7,
     title: 'Contact Preferences',
     description: 'How should we reach you?',
+  },
+  {
+    id: 8,
+    title: 'Select Package',
+    description: 'Choose the package that fits your needs',
   },
 ];
 
@@ -138,6 +150,9 @@ export default function IntakePage() {
     timezone: undefined,
     communicationPreference: undefined,
     additionalNotes: '',
+    // Step 8 - Payment
+    selectedPlan: undefined,
+    paymentMethod: undefined,
   });
 
   // Load saved progress on mount
@@ -230,7 +245,7 @@ export default function IntakePage() {
         onStepChange={setCurrentStep}
         onNext={handleNext}
         onSubmit={handleSubmit}
-        isLastStep={currentStep === 7}
+        isLastStep={currentStep === 8}
         isSubmitting={isSubmitting}
       >
         {errors.general && (
@@ -905,7 +920,20 @@ export default function IntakePage() {
             </FormField>
           </StepContent>
         )}
+
+        {/* Step 8: Payment/Package Selection */}
+        {currentStep === 8 && (
+          <PaymentStep
+            selectedPlan={formData.selectedPlan || null}
+            onPlanSelect={(planId) => updateField('selectedPlan', planId as 'starter' | 'growth' | 'enterprise')}
+            paymentMethod={formData.paymentMethod || 'full'}
+            onPaymentMethodChange={(method) => updateField('paymentMethod', method)}
+          />
+        )}
       </OnboardingWizard>
+
+      {/* Submitting Overlay */}
+      {isSubmitting && <SubmittingOverlay message="Submitting your onboarding information..." />}
     </div>
   );
 }
