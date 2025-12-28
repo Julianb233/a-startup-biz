@@ -2,7 +2,8 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { Mail, Phone, Building2, User, MessageSquare, Calendar, Send } from 'lucide-react';
+import { Mail, Phone, Building2, User, MessageSquare, Calendar, Send, ClipboardList } from 'lucide-react';
+import Link from 'next/link';
 
 type FormData = {
   name: string;
@@ -208,6 +209,47 @@ export default function CTASection() {
                 Ready to move forward? Pick the option that works best for you.
               </p>
             </div>
+
+            {/* Get Started Card - Primary CTA */}
+            <Link href="/onboarding">
+              <motion.div
+                whileHover={{ scale: 1.02, y: -4 }}
+                transition={{ duration: 0.3 }}
+                className="group relative cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-[#ff6a1a] to-[#ff8c4a] rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-300" />
+                <div className="relative bg-gradient-to-br from-[#ff6a1a]/10 to-[#ff8c4a]/5 border-2 border-[#ff6a1a]/40 rounded-2xl p-8 hover:border-[#ff6a1a] transition-all duration-300">
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-1 bg-[#ff6a1a] text-white text-xs font-bold rounded-full">
+                      RECOMMENDED
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-[#ff6a1a] to-[#ff8c4a] flex items-center justify-center shadow-lg shadow-[#ff6a1a]/30">
+                      <ClipboardList className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-xl font-bold text-white mb-2">
+                        Start Your Onboarding
+                      </h4>
+                      <p className="text-gray-300 mb-4">
+                        Complete our quick intake form to get a customized action plan.
+                        We&apos;ll analyze your needs and create your success roadmap.
+                      </p>
+                      <span className="inline-flex items-center gap-2 text-[#ff6a1a] font-semibold group-hover:gap-3 transition-all duration-300">
+                        Get Started Now
+                        <motion.span
+                          animate={{ x: [0, 4, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          →
+                        </motion.span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </Link>
 
             {/* Book a Call Card */}
             <motion.div

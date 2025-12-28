@@ -15,6 +15,7 @@ import {
   Package,
   UserCheck,
   BarChart3,
+  ClipboardList,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -26,6 +27,11 @@ const navItems = [
     name: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
+  },
+  {
+    name: 'Onboarding',
+    href: '/admin/onboarding',
+    icon: ClipboardList,
   },
   {
     name: 'Orders',

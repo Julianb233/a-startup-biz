@@ -851,3 +851,118 @@ export async function markReferralPaid(referralId: string, amount: number): Prom
   ` as unknown as Referral[]
   return result[0]
 }
+
+// ============================================
+// ONBOARDING SUBMISSIONS
+// ============================================
+
+export async function createOnboardingSubmission(data: {
+  userId?: string
+  businessName: string
+  businessType: string
+  businessStage: string
+  goals: string[]
+  challenges: string[]
+  contactEmail: string
+  contactPhone?: string
+  timeline?: string
+  budgetRange?: string
+  additionalInfo?: string
+}): Promise<OnboardingSubmission> {
+  const result = await sql`
+    INSERT INTO onboarding_submissions (
+      user_id,
+      business_name,
+      business_type,
+      business_stage,
+      goals,
+      challenges,
+      contact_email,
+      contact_phone,
+      timeline,
+      budget_range,
+      additional_info,
+      status
+    )
+    VALUES (
+      ${data.userId || null},
+      ${data.businessName},
+      ${data.businessType},
+      ${data.businessStage},
+      ${data.goals},
+      ${data.challenges},
+      ${data.contactEmail},
+      ${data.contactPhone || null},
+      ${data.timeline || null},
+      ${data.budgetRange || null},
+      ${data.additionalInfo || null},
+      'submitted'
+    )
+    RETURNING *
+  ` as unknown as OnboardingSubmission[]
+  return result[0]
+}
+
+export async function getOnboardingSubmissionByEmail(email: string): Promise<OnboardingSubmission | null> {
+  const results = await sql`
+    SELECT * FROM onboarding_submissions
+    WHERE contact_email = ${email}
+    ORDER BY created_at DESC
+    LIMIT 1
+  ` as unknown as OnboardingSubmission[]
+  return results[0] || null
+}
+
+export async function getAllOnboardingSubmissions(filters?: {
+  status?: string
+  limit?: number
+  offset?: number
+}): Promise<{ submissions: OnboardingSubmission[], total: number }> {
+  const limit = filters?.limit || 50
+  const offset = filters?.offset || 0
+
+  let submissions: OnboardingSubmission[]
+  let countResult: any[]
+
+  if (filters?.status) {
+    submissions = await sql`
+      SELECT os.*, u.name as user_name, u.email as user_email
+      FROM onboarding_submissions os
+      LEFT JOIN users u ON os.user_id = u.id
+      WHERE os.status = ${filters.status}
+      ORDER BY os.created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as OnboardingSubmission[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM onboarding_submissions WHERE status = ${filters.status}
+    ` as unknown as any[]
+  } else {
+    submissions = await sql`
+      SELECT os.*, u.name as user_name, u.email as user_email
+      FROM onboarding_submissions os
+      LEFT JOIN users u ON os.user_id = u.id
+      ORDER BY os.created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as OnboardingSubmission[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM onboarding_submissions
+    ` as unknown as any[]
+  }
+
+  return { submissions, total: parseInt(countResult[0]?.count || '0') }
+}
+
+export async function updateOnboardingStatus(
+  submissionId: string,
+  status: 'submitted' | 'reviewed' | 'in_progress' | 'completed'
+): Promise<OnboardingSubmission | null> {
+  const result = await sql`
+    UPDATE onboarding_submissions
+    SET status = ${status}
+    WHERE id = ${submissionId}
+    RETURNING *
+  ` as unknown as OnboardingSubmission[]
+  return result[0] || null
+}
