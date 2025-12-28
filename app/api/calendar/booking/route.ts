@@ -113,20 +113,17 @@ export async function GET(request: NextRequest) {
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
-    // Execute query
-    const bookings = await sql(
-      `SELECT * FROM bookings
+    // Execute query - using type assertion for dynamic SQL
+    const queryText = `SELECT * FROM bookings
        ${whereClause}
        ORDER BY start_time DESC
-       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
-      [...values, limit, offset]
-    ) as DbBooking[]
+       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`
+
+    const bookings = (await sql(queryText as any, [...values, limit, offset])) as DbBooking[]
 
     // Get total count for pagination
-    const countResult = await sql(
-      `SELECT COUNT(*) as total FROM bookings ${whereClause}`,
-      values
-    ) as Array<{ total: number }>
+    const countQueryText = `SELECT COUNT(*) as total FROM bookings ${whereClause}`
+    const countResult = (await sql(countQueryText as any, values)) as Array<{ total: number }>
 
     const total = Number(countResult[0].total)
 

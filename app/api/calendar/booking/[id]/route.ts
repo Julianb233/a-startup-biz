@@ -288,14 +288,14 @@ export async function PATCH(
     // Add updated_at
     updates.push(`updated_at = NOW()`)
 
-    // Execute update
-    const updatedBookings = await sql(
-      `UPDATE bookings
+    // Execute update - use raw query execution for dynamic updates
+    const queryText = `UPDATE bookings
        SET ${updates.join(', ')}
        WHERE id = $${paramIndex}
-       RETURNING *`,
-      [...values, id]
-    ) as DbBooking[]
+       RETURNING *`
+
+    // Neon sql() accepts a string as first parameter for dynamic queries
+    const updatedBookings = (await sql(queryText as any, [...values, id])) as DbBooking[]
 
     const updatedBooking = dbBookingToBooking(updatedBookings[0])
 

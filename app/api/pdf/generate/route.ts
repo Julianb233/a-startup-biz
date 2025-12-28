@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { generateQuotePDF, generateQuoteFilename } from '@/lib/pdf/generator'
+import { withRateLimit, addRateLimitHeaders } from '@/lib/rate-limit'
 import type {
   Quote,
   QuoteCreateInput,
@@ -26,6 +27,12 @@ export const dynamic = 'force-dynamic'
  * Generate PDF quote
  */
 export async function POST(request: NextRequest) {
+  // Apply rate limiting - 10 requests per 10 minutes
+  const rateLimitResponse = await withRateLimit(request, 'pdf')
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   try {
     const body = (await request.json()) as QuoteCreateInput
 

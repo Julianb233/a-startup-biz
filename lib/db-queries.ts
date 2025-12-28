@@ -1,5 +1,8 @@
 import { sql } from "./db"
 
+// Re-export sql for use in API routes
+export { sql }
+
 // ============================================
 // TYPE DEFINITIONS
 // ============================================

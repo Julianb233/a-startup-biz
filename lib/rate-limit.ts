@@ -80,6 +80,26 @@ export const rateLimiters = {
         prefix: 'ratelimit:email',
       })
     : null,
+
+  // PDF generation: 10 requests per 10 minutes (resource intensive)
+  pdf: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '10m'),
+        analytics: true,
+        prefix: 'ratelimit:pdf',
+      })
+    : null,
+
+  // Quote creation: 20 requests per hour
+  quote: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(20, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:quote',
+      })
+    : null,
 }
 
 // In-memory rate limiting for development
@@ -120,6 +140,8 @@ const configs: Record<RateLimitType, RateLimitConfig> = {
   contact: { maxRequests: 3, windowMs: 600000 },
   onboarding: { maxRequests: 5, windowMs: 600000 },
   email: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
+  pdf: { maxRequests: 10, windowMs: 600000 }, // 10 per 10 minutes
+  quote: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
 }
 
 // Get client IP from request
