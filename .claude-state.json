@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "project": "a-startup-biz",
-  "lastUpdated": "2025-12-29T14:45:00Z",
+  "lastUpdated": "2025-12-29T15:30:00Z",
   "expiresAt": "2026-01-01T06:00:00Z",
   "swarmId": "swarm_bubba_dashboard_1735448400",
   "swarmStatus": "completed",
@@ -21,7 +21,7 @@
     "stagingPending": false,
     "stagingNotes": "CI/CD fully configured with GitHub Actions",
     "vercelConfigured": true,
-    "lastSuccessfulBuild": "2025-12-29T08:15:00Z"
+    "lastSuccessfulBuild": "2025-12-29T15:30:00Z"
   },
   "agents": {
     "Bubba-Orchestrator": {
@@ -112,12 +112,21 @@
     "Call recording with LiveKit Egress (lib/voice-recording.ts)",
     "Webhook saves call records to database",
     "Admin call history page (/admin/calls)",
-    "LiveKit setup documentation (docs/LIVEKIT_SETUP.md)"
+    "LiveKit setup documentation (docs/LIVEKIT_SETUP.md)",
+    "Voice calls database migration (010_voice_calls.sql) applied",
+    "Environment variable placeholders added to .env.local",
+    "Notification preferences table (009_notification_preferences.sql)",
+    "Notification preferences API (/api/notifications/preferences)",
+    "Real-time notification polling hook (hooks/useNotifications.ts)",
+    "NotificationBell integrated into partner portal header",
+    "Email notification service (lib/notification-email-service.ts)",
+    "Email sending API endpoint (/api/notifications/send-email)",
+    "Missing UI components (avatar, tooltip, dropdown-menu, scroll-area, alert)"
   ],
   "inProgress": [],
   "pendingTasks": [],
   "autonomousMode": true,
-  "resumeInstructions": "Voice call integration complete. Need LIVEKIT_HOST, LIVEKIT_API_KEY, LIVEKIT_API_SECRET for voice calls. Need OPENAI_API_KEY for AI agent voice. Need RESEND_API_KEY for email functionality. HubSpot integration pending API key.",
+  "resumeInstructions": "LiveKit installation COMPLETE. Code, database, and docs are ready. User action required: 1) Create LiveKit Cloud account at cloud.livekit.io, 2) Add LIVEKIT_HOST, LIVEKIT_API_KEY, LIVEKIT_API_SECRET to Vercel, 3) Add OPENAI_API_KEY for AI agent voice. Also pending: RESEND_API_KEY for email, HubSpot API key.",
   "testingResults": {
     "testedAt": "2025-12-29T01:25:00Z",
     "results": {
