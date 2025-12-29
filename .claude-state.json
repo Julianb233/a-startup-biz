@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "project": "a-startup-biz",
-  "lastUpdated": "2025-12-29T06:00:00Z",
+  "lastUpdated": "2025-12-29T06:30:00Z",
   "expiresAt": "2026-01-01T06:00:00Z",
   "swarmId": "swarm_bubba_dashboard_1735448400",
   "swarmStatus": "completed",
@@ -73,6 +73,8 @@
     "Email system",
     "Calendar booking",
     "Stripe Connect partner payouts (code ready)",
+    "Partner Portal DB schema (partners, partner_leads, partner_profiles)",
+    "Stripe Connect DB migration (partner_transfers, partner_payouts, stripe_connect_events)",
     "Admin orders real-time DB integration",
     "Admin consultations API endpoint",
     "updateConsultation DB query",
@@ -83,7 +85,6 @@
   ],
   "inProgress": [],
   "pendingTasks": [
-    "Run Stripe Connect DB migration (006_stripe_connect.sql)",
     "Configure VERCEL_TOKEN secret in GitHub for staging deployment",
     "Add HUBSPOT_API_KEY to environment variables (.env.local and Vercel)",
     "Test HubSpot sync with real API key",
