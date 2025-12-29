@@ -83,17 +83,19 @@
     "HubSpot onboarding sync - Automatic contact and deal creation",
     "HubSpot bidirectional webhook integration",
     "HubSpot sync API endpoints (manual sync + status check)",
-    "HubSpot retry logic with exponential backoff"
+    "HubSpot retry logic with exponential backoff",
+    "GitHub Actions CI/CD with Vercel deployment",
+    "VERCEL_TOKEN + ORG_ID + PROJECT_ID configured"
   ],
   "inProgress": [],
   "pendingTasks": [
-    "Configure VERCEL_TOKEN secret in GitHub for staging deployment",
+    "Run Stripe Connect DB migration (006_stripe_connect.sql)",
     "Add HUBSPOT_API_KEY to environment variables (.env.local and Vercel)",
     "Test HubSpot sync with real API key",
     "Configure HubSpot custom properties (optional but recommended)"
   ],
   "autonomousMode": true,
-  "resumeInstructions": "Test suite fully passing (115 tests). Email regex patterns fixed. Rate limit retry-after header calculation corrected. Ready for staging deployment once VERCEL_TOKEN is configured in GitHub secrets.",
+  "resumeInstructions": "CI/CD fully operational with GitHub Actions + Vercel. Build passing. Test suite: 115 passed. Rate limiting and fraud detection implemented. Ready for Stripe Connect migration.",
   "testingResults": {
     "testedAt": "2025-12-29T01:25:00Z",
     "results": {

@@ -13,9 +13,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { sql, query } from '@/lib/db'
 import { withRateLimit } from '@/lib/rate-limit'
+import { requireAdmin, withAuth } from '@/lib/api-auth'
 
 /**
  * GET /api/admin/referral-fraud
@@ -31,19 +31,9 @@ import { withRateLimit } from '@/lib/rate-limit'
  *   - offset: Pagination offset
  */
 export async function GET(request: NextRequest) {
-  try {
-    // Check admin authentication
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    // TODO: Add proper admin role check
-    // For now, allow any authenticated user
-    // In production, check: if (!isAdmin(userId)) return 403
+  return withAuth(async () => {
+    // Require admin role - throws 401/403 if not authorized
+    const { userId } = await requireAdmin()
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams
@@ -146,16 +136,7 @@ export async function GET(request: NextRequest) {
         },
       },
     })
-  } catch (error) {
-    console.error('GET /api/admin/referral-fraud error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to fetch fraud logs',
-      },
-      { status: 500 }
-    )
-  }
+  })
 }
 
 /**
@@ -170,19 +151,9 @@ export async function GET(request: NextRequest) {
  *   - notes: Admin notes
  */
 export async function POST(request: NextRequest) {
-  try {
-    // Check admin authentication
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    // TODO: Add proper admin role check
-    // For now, allow any authenticated user
-    // In production, check: if (!isAdmin(userId)) return 403
+  return withAuth(async () => {
+    // Require admin role - throws 401/403 if not authorized
+    const { userId } = await requireAdmin()
 
     // Rate limiting (use 'api' type for admin routes)
     const rateLimitResponse = await withRateLimit(request, 'api')
@@ -300,16 +271,7 @@ export async function POST(request: NextRequest) {
         message: `Pattern whitelisted as false positive: ${patternType}:${patternValue}`,
       })
     }
-  } catch (error) {
-    console.error('POST /api/admin/referral-fraud error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        message: error instanceof Error ? error.message : 'Failed to process fraud action',
-      },
-      { status: 500 }
-    )
-  }
+  })
 }
 
 /**
