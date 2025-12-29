@@ -178,7 +178,8 @@ describe('PDF Quote Types', () => {
 
   describe('formatDate', () => {
     it('formats date correctly', () => {
-      const date = new Date('2024-12-28')
+      // Use noon UTC to avoid timezone date shifts
+      const date = new Date('2024-12-28T12:00:00Z')
       const formatted = formatDate(date, 'en-US')
       expect(formatted).toMatch(/December 28, 2024/)
     })
