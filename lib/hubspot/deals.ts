@@ -79,9 +79,10 @@ export async function findDealByOrderId(orderId: string): Promise<HubSpotDeal | 
     const response = await withRetry(
       () => client.crm.deals.searchApi.doSearch({
         filterGroups: [{
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           filters: [{
             propertyName: 'order_id',
-            operator: 'EQ' as const,
+            operator: 'EQ' as any,
             value: orderId,
           }],
         }],

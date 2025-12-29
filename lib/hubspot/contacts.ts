@@ -86,9 +86,10 @@ export async function findContactByEmail(email: string): Promise<HubSpotContact 
     const response = await withRetry(
       () => client.crm.contacts.searchApi.doSearch({
         filterGroups: [{
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           filters: [{
             propertyName: 'email',
-            operator: 'EQ' as const,
+            operator: 'EQ' as any,
             value: email.toLowerCase(),
           }],
         }],
