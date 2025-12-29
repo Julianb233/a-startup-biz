@@ -17,6 +17,7 @@ import {
   BarChart3,
   ClipboardList,
   Building2,
+  MessageSquare,
 } from 'lucide-react';
 
 const navItems = [
@@ -29,6 +30,7 @@ const navItems = [
   { name: 'Fulfillment', href: '/admin/fulfillment', icon: Package },
   { name: 'Referrals', href: '/admin/referrals', icon: UserCheck },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { name: 'Chatbot', href: '/admin/chatbot', icon: MessageSquare },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

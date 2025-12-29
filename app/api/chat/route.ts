@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { sql } from '@/lib/db'
 import { chatbotKnowledge } from '@/lib/chatbot-knowledge'
 
 // Lazy initialization to avoid build-time errors
@@ -11,8 +12,79 @@ function getOpenAI() {
   return new OpenAI({ apiKey })
 }
 
-// System prompt for the Startup Biz Butler
-const SYSTEM_PROMPT = `You are the Startup Biz Butler - a warm, knowledgeable assistant who helps visitors learn about A Startup Biz and Tory Zweigle's consulting services.
+// Fetch knowledge from database
+async function getKnowledgeFromDB(): Promise<string> {
+  try {
+    const knowledge = await sql`
+      SELECT title, category, content, keywords
+      FROM chatbot_knowledge
+      WHERE is_active = true
+      ORDER BY priority DESC, category, title
+    `
+
+    if (knowledge.length === 0) {
+      // Fallback to hardcoded knowledge
+      return chatbotKnowledge.services.map(s =>
+        `${s.name}: ${s.price} - ${s.shortDescription}`
+      ).join('\n')
+    }
+
+    // Group by category
+    const byCategory: Record<string, string[]> = {}
+    for (const doc of knowledge) {
+      if (!byCategory[doc.category]) {
+        byCategory[doc.category] = []
+      }
+      byCategory[doc.category].push(`${doc.title}: ${doc.content}`)
+    }
+
+    // Format as knowledge base
+    return Object.entries(byCategory)
+      .map(([category, docs]) => `\n[${category}]\n${docs.join('\n\n')}`)
+      .join('\n')
+  } catch (error) {
+    console.error('Error fetching knowledge from DB:', error)
+    // Fallback to hardcoded knowledge
+    return chatbotKnowledge.services.map(s =>
+      `${s.name}: ${s.price} - ${s.shortDescription}`
+    ).join('\n')
+  }
+}
+
+// Find relevant knowledge based on user message
+async function findRelevantKnowledge(message: string): Promise<string> {
+  try {
+    const words = message.toLowerCase().split(/\s+/)
+
+    // Search for matching knowledge by keywords
+    const matches = await sql`
+      SELECT title, content, keywords
+      FROM chatbot_knowledge
+      WHERE is_active = true
+      AND (
+        keywords && ${words}::text[]
+        OR title ILIKE ${'%' + message + '%'}
+        OR content ILIKE ${'%' + message + '%'}
+      )
+      ORDER BY priority DESC
+      LIMIT 5
+    `
+
+    if (matches.length > 0) {
+      return matches.map(m => `${m.title}: ${m.content}`).join('\n\n')
+    }
+    return ''
+  } catch (error) {
+    console.error('Error finding relevant knowledge:', error)
+    return ''
+  }
+}
+
+// Build dynamic system prompt with database knowledge
+async function buildSystemPrompt(): Promise<string> {
+  const knowledgeBase = await getKnowledgeFromDB()
+
+  return `You are the Startup Biz Butler - a warm, knowledgeable assistant who helps visitors learn about A Startup Biz and Tory Zweigle's consulting services.
 
 PERSONALITY:
 - Think of yourself as a helpful butler/concierge - professional yet warm
@@ -22,23 +94,8 @@ PERSONALITY:
 - Keep responses concise (2-4 short paragraphs max)
 - Occasionally use butler-themed phrases naturally (but don't overdo it)
 
-ABOUT TORY ZWEIGLE:
-- Serial entrepreneur with 46+ years of experience
-- Started first business at age 11
-- Built and scaled over 100 businesses
-- Master of absentee ownership
-- NOT a traditional consultant - teaches from real-world experience, not textbooks
-- Believes in action over theory
-
-KEY OFFERING - CLARITY CALL ($1,000):
-- 90-minute deep-dive strategy session with Tory
-- Personalized roadmap for your business
-- Identify blind spots and hidden opportunities
-- Worth $10,000+ in avoided mistakes
-- This is NOT a sales pitch - actionable insights guaranteed
-
-SERVICES OFFERED (17 total):
-${chatbotKnowledge.services.map(s => `- ${s.name}: ${s.price} - ${s.shortDescription}`).join('\n')}
+KNOWLEDGE BASE (use this information to answer questions):
+${knowledgeBase}
 
 RESPONSE GUIDELINES:
 1. Be warm and personal - never robotic
@@ -46,9 +103,10 @@ RESPONSE GUIDELINES:
 3. Focus on helping, not selling
 4. If asked about specific services, share relevant details naturally
 5. Always offer to help further or suggest next steps
-6. Remember: the user is on a specific page, so reference that context when relevant
+6. Reference the user's current page context when relevant
 
 IMPORTANT: Never use asterisks (*) or markdown formatting. Write in plain, conversational text only.`
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,18 +140,29 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Get relevant knowledge for this specific query
+    const relevantKnowledge = await findRelevantKnowledge(message)
+
+    // Build the system prompt with database knowledge
+    const systemPrompt = await buildSystemPrompt()
+
     const openai = getOpenAI()
+
+    // Build user message with context and relevant knowledge
+    let userContent = ''
+    if (contextMessage) {
+      userContent += `[Page Context: ${contextMessage}]\n\n`
+    }
+    if (relevantKnowledge) {
+      userContent += `[Relevant Knowledge for this question:\n${relevantKnowledge}]\n\n`
+    }
+    userContent += `User message: ${message}`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        {
-          role: 'user',
-          content: contextMessage
-            ? `[Context: ${contextMessage}]\n\nUser message: ${message}`
-            : message
-        }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userContent }
       ],
       temperature: 0.7,
       max_tokens: 500,
