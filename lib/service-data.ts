@@ -407,7 +407,7 @@ export const services: Service[] = [
     slug: 'website-development',
     title: 'Website Design & Development',
     shortTitle: 'Web Development',
-    description: "Your website is your 24/7 salesperson. I've built sites for my own businesses that actually convert—not just look pretty. Let me create something that works as hard as you do.",
+    description: "Your website is your 24/7 salesperson. I've built sites for my own businesses that actually convert—not just look pretty. From single-page landing sites to comprehensive 15-20 page business websites, let me create something that works as hard as you do.",
     icon: 'Globe',
     features: [
       'Custom responsive design built for your brand',
@@ -424,12 +424,12 @@ export const services: Service[] = [
       'Training so you can update content yourself'
     ],
     pricing: {
-      basePrice: 3000,
+      basePrice: 1500,
       currency: 'USD',
       billingPeriod: 'one-time',
       priceRange: {
-        min: 3000,
-        max: 20000
+        min: 1500,
+        max: 7500
       },
       customQuote: true
     },
@@ -444,49 +444,48 @@ export const services: Service[] = [
       { step: 'Step 5', title: 'Launch & Training', description: 'Go live and learn to manage your site', icon: 'Rocket', duration: '1 day' }
     ],
     serviceCards: [
-      { title: 'Conversion Design', tagline: 'Sites That Sell', description: 'Beautiful is not enough. We build websites optimized to convert visitors into customers, leads, or subscribers.', icon: 'Target', highlights: ['Conversion optimization', 'Clear CTAs', 'Trust elements'] },
-      { title: 'Mobile-First', tagline: 'Perfect on Every Device', description: 'Over 60% of web traffic is mobile. Your site will look and work perfectly on phones, tablets, and desktops.', icon: 'Smartphone', highlights: ['Responsive design', 'Fast loading', 'Touch optimized'] },
-      { title: 'Easy Management', tagline: 'You Control It', description: 'Modern CMS that lets you update content, add pages, and manage your site without needing a developer.', icon: 'Edit3', highlights: ['Easy updates', 'No coding needed', 'Training included'] }
+      { title: 'Single-Page Starter', tagline: 'From $1,500', description: 'Perfect for landing pages, coming soon pages, or simple business presence. One powerful page that converts visitors into customers.', icon: 'FileText', highlights: ['1 page design', 'Mobile responsive', 'Contact form included'] },
+      { title: 'Business Website', tagline: 'Up to $7,500', description: 'Full 15-20 page websites for established businesses. Home, About, Services, Blog, Contact, and custom pages—everything you need.', icon: 'Globe', highlights: ['15-20 pages', 'Full CMS access', 'SEO optimized'] },
+      { title: 'Mobile-First Design', tagline: 'Perfect on Every Device', description: 'Over 60% of web traffic is mobile. Your site will look and work perfectly on phones, tablets, and desktops.', icon: 'Smartphone', highlights: ['Responsive design', 'Fast loading', 'Touch optimized'] }
     ],
     businessImpact: {
       headline: 'Your Website is Your Best Salesperson',
       subheadline: 'It works 24/7, never takes a sick day, and handles unlimited visitors. Make sure it is doing its job.',
       painPoints: ['Outdated website makes you look unprofessional', 'Slow sites drive away 53% of mobile visitors', 'Poor design costs you sales every day'],
-      outcomes: [{ metric: '3x', label: 'More', description: 'Lead generation' }, { metric: '<2s', label: 'Load Time', description: 'On all pages' }, { metric: '100%', label: 'Mobile', description: 'Optimized' }],
+      outcomes: [{ metric: '$1,500', label: 'Starting', description: 'Single page sites' }, { metric: '$7,500', label: 'Full Site', description: '15-20 pages' }, { metric: '100%', label: 'Mobile', description: 'Optimized' }],
       testimonialQuote: 'New website tripled our online leads. Should have done this years ago.',
       testimonialAuthor: 'Karen S., Law Firm Partner'
     },
     faqs: [
-      { question: 'How long does it take to build a website?', answer: 'Most business websites take 4-8 weeks from start to launch. This includes discovery, design, development, content, and testing. Rush projects can be completed faster for an additional fee.' },
+      { question: 'What is the difference between a $1,500 and $7,500 website?', answer: 'Our $1,500 single-page sites are perfect for landing pages, lead capture, or simple business presence. Full websites ($5,000-$7,500) include 15-20 pages—Home, About, Services, Blog, Contact, and custom pages—with full CMS, SEO optimization, and comprehensive training.' },
+      { question: 'How long does it take to build a website?', answer: 'Single-page sites take 1-2 weeks. Full business websites take 4-8 weeks from start to launch. This includes discovery, design, development, content, and testing. Rush projects available.' },
       { question: 'Will I be able to update the website myself?', answer: 'Absolutely. We build sites on modern CMS platforms (WordPress, Webflow, or custom) that let you update content, add pages, and manage your site without coding. We provide training and documentation.' },
-      { question: 'Do you provide website hosting and maintenance?', answer: 'Yes. We offer managed hosting, security updates, backups, and ongoing maintenance. You can also host elsewhere—we build sites that work with any quality hosting provider.' },
-      { question: 'What if I do not like the design?', answer: 'We show you design mockups before development begins. You get multiple revision rounds to ensure you love the design. We do not start building until you approve the design—no surprises.' }
+      { question: 'Do you provide website hosting and maintenance?', answer: 'Yes. We offer managed hosting, security updates, backups, and ongoing maintenance. You can also host elsewhere—we build sites that work with any quality hosting provider.' }
     ],
     relatedServices: ['crm-implementation', 'website-development', 'it-services'],
   },
   {
     id: 'marketing-strategy',
     slug: 'marketing-strategy',
-    title: 'Marketing Strategy & Execution',
+    title: 'Marketing Strategy & Branding',
     shortTitle: 'Marketing',
-    description: "I've marketed everything from local services to nationwide brands. Forget guesswork—I'll show you exactly what's working right now and help you reach customers who are ready to buy.",
+    description: "I've marketed everything from local services to nationwide brands. Forget guesswork—I'll show you exactly what's working right now and help you reach customers who are ready to buy. 6-month minimum commitment ensures we have time to build real results.",
     icon: 'TrendingUp',
     features: [
+      'Full-service marketing retainer',
+      'Brand strategy and positioning',
       'Market research and analysis',
       'Competitive analysis',
-      'Brand positioning',
       'Multi-channel campaign planning',
-      'Content strategy',
-      'Performance tracking and optimization'
+      'Content strategy and creation',
+      'Performance tracking and optimization',
+      'Monthly strategy calls',
+      '6-month minimum commitment for lasting results'
     ],
     pricing: {
       basePrice: 1500,
       currency: 'USD',
       billingPeriod: 'monthly',
-      priceRange: {
-        min: 1500,
-        max: 10000
-      },
       customQuote: true
     },
     category: 'marketing',
@@ -500,9 +499,9 @@ export const services: Service[] = [
       { step: 'Step 5', title: 'Optimize & Scale', description: 'Measure results and double down on what works', icon: 'TrendingUp', duration: 'Ongoing' }
     ],
     serviceCards: [
-      { title: 'Market Analysis', tagline: 'Know Your Battlefield', description: 'Deep competitive analysis and market research so you understand exactly where opportunities exist.', icon: 'BarChart', highlights: ['Competitor analysis', 'Market sizing', 'Opportunity mapping'] },
-      { title: 'Multi-Channel Strategy', tagline: 'Be Everywhere That Matters', description: 'Coordinated campaigns across digital, social, email, and traditional channels that work together.', icon: 'Layers', highlights: ['Digital marketing', 'Social media', 'Email campaigns'] },
-      { title: 'Performance Tracking', tagline: 'Data-Driven Decisions', description: 'Real-time dashboards showing exactly which campaigns are working and which need adjustment.', icon: 'Activity', highlights: ['ROI tracking', 'Campaign analytics', 'Attribution modeling'] }
+      { title: 'Monthly Retainer', tagline: '$1,500/Month (6-Month Min)', description: 'Comprehensive marketing support with dedicated strategy, execution, and optimization. Real partnerships require real commitment—6 months builds momentum.', icon: 'Calendar', highlights: ['Dedicated support', 'Monthly strategy calls', 'Ongoing optimization'] },
+      { title: 'Brand Strategy', tagline: 'Stand Out From Competition', description: 'Deep competitive analysis, brand positioning, and messaging that resonates with your ideal customers.', icon: 'Target', highlights: ['Brand positioning', 'Competitor analysis', 'Messaging framework'] },
+      { title: 'Multi-Channel Execution', tagline: 'Full Campaign Management', description: 'We plan AND execute—content creation, ad campaigns, email marketing, and social media all coordinated for maximum impact.', icon: 'Layers', highlights: ['Campaign execution', 'Content creation', 'Performance tracking'] }
     ],
     businessImpact: {
       headline: 'Marketing Without Strategy is Just Noise',
@@ -513,66 +512,65 @@ export const services: Service[] = [
       testimonialAuthor: 'Ryan M., B2B Software'
     },
     faqs: [
-      { question: 'How do you determine which marketing channels to use?', answer: 'We start with where your ideal customers actually spend time. Through market research and competitor analysis, we identify the 2-3 channels most likely to drive results, then test and optimize. No wasted budget on channels that do not work for your business.' },
-      { question: 'What is your typical ROI on marketing campaigns?', answer: 'Most clients see 3-5x ROI within 6 months. Early campaigns focus on testing and learning, then we scale what works. We track every dollar spent and every lead generated so you know exactly what is working.' },
-      { question: 'Do you handle the actual marketing execution or just strategy?', answer: 'Both. We create the strategy AND execute it—content creation, ad campaigns, email marketing, social media. You get a full marketing team at a fraction of the cost of hiring in-house.' },
-      { question: 'How often will I see campaign results and reports?', answer: 'Weekly performance updates and monthly detailed reports. You also get real-time dashboard access 24/7 to see campaign performance, lead flow, and ROI anytime.' }
+      { question: 'Why is there a 6-month minimum commitment?', answer: 'Marketing results take time. The first 1-2 months are testing and optimization. By month 3-4, we see what works. Months 5-6 is where we scale winners and see real ROI. Clients who commit for 6 months see 3-5x better results than those who stop early.' },
+      { question: 'What is included in the $1,500/month retainer?', answer: 'Full-service marketing: strategy, content creation, campaign execution, performance tracking, and monthly strategy calls. You get a complete marketing team—not just advice. We plan AND execute everything.' },
+      { question: 'Do you handle branding and visual identity too?', answer: 'Yes. Brand strategy includes positioning, messaging, and visual identity guidelines. We ensure your brand stands out consistently across all channels. Full rebrands available as add-on projects.' },
+      { question: 'How often will I see campaign results and reports?', answer: 'Weekly performance updates and monthly detailed reports with strategy calls. You also get real-time dashboard access 24/7 to see campaign performance, lead flow, and ROI anytime.' }
     ],
-    relatedServices: ['ai-solutions', 'marketing-strategy', 'social-media'],
+    relatedServices: ['ai-solutions', 'seo-services', 'social-media'],
   },
   {
     id: 'business-strategy',
     slug: 'business-strategy',
     title: 'Business Strategy Consulting',
     shortTitle: 'Strategy',
-    description: "46+ years of starting, growing, and scaling businesses—that's what you get access to. I'll help you see the gaps, seize the opportunities, and build a roadmap that actually works.",
+    description: "46+ years of starting, growing, and scaling businesses—that's what you get access to. I'll help you see the gaps, seize the opportunities, and build a roadmap that actually works. Consulting is billed hourly based on your specific needs.",
     icon: 'Target',
     features: [
+      'One-on-one strategic consultation sessions',
       'Business plan development',
       'Market opportunity analysis',
       'Growth strategy planning',
       'Competitive positioning',
       'Financial modeling',
-      'Execution roadmap'
+      'Execution roadmap',
+      'Time-based billing with detailed tracking',
+      'Flexible engagement—pay only for the time you need'
     ],
     pricing: {
-      basePrice: 2000,
+      basePrice: 750,
       currency: 'USD',
-      billingPeriod: 'one-time',
-      priceRange: {
-        min: 2000,
-        max: 15000
-      },
+      billingPeriod: 'hourly',
       customQuote: true
     },
     category: 'growth',
     featured: true,
     heroImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80',
     timeline: [
-      { step: 'Step 1', title: 'Business Assessment', description: 'Deep dive into your current situation and goals', icon: 'ClipboardCheck', duration: '1 week' },
-      { step: 'Step 2', title: 'Opportunity Analysis', description: 'Identify growth opportunities and threats', icon: 'Target', duration: '1 week' },
-      { step: 'Step 3', title: 'Strategy Development', description: 'Create a clear roadmap for growth', icon: 'Map', duration: '1-2 weeks' },
-      { step: 'Step 4', title: 'Financial Modeling', description: 'Project outcomes and resource requirements', icon: 'Calculator', duration: '3-5 days' },
-      { step: 'Step 5', title: 'Execution Planning', description: 'Detailed action plan with milestones', icon: 'ListChecks', duration: '1 week' }
+      { step: 'Step 1', title: 'Discovery Call', description: 'Free 30-minute call to understand your needs and scope the engagement', icon: 'Phone', duration: 'Same day' },
+      { step: 'Step 2', title: 'Business Assessment', description: 'Deep dive into your current situation and goals (billed hourly)', icon: 'ClipboardCheck', duration: '2-4 hours' },
+      { step: 'Step 3', title: 'Opportunity Analysis', description: 'Identify growth opportunities and threats', icon: 'Target', duration: '3-6 hours' },
+      { step: 'Step 4', title: 'Strategy Development', description: 'Create a clear roadmap for growth', icon: 'Map', duration: '4-8 hours' },
+      { step: 'Step 5', title: 'Execution Planning', description: 'Detailed action plan with milestones', icon: 'ListChecks', duration: '2-4 hours' }
     ],
     serviceCards: [
+      { title: 'Hourly Consulting', tagline: '$750/Hour Expert Guidance', description: 'Get strategic advice from someone who has built 100+ businesses. Pay only for the time you need—no retainers, no minimums for initial engagements.', icon: 'Clock', highlights: ['Flexible scheduling', 'Detailed time tracking', 'No wasted spend'] },
       { title: 'Growth Strategy', tagline: 'Scale With Confidence', description: 'A clear roadmap from where you are to where you want to be, with specific milestones and metrics.', icon: 'TrendingUp', highlights: ['Growth roadmap', 'Milestone planning', 'KPI definition'] },
-      { title: 'Competitive Positioning', tagline: 'Stand Out From Competition', description: 'Find your unique advantage and position your business to win against larger, more established competitors.', icon: 'Award', highlights: ['Market positioning', 'Differentiation strategy', 'Pricing optimization'] },
       { title: 'Business Planning', tagline: 'Plans That Get Funded', description: 'Whether for investors, banks, or your own clarity—business plans that are credible and actionable.', icon: 'FileText', highlights: ['Investor decks', 'Bank-ready plans', 'Financial projections'] }
     ],
     businessImpact: {
       headline: 'Stop Guessing, Start Growing',
       subheadline: 'Most businesses fail not from lack of effort, but from lack of direction. Strategy gives you the roadmap.',
       painPoints: ['Working hard but not seeing proportional growth', 'Unclear on which opportunities to pursue', 'Making decisions based on gut, not data'],
-      outcomes: [{ metric: '46+', label: 'Years', description: 'Of experience applied' }, { metric: '100+', label: 'Businesses', description: 'Strategies developed' }, { metric: 'Clear', label: 'Roadmap', description: 'To your goals' }],
+      outcomes: [{ metric: '$750', label: 'Per Hour', description: 'Transparent billing' }, { metric: '46+', label: 'Years', description: 'Of experience applied' }, { metric: '100+', label: 'Businesses', description: 'Strategies developed' }],
       testimonialQuote: 'Tory saw opportunities I was blind to. Revenue up 60% following his strategy.',
       testimonialAuthor: 'Patricia W., Manufacturing CEO'
     },
     faqs: [
-      { question: 'How is your consulting different from other business consultants?', answer: 'Most consultants have MBAs and case studies. I have 46 years and 100+ businesses actually built and scaled. You get advice from someone who has done it, not just studied it. Real experience beats theory every time.' },
+      { question: 'How does hourly consulting work?', answer: 'We start with a free 30-minute discovery call to understand your needs. From there, I quote estimated hours for your project. You are billed only for time spent, with detailed tracking of all consulting hours. Most initial strategy sessions run 10-20 hours total.' },
+      { question: 'Why $750 per hour?', answer: 'You are getting 46 years and 100+ businesses worth of experience distilled into focused, actionable guidance. Most consultants charge similar rates but have only read about business. I have actually built them. The ROI on strategic clarity typically pays for itself many times over.' },
       { question: 'Do you work with startups or just established businesses?', answer: 'Both. Startups get help validating ideas, building business plans, and avoiding costly mistakes. Established businesses get growth strategies, operational improvements, and scaling plans. The approach differs, but the value is the same—actionable guidance from experience.' },
-      { question: 'What if I need help implementing the strategy?', answer: 'We do not just hand you a plan and disappear. Implementation support is available—we can introduce you to our network, help hire key roles, or provide fractional executive support to execute the strategy alongside you.' },
-      { question: 'How long does a typical strategic consulting engagement last?', answer: 'Initial strategy development takes 4-6 weeks. Many clients then retain us for ongoing quarterly reviews and strategic guidance. The relationship evolves based on your needs and growth stage.' }
+      { question: 'What if I need ongoing support after the initial strategy?', answer: 'Many clients retain me for ongoing quarterly reviews and strategic guidance at the same hourly rate. We can also discuss retainer arrangements for consistent monthly support if that fits your needs better.' }
     ],
     relatedServices: ['seo-services', 'content-creation', 'ai-solutions'],
   },
@@ -744,17 +742,21 @@ export const services: Service[] = [
   {
     id: 'seo-services',
     slug: 'seo-services',
-    title: 'SEO & Search Marketing',
+    title: 'SEO & AI-Powered Search Marketing',
     shortTitle: 'SEO',
-    description: "Getting found online is no accident. I've ranked my own businesses on page one—now let me help you get discovered by customers who are actively searching for what you offer.",
+    description: "Getting found online is no accident. I've ranked my own businesses on page one using both traditional SEO and cutting-edge AI tools. Let me help you get discovered by customers who are actively searching for what you offer—faster than ever with AI-enhanced optimization.",
     icon: 'Search',
     features: [
-      'Keyword research and strategy',
-      'On-page optimization',
-      'Technical SEO audits',
-      'Link building',
-      'Local SEO',
-      'Monthly performance reports'
+      'Traditional and AI-powered keyword research',
+      'AI content optimization and generation',
+      'On-page SEO optimization',
+      'Technical SEO audits and fixes',
+      'AI-enhanced link building strategies',
+      'Local SEO domination',
+      'Voice search optimization',
+      'AI-driven competitor analysis',
+      'Schema markup and structured data',
+      'Monthly performance reports with AI insights'
     ],
     pricing: {
       basePrice: 1000,
@@ -776,9 +778,9 @@ export const services: Service[] = [
       { step: 'Step 5', title: 'Monthly Reporting', description: 'Track rankings and traffic improvements', icon: 'BarChart', duration: 'Monthly' }
     ],
     serviceCards: [
-      { title: 'Technical SEO', tagline: 'Foundation for Rankings', description: 'Site speed, mobile optimization, and technical fixes that search engines reward with higher rankings.', icon: 'Settings', highlights: ['Site speed optimization', 'Mobile-first fixes', 'Schema markup'] },
-      { title: 'Content Strategy', tagline: 'Rank for What Matters', description: 'Strategic content that targets keywords your ideal customers are searching for right now.', icon: 'FileText', highlights: ['Keyword targeting', 'Content optimization', 'Blog strategy'] },
-      { title: 'Local SEO', tagline: 'Dominate Your Area', description: 'Get found by local customers searching for businesses like yours. Own your local market.', icon: 'MapPin', highlights: ['Google Business Profile', 'Local citations', 'Review management'] }
+      { title: 'AI-Powered SEO', tagline: 'Next-Gen Optimization', description: 'We use AI tools to analyze competitors, optimize content, and find ranking opportunities humans miss. Faster results with smarter technology.', icon: 'Bot', highlights: ['AI content optimization', 'Competitor intelligence', 'Automated insights'] },
+      { title: 'Technical SEO', tagline: 'Foundation for Rankings', description: 'Site speed, mobile optimization, schema markup, and technical fixes that search engines reward with higher rankings.', icon: 'Settings', highlights: ['Site speed optimization', 'Core Web Vitals', 'Schema markup'] },
+      { title: 'Local SEO', tagline: 'Dominate Your Area', description: 'Get found by local customers searching for businesses like yours. Own your local market with Google Business Profile optimization.', icon: 'MapPin', highlights: ['Google Business Profile', 'Local citations', 'Review management'] }
     ],
     businessImpact: {
       headline: 'If You Are Not on Page 1, You Do Not Exist',
@@ -789,10 +791,10 @@ export const services: Service[] = [
       testimonialAuthor: 'Steve R., Plumbing Company Owner'
     },
     faqs: [
-      { question: 'How long does SEO take to show results?', answer: 'Expect to see movement in 3-4 months and significant results in 6-12 months. SEO is a long-term strategy, not a quick fix. However, technical fixes can improve site speed and user experience immediately.' },
-      { question: 'Can you guarantee first page rankings?', answer: 'Anyone who guarantees #1 rankings is lying. We can guarantee quality work, best practices, and steady improvement. Our track record shows 80%+ of clients reach page 1 for target keywords within 12 months.' },
-      { question: 'What is the difference between SEO and paid ads?', answer: 'Paid ads deliver immediate traffic but stop when you stop paying. SEO builds long-term organic traffic that keeps coming without ad spend. Smart businesses use both—ads for quick wins, SEO for sustainable growth.' },
-      { question: 'Do you do local SEO for service area businesses?', answer: 'Absolutely. Local SEO is one of our specialties—Google Business Profile optimization, local citations, review management, and local content. Perfect for businesses serving specific geographic areas.' }
+      { question: 'How does AI-powered SEO differ from traditional SEO?', answer: 'AI tools analyze thousands of data points to find ranking opportunities, optimize content faster, and predict algorithm changes. We use AI for keyword research, content optimization, competitor analysis, and identifying link opportunities. Results come faster with AI-enhanced strategies.' },
+      { question: 'How long does SEO take to show results?', answer: 'With AI-enhanced SEO, expect to see movement in 2-3 months and significant results in 4-8 months—faster than traditional methods. Technical fixes improve site speed immediately. Our AI tools accelerate every phase of SEO.' },
+      { question: 'Can you guarantee first page rankings?', answer: 'Anyone who guarantees #1 rankings is lying. We guarantee quality work, AI-enhanced best practices, and steady improvement. Our track record shows 80%+ of clients reach page 1 for target keywords within 12 months.' },
+      { question: 'Do you optimize for voice search and AI assistants?', answer: 'Yes. Voice search and AI assistants like Siri, Alexa, and Google Assistant are changing how people find businesses. We optimize for conversational queries, featured snippets, and the structured data that AI assistants rely on.' }
     ],
     relatedServices: ['ai-solutions', 'website-development', 'crm-implementation'],
   },
@@ -1062,6 +1064,56 @@ export function getRelatedServices(service: Service): Service[] {
 /**
  * Service categories metadata
  */
+/**
+ * Financing Options Configuration
+ * Quirina financing available for qualifying services
+ */
+export const financingConfig = {
+  provider: 'Quirina',
+  enabled: true,
+  minimumAmount: 1000,
+  maximumAmount: 50000,
+  terms: [6, 12, 18, 24],
+  aprRange: { min: 0, max: 29.99 },
+  eligibleCategories: ['technology', 'marketing', 'growth', 'operations'],
+  cta: {
+    text: 'Finance This Service',
+    subtext: 'As low as 0% APR with Quirina',
+  },
+  benefits: [
+    'Quick approval in minutes',
+    'Rates as low as 0% APR',
+    'Flexible 6-24 month terms',
+    'No prepayment penalties',
+    'Simple online application'
+  ],
+  disclaimer: 'Financing provided by Quirina. Subject to credit approval. Terms and conditions apply. Rates range from 0-29.99% APR based on creditworthiness.'
+};
+
+/**
+ * Check if a service is eligible for financing
+ */
+export function isServiceFinancingEligible(service: Service): boolean {
+  return (
+    financingConfig.enabled &&
+    financingConfig.eligibleCategories.includes(service.category) &&
+    service.pricing.basePrice >= financingConfig.minimumAmount
+  );
+}
+
+/**
+ * Calculate estimated monthly payment
+ */
+export function calculateMonthlyPayment(amount: number, termMonths: number, apr: number = 0): number {
+  if (apr === 0) {
+    return Math.ceil(amount / termMonths);
+  }
+  const monthlyRate = apr / 100 / 12;
+  const payment = (amount * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) /
+                  (Math.pow(1 + monthlyRate, termMonths) - 1);
+  return Math.ceil(payment);
+}
+
 export const serviceCategories = [
   {
     id: 'formation',
