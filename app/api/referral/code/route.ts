@@ -16,6 +16,7 @@ import {
   getUserReferrals,
   getReferralStats,
 } from '@/lib/referral'
+import { withRateLimit } from '@/lib/rate-limit'
 import type {
   GenerateReferralCodeRequest,
   GenerateReferralCodeResponse,
@@ -37,6 +38,12 @@ import type {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting - prevent abuse (10 requests per hour per IP)
+    const rateLimitResponse = await withRateLimit(request, 'referral')
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
     // Get authenticated user
     const { userId: authUserId } = await auth()
 
@@ -144,6 +151,12 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting - prevent abuse (10 requests per hour per IP)
+    const rateLimitResponse = await withRateLimit(request, 'referral')
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
     // Get authenticated user
     const { userId: authUserId } = await auth()
 

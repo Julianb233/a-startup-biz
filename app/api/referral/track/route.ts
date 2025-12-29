@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { trackReferralSignup, validateReferralCode, isReferralCodeActive } from '@/lib/referral'
 import { withRateLimit } from '@/lib/rate-limit'
+import { detectFraud } from '@/lib/referral-fraud-detection'
 import type {
   TrackReferralRequest,
   TrackReferralResponse,
@@ -117,6 +118,52 @@ export async function POST(request: NextRequest) {
       request.headers.get('referer') ||
       request.headers.get('referrer') ||
       null
+
+    // FRAUD DETECTION: Check for suspicious patterns before tracking
+    const fraudCheck = await detectFraud(
+      referralCode,
+      referredEmail,
+      {
+        ipAddress: clientIp,
+        userAgent: clientUserAgent,
+      }
+    )
+
+    // Log fraud detection results
+    console.log(`[Fraud Detection] Code: ${referralCode}, Risk Score: ${fraudCheck.riskScore}, Action: ${fraudCheck.action}`)
+
+    // Block if fraud score is too high
+    if (fraudCheck.action === 'block') {
+      console.warn(`[Fraud Detection] BLOCKED - High risk referral signup attempt`, {
+        referralCode,
+        referredEmail,
+        riskScore: fraudCheck.riskScore,
+        signals: fraudCheck.signals.map(s => s.type),
+      })
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'This referral could not be processed. Please contact support if you believe this is an error.',
+        } satisfies TrackReferralResponse,
+        { status: 403 }
+      )
+    }
+
+    // Flag for review if moderately suspicious (but allow to proceed)
+    if (fraudCheck.action === 'review' || fraudCheck.action === 'monitor') {
+      console.warn(`[Fraud Detection] FLAGGED for review`, {
+        referralCode,
+        referredEmail,
+        riskScore: fraudCheck.riskScore,
+        action: fraudCheck.action,
+        signals: fraudCheck.signals.map(s => ({
+          type: s.type,
+          severity: s.severity,
+          description: s.description,
+        })),
+      })
+    }
 
     // Track the referral signup
     const referralId = await trackReferralSignup(

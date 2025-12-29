@@ -356,8 +356,10 @@ Purchase Value: $199.99
 │     ├─▶ Email validation                    │
 │     └─▶ Amount validation                   │
 │                                             │
-│  4. Rate Limiting (TODO)                    │
-│     └─▶ Prevent abuse                       │
+│  4. Rate Limiting (IMPLEMENTED)             │
+│     ├─▶ 10 requests per hour per IP         │
+│     ├─▶ Applied to all referral endpoints   │
+│     └─▶ Upstash Redis with in-memory fallback│
 │                                             │
 │  5. Fraud Detection (TODO)                  │
 │     ├─▶ IP tracking                         │

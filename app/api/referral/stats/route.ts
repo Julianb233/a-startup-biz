@@ -15,6 +15,7 @@ import {
   getUserReferrals,
   getUserPayouts,
 } from '@/lib/referral'
+import { withRateLimit } from '@/lib/rate-limit'
 import type { GetReferralStatsResponse } from '@/lib/types/referral'
 
 /**
@@ -35,6 +36,12 @@ import type { GetReferralStatsResponse } from '@/lib/types/referral'
  */
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting - prevent abuse (10 requests per hour per IP)
+    const rateLimitResponse = await withRateLimit(request, 'referral')
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
     // Get authenticated user
     const { userId: authUserId } = await auth()
 

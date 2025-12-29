@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { convertReferral } from '@/lib/referral'
 import { withRateLimit } from '@/lib/rate-limit'
+import { detectFraud } from '@/lib/referral-fraud-detection'
 import type {
   ConvertReferralRequest,
   ConvertReferralResponse,
