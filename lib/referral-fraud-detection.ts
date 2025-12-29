@@ -637,8 +637,12 @@ async function logFraudDetection(
   result: FraudDetectionResult
 ): Promise<void> {
   try {
-    // Create a fraud log table if it doesn't exist (you'll need to add this to schema)
-    // For now, log to console and update referral metadata
+    const referralCode = result.metadata.referralCode as string | undefined
+    const referredEmail = result.metadata.referredEmail as string | undefined
+    const ipAddress = result.metadata.ipAddress as string | undefined
+    const userAgent = result.metadata.userAgent as string | undefined
+
+    // Log to console
     console.log('[Fraud Detection]', {
       riskScore: result.riskScore,
       action: result.action,
@@ -646,10 +650,31 @@ async function logFraudDetection(
       metadata: result.metadata,
     })
 
-    // If suspicious, update the referral's metadata with fraud signals
-    if (result.isSuspicious && result.metadata.referralCode) {
-      const referralCode = result.metadata.referralCode as string
+    // Insert into fraud logs table for comprehensive tracking
+    await sql`
+      INSERT INTO referral_fraud_logs (
+        referral_code,
+        risk_score,
+        action,
+        referred_email,
+        ip_address,
+        user_agent,
+        signals,
+        metadata
+      ) VALUES (
+        ${referralCode || null},
+        ${result.riskScore},
+        ${result.action},
+        ${referredEmail || null},
+        ${ipAddress || null},
+        ${userAgent || null},
+        ${JSON.stringify(result.signals)}::jsonb,
+        ${JSON.stringify(result.metadata)}::jsonb
+      )
+    `
 
+    // If suspicious, update the referral's metadata with fraud signals
+    if (result.isSuspicious && referralCode) {
       await sql`
         UPDATE referrals
         SET metadata = COALESCE(metadata, '{}'::jsonb) || jsonb_build_object(
@@ -663,8 +688,89 @@ async function logFraudDetection(
         WHERE referral_code = ${referralCode}
       `
     }
+
+    // Update fraud patterns for learning
+    for (const signal of result.signals) {
+      if (signal.severity === 'high' || signal.severity === 'critical') {
+        await updateFraudPattern(signal, ipAddress, referredEmail)
+      }
+    }
   } catch (error) {
     console.error('Error logging fraud detection:', error)
+  }
+}
+
+/**
+ * Update fraud pattern tracking for learning
+ */
+async function updateFraudPattern(
+  signal: FraudSignal,
+  ipAddress?: string,
+  email?: string
+): Promise<void> {
+  try {
+    let patternType = signal.type
+    let patternValue = ''
+
+    // Determine pattern value based on signal type
+    switch (signal.type) {
+      case 'ip_abuse':
+      case 'rapid_signup':
+        if (ipAddress) {
+          patternValue = ipAddress
+          patternType = 'ip_abuse'
+        }
+        break
+      case 'suspicious_domain':
+        if (email) {
+          const domain = email.split('@')[1]
+          if (domain) {
+            patternValue = domain
+            patternType = 'suspicious_domain'
+          }
+        }
+        break
+      case 'email_pattern':
+        if (email) {
+          const domain = email.split('@')[1]
+          if (domain) {
+            patternValue = domain
+            patternType = 'email_pattern'
+          }
+        }
+        break
+    }
+
+    if (!patternValue) return
+
+    // Upsert fraud pattern
+    await sql`
+      INSERT INTO referral_fraud_patterns (
+        pattern_type,
+        pattern_value,
+        times_detected,
+        first_detected_at,
+        last_detected_at,
+        metadata
+      ) VALUES (
+        ${patternType},
+        ${patternValue},
+        1,
+        NOW(),
+        NOW(),
+        ${JSON.stringify({ signal })}::jsonb
+      )
+      ON CONFLICT (pattern_type, pattern_value)
+      DO UPDATE SET
+        times_detected = referral_fraud_patterns.times_detected + 1,
+        last_detected_at = NOW(),
+        metadata = referral_fraud_patterns.metadata || ${JSON.stringify({ signal })}::jsonb
+    `
+  } catch (error) {
+    // Ignore constraint errors (unique constraint might not exist yet)
+    if (!error?.toString().includes('duplicate key')) {
+      console.error('Error updating fraud pattern:', error)
+    }
   }
 }
 

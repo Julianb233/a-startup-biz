@@ -2,6 +2,9 @@ import { redirect } from 'next/navigation'
 import { requireAuth } from '@/lib/auth'
 import PartnerDashboard from '@/components/partner/PartnerDashboard'
 import LeadTable from '@/components/partner/LeadTable'
+import AnalyticsWidget from '@/components/partner/AnalyticsWidget'
+import ReferralFunnel from '@/components/partner/ReferralFunnel'
+import PerformanceTrends from '@/components/partner/PerformanceTrends'
 import { ArrowRight, Plus, FileText } from 'lucide-react'
 import Link from 'next/link'
 
@@ -128,6 +131,9 @@ export default async function PartnerDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Analytics Overview */}
+      <AnalyticsWidget stats={stats} showDetailed />
+
       {/* Dashboard Overview */}
       <PartnerDashboard
         stats={stats}
@@ -146,6 +152,15 @@ export default async function PartnerDashboardPage() {
           },
         ]}
       />
+
+      {/* Referral Funnel and Performance Trends */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <ReferralFunnel stats={stats} />
+        <PerformanceTrends
+          thisMonthEarnings={stats.totalEarnings}
+          lastMonthEarnings={stats.paidEarnings}
+        />
+      </div>
 
       {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
