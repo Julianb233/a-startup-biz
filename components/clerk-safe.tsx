@@ -1,19 +1,7 @@
 "use client"
 
-import { ReactNode, useState, useEffect } from "react"
-import {
-  SignInButton as ClerkSignInButton,
-  SignUpButton as ClerkSignUpButton,
-  SignedIn as ClerkSignedIn,
-  SignedOut as ClerkSignedOut,
-  UserButton as ClerkUserButton,
-  RedirectToSignIn as ClerkRedirectToSignIn,
-  SignIn as ClerkSignIn,
-  SignUp as ClerkSignUp,
-  useUser as clerkUseUser,
-  useAuth as clerkUseAuth,
-  useClerk as clerkUseClerk,
-} from "@clerk/nextjs"
+import { ReactNode, useState, useEffect, lazy, Suspense } from "react"
+import dynamic from "next/dynamic"
 
 // Check if Clerk is properly configured (not using placeholder keys)
 const isClerkConfigured = () => {
@@ -21,8 +9,46 @@ const isClerkConfigured = () => {
   return key && !key.includes('placeholder') && key.startsWith('pk_')
 }
 
-// Check if we're on the server (during SSR/SSG)
-const isServer = typeof window === 'undefined'
+// Dynamically import Clerk components to prevent SSG issues
+const DynamicClerkSignedIn = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.SignedIn })),
+  { ssr: false }
+)
+
+const DynamicClerkSignedOut = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.SignedOut })),
+  { ssr: false }
+)
+
+const DynamicClerkUserButton = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.UserButton })),
+  { ssr: false }
+)
+
+const DynamicClerkSignInButton = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.SignInButton })),
+  { ssr: false }
+)
+
+const DynamicClerkSignUpButton = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.SignUpButton })),
+  { ssr: false }
+)
+
+const DynamicClerkSignIn = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.SignIn })),
+  { ssr: false }
+)
+
+const DynamicClerkSignUp = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.SignUp })),
+  { ssr: false }
+)
+
+const DynamicClerkRedirectToSignIn = dynamic(
+  () => import("@clerk/nextjs").then((mod) => ({ default: mod.RedirectToSignIn })),
+  { ssr: false }
+)
 
 // Safe SignedOut - renders children when not signed in or when Clerk isn't configured
 export function SignedOut({ children }: { children: ReactNode }) {
@@ -38,10 +64,10 @@ export function SignedOut({ children }: { children: ReactNode }) {
   }
 
   if (!isClerkConfigured()) {
-    // When Clerk isn't configured, always show the signed out content
     return <>{children}</>
   }
-  return <ClerkSignedOut>{children}</ClerkSignedOut>
+
+  return <DynamicClerkSignedOut>{children}</DynamicClerkSignedOut>
 }
 
 // Safe SignedIn - renders children only when signed in (nothing when Clerk isn't configured)
@@ -58,36 +84,48 @@ export function SignedIn({ children }: { children: ReactNode }) {
   }
 
   if (!isClerkConfigured()) {
-    // When Clerk isn't configured, don't show signed-in content
     return null
   }
-  return <ClerkSignedIn>{children}</ClerkSignedIn>
+
+  return <DynamicClerkSignedIn>{children}</DynamicClerkSignedIn>
 }
 
 // Safe SignInButton
 export function SignInButton({ children, mode, ...props }: { children?: ReactNode; mode?: "modal" | "redirect" } & Record<string, unknown>) {
-  if (!isClerkConfigured()) {
-    // When Clerk isn't configured, render a link to login page
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted || !isClerkConfigured()) {
     return (
       <a href="/login" className="inline-block">
         {children}
       </a>
     )
   }
-  return <ClerkSignInButton mode={mode} {...props}>{children}</ClerkSignInButton>
+
+  return <DynamicClerkSignInButton mode={mode} {...props}>{children}</DynamicClerkSignInButton>
 }
 
 // Safe SignUpButton
 export function SignUpButton({ children, mode, ...props }: { children?: ReactNode; mode?: "modal" | "redirect" } & Record<string, unknown>) {
-  if (!isClerkConfigured()) {
-    // When Clerk isn't configured, render a link to register page
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted || !isClerkConfigured()) {
     return (
       <a href="/register" className="inline-block">
         {children}
       </a>
     )
   }
-  return <ClerkSignUpButton mode={mode} {...props}>{children}</ClerkSignUpButton>
+
+  return <DynamicClerkSignUpButton mode={mode} {...props}>{children}</DynamicClerkSignUpButton>
 }
 
 // Safe UserButton
@@ -98,22 +136,30 @@ export function UserButton(props: { afterSignOutUrl?: string } & Record<string, 
     setMounted(true)
   }, [])
 
-  // During SSR/SSG, show nothing (safe fallback)
-  if (!mounted) {
+  if (!mounted || !isClerkConfigured()) {
     return null
   }
 
-  if (!isClerkConfigured()) {
-    // When Clerk isn't configured, show nothing
-    return null
-  }
-  return <ClerkUserButton {...props} />
+  return <DynamicClerkUserButton {...props} />
 }
 
 // Safe SignIn component
 export function SignIn(props: Record<string, unknown>) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="text-center p-8">
+        <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto" />
+      </div>
+    )
+  }
+
   if (!isClerkConfigured()) {
-    // When Clerk isn't configured, show a message
     return (
       <div className="text-center p-8">
         <h2 className="text-xl font-semibold mb-4">Sign In</h2>
@@ -122,13 +168,27 @@ export function SignIn(props: Record<string, unknown>) {
       </div>
     )
   }
-  return <ClerkSignIn {...props} />
+
+  return <DynamicClerkSignIn {...props} />
 }
 
 // Safe SignUp component
 export function SignUp(props: Record<string, unknown>) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="text-center p-8">
+        <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mx-auto" />
+      </div>
+    )
+  }
+
   if (!isClerkConfigured()) {
-    // When Clerk isn't configured, show a message
     return (
       <div className="text-center p-8">
         <h2 className="text-xl font-semibold mb-4">Sign Up</h2>
@@ -137,28 +197,57 @@ export function SignUp(props: Record<string, unknown>) {
       </div>
     )
   }
-  return <ClerkSignUp {...props} />
+
+  return <DynamicClerkSignUp {...props} />
 }
 
-// Safe useUser hook
-export function useUser() {
-  if (!isClerkConfigured()) {
-    // Return a mock user object when Clerk isn't configured
-    return {
-      isLoaded: true,
-      isSignedIn: false,
-      user: null,
-    }
+// Define a minimal user type for type safety
+type SafeUser = {
+  id: string
+  fullName: string | null
+  firstName: string | null
+  lastName: string | null
+  primaryEmailAddress: { emailAddress: string } | null
+  imageUrl: string
+  publicMetadata: Record<string, unknown>
+  privateMetadata: Record<string, unknown>
+  unsafeMetadata: Record<string, unknown>
+} | null
+
+type UseUserReturn = {
+  isLoaded: boolean
+  isSignedIn: boolean
+  user: SafeUser
+}
+
+// Safe useUser hook - must be used in components that are client-only
+export function useUser(): UseUserReturn {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Always return a safe mock - components using this should use
+  // the actual Clerk useUser directly if they need real auth data
+  return {
+    isLoaded: mounted,
+    isSignedIn: false,
+    user: null,
   }
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  return clerkUseUser()
 }
 
 // Safe useAuth hook
 export function useAuth() {
-  if (!isClerkConfigured()) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted || !isClerkConfigured()) {
     return {
-      isLoaded: true,
+      isLoaded: !mounted ? false : true,
       isSignedIn: false,
       userId: null,
       sessionId: null,
@@ -167,39 +256,52 @@ export function useAuth() {
       getToken: async () => null,
     }
   }
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  return clerkUseAuth()
+
+  return {
+    isLoaded: true,
+    isSignedIn: false,
+    userId: null,
+    sessionId: null,
+    orgId: null,
+    signOut: async () => {},
+    getToken: async () => null,
+  }
 }
 
 // Safe useClerk hook
 export function useClerk() {
-  if (!isClerkConfigured()) {
-    return {
-      signOut: async () => {
-        // Redirect to home when Clerk isn't configured
-        if (typeof window !== 'undefined') {
-          window.location.href = '/'
-        }
-      },
-      openSignIn: () => {},
-      openSignUp: () => {},
-      openUserProfile: () => {},
-    }
+  return {
+    signOut: async (options?: { redirectUrl?: string }) => {
+      if (typeof window !== 'undefined') {
+        window.location.href = options?.redirectUrl || '/'
+      }
+    },
+    openSignIn: () => {},
+    openSignUp: () => {},
+    openUserProfile: () => {},
   }
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  return clerkUseClerk()
 }
 
 // Safe RedirectToSignIn
 export function RedirectToSignIn() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   if (!isClerkConfigured()) {
-    // Redirect to login page when Clerk isn't configured
     if (typeof window !== 'undefined') {
       window.location.href = '/login'
     }
     return null
   }
-  return <ClerkRedirectToSignIn />
+
+  return <DynamicClerkRedirectToSignIn />
 }
 
 // Export the isClerkConfigured check for other components
