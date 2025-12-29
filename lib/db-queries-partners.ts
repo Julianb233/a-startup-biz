@@ -1,11 +1,14 @@
 import { sql } from "./db"
-import type { Partner, PartnerStripeConnect } from "./db-queries"
+import type { Partner } from "./db-queries"
 
 // ============================================
 // ADMIN PARTNER QUERIES
 // ============================================
 
-export interface PartnerWithStats extends Partner, PartnerStripeConnect {
+export interface PartnerWithStats extends Partner {
+  stripe_account_id?: string
+  stripe_payouts_enabled?: boolean
+  stripe_charges_enabled?: boolean
   user_name?: string
   user_email?: string
   conversion_rate?: number
@@ -30,40 +33,72 @@ export async function getAllPartners(filters?: {
 
   if (filters?.search) {
     const searchTerm = `%${filters.search}%`
-    const baseQuery = `
-      SELECT
-        p.*,
-        u.name as user_name,
-        u.email as user_email,
-        COUNT(DISTINCT pl.id) FILTER (WHERE pl.status IN ('pending', 'contacted', 'qualified')) as active_leads,
-        COUNT(DISTINCT pl.id) FILTER (WHERE pl.status = 'converted') as converted_leads,
-        CASE
-          WHEN COUNT(DISTINCT pl.id) > 0
-          THEN ROUND(
-            (COUNT(DISTINCT pl.id) FILTER (WHERE pl.status = 'converted')::DECIMAL / COUNT(DISTINCT pl.id)::DECIMAL) * 100,
-            2
-          )
-          ELSE 0
-        END as conversion_rate
-      FROM partners p
-      LEFT JOIN users u ON p.user_id = u.id
-      LEFT JOIN partner_leads pl ON p.id = pl.partner_id
-      WHERE (p.company_name ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm} OR u.email ILIKE ${searchTerm})
-      ${filters?.status ? sql`AND p.status = ${filters.status}` : sql``}
-      GROUP BY p.id, u.name, u.email
-      ORDER BY p.created_at DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `
 
-    partners = await sql(baseQuery, []) as unknown as PartnerWithStats[]
+    if (filters?.status) {
+      partners = await sql`
+        SELECT
+          p.*,
+          u.name as user_name,
+          u.email as user_email,
+          COUNT(DISTINCT pl.id) FILTER (WHERE pl.status IN ('pending', 'contacted', 'qualified')) as active_leads,
+          COUNT(DISTINCT pl.id) FILTER (WHERE pl.status = 'converted') as converted_leads,
+          CASE
+            WHEN COUNT(DISTINCT pl.id) > 0
+            THEN ROUND(
+              (COUNT(DISTINCT pl.id) FILTER (WHERE pl.status = 'converted')::DECIMAL / COUNT(DISTINCT pl.id)::DECIMAL) * 100,
+              2
+            )
+            ELSE 0
+          END as conversion_rate
+        FROM partners p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN partner_leads pl ON p.id = pl.partner_id
+        WHERE (p.company_name ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm} OR u.email ILIKE ${searchTerm})
+          AND p.status = ${filters.status}
+        GROUP BY p.id, u.name, u.email
+        ORDER BY p.created_at DESC
+        LIMIT ${limit} OFFSET ${offset}
+      ` as unknown as PartnerWithStats[]
 
-    countResult = await sql`
-      SELECT COUNT(DISTINCT p.id) as count
-      FROM partners p
-      LEFT JOIN users u ON p.user_id = u.id
-      WHERE (p.company_name ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm} OR u.email ILIKE ${searchTerm})
-      ${filters?.status ? sql`AND p.status = ${filters.status}` : sql``}
-    ` as unknown as any[]
+      countResult = await sql`
+        SELECT COUNT(DISTINCT p.id) as count
+        FROM partners p
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE (p.company_name ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm} OR u.email ILIKE ${searchTerm})
+          AND p.status = ${filters.status}
+      ` as unknown as any[]
+    } else {
+      partners = await sql`
+        SELECT
+          p.*,
+          u.name as user_name,
+          u.email as user_email,
+          COUNT(DISTINCT pl.id) FILTER (WHERE pl.status IN ('pending', 'contacted', 'qualified')) as active_leads,
+          COUNT(DISTINCT pl.id) FILTER (WHERE pl.status = 'converted') as converted_leads,
+          CASE
+            WHEN COUNT(DISTINCT pl.id) > 0
+            THEN ROUND(
+              (COUNT(DISTINCT pl.id) FILTER (WHERE pl.status = 'converted')::DECIMAL / COUNT(DISTINCT pl.id)::DECIMAL) * 100,
+              2
+            )
+            ELSE 0
+          END as conversion_rate
+        FROM partners p
+        LEFT JOIN users u ON p.user_id = u.id
+        LEFT JOIN partner_leads pl ON p.id = pl.partner_id
+        WHERE (p.company_name ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm} OR u.email ILIKE ${searchTerm})
+        GROUP BY p.id, u.name, u.email
+        ORDER BY p.created_at DESC
+        LIMIT ${limit} OFFSET ${offset}
+      ` as unknown as PartnerWithStats[]
+
+      countResult = await sql`
+        SELECT COUNT(DISTINCT p.id) as count
+        FROM partners p
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE (p.company_name ILIKE ${searchTerm} OR u.name ILIKE ${searchTerm} OR u.email ILIKE ${searchTerm})
+      ` as unknown as any[]
+    }
   } else if (filters?.status) {
     partners = await sql`
       SELECT

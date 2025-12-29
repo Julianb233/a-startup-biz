@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth, checkRole } from "@/lib/auth"
+import { requireAdmin, withAuth } from "@/lib/api-auth"
 import { getPartnerWithDetails, updatePartnerStatus, updatePartnerCommissionRate } from "@/lib/db-queries-partners"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const isAdmin = await checkRole("admin")
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden - Admin only" }, { status: 403 })
-    }
+  return withAuth(async () => {
+    await requireAdmin()
 
     const { id } = await params
     const partner = await getPartnerWithDetails(id)
@@ -26,30 +17,15 @@ export async function GET(
     }
 
     return NextResponse.json({ partner })
-  } catch (error) {
-    console.error("Error fetching partner:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch partner" },
-      { status: 500 }
-    )
-  }
+  })
 }
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const isAdmin = await checkRole("admin")
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden - Admin only" }, { status: 403 })
-    }
+  return withAuth(async () => {
+    await requireAdmin()
 
     const { id } = await params
     const body = await request.json()
@@ -76,11 +52,5 @@ export async function PATCH(
       success: true,
       partner: updatedPartner
     })
-  } catch (error) {
-    console.error("Error updating partner:", error)
-    return NextResponse.json(
-      { error: "Failed to update partner" },
-      { status: 500 }
-    )
-  }
+  })
 }
