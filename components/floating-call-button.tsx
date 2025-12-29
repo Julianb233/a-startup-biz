@@ -32,9 +32,6 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
     setMounted(true)
   }, [])
 
-  // Only show for signed-in users on client side
-  if (!mounted || !isSignedIn) return null
-
   // Prevent body scroll when call panel is open
   useEffect(() => {
     if (isOpen && typeof window !== "undefined") {
@@ -137,6 +134,9 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
     setIsInCall(false)
     setCredentials(null)
   }, [])
+
+  // Only show for signed-in users on client side
+  if (!mounted || !isSignedIn) return null
 
   return (
     <>
