@@ -8,7 +8,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { trackReferralSignup, validateReferralCode } from '@/lib/referral'
+import { trackReferralSignup, validateReferralCode, isReferralCodeActive } from '@/lib/referral'
+import { withRateLimit } from '@/lib/rate-limit'
 import type {
   TrackReferralRequest,
   TrackReferralResponse,
@@ -30,6 +31,12 @@ import type {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting - prevent abuse (10 referral signups per hour per IP)
+    const rateLimitResponse = await withRateLimit(request, 'referral')
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
     // Parse request body
     const body = await request.json() as TrackReferralRequest
 
@@ -77,6 +84,22 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // FRAUD DETECTION: Verify referral code is active and valid
+    const isActive = await isReferralCodeActive(referralCode)
+    if (!isActive) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Referral code is expired or inactive',
+        } satisfies TrackReferralResponse,
+        { status: 400 }
+      )
+    }
+
+    // Log referral activity for monitoring
+    const normalizedReferredEmail = referredEmail.toLowerCase().trim()
+    console.log(`[Referral Tracking] Code: ${referralCode}, Referred: ${normalizedReferredEmail}`)
 
     // Get IP address from headers if not provided
     const clientIp = ipAddress ||

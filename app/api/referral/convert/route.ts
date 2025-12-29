@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { convertReferral } from '@/lib/referral'
+import { withRateLimit } from '@/lib/rate-limit'
 import type {
   ConvertReferralRequest,
   ConvertReferralResponse,
@@ -38,6 +39,12 @@ import type {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting - prevent abuse
+    const rateLimitResponse = await withRateLimit(request, 'referral')
+    if (rateLimitResponse) {
+      return rateLimitResponse
+    }
+
     // Parse request body
     const body = await request.json() as ConvertReferralRequest
 
