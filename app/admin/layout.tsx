@@ -2,73 +2,11 @@ import { redirect } from 'next/navigation';
 import { checkRole, requireAuth } from '@/lib/auth';
 import { auth } from '@/lib/clerk-server-safe';
 import Link from 'next/link';
-import { AdminUserButton } from './admin-user-button';
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Users,
-  Settings,
-  Briefcase,
-  Menu,
-  X,
-  Calendar,
-  Package,
-  UserCheck,
-  BarChart3,
-  ClipboardList,
-} from 'lucide-react';
+import { AdminSidebar } from './admin-sidebar';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
-
-const navItems = [
-  {
-    name: 'Dashboard',
-    href: '/admin',
-    icon: LayoutDashboard,
-  },
-  {
-    name: 'Onboarding',
-    href: '/admin/onboarding',
-    icon: ClipboardList,
-  },
-  {
-    name: 'Orders',
-    href: '/admin/orders',
-    icon: ShoppingCart,
-  },
-  {
-    name: 'Consultations',
-    href: '/admin/consultations',
-    icon: Calendar,
-  },
-  {
-    name: 'Users',
-    href: '/admin/users',
-    icon: Users,
-  },
-  {
-    name: 'Fulfillment',
-    href: '/admin/fulfillment',
-    icon: Package,
-  },
-  {
-    name: 'Referrals',
-    href: '/admin/referrals',
-    icon: UserCheck,
-  },
-  {
-    name: 'Analytics',
-    href: '/admin/analytics',
-    icon: BarChart3,
-  },
-  {
-    name: 'Settings',
-    href: '/admin/settings',
-    icon: Settings,
-  },
-];
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   // Ensure user is authenticated
@@ -86,55 +24,19 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-gray-800 transition-transform">
-        <div className="flex h-full flex-col overflow-y-auto border-r border-gray-700">
-          {/* Logo */}
-          <div className="flex h-16 items-center border-b border-gray-700 px-6">
-            <Link href="/admin" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">ASB</span>
-              </div>
-              <span className="text-lg font-bold text-white">Admin</span>
-            </Link>
-          </div>
+      {/* Mobile-responsive Sidebar */}
+      <AdminSidebar userName={userName} />
 
-          {/* Navigation */}
-          <nav className="flex-1 space-y-1 px-3 py-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-700 hover:text-white group"
-              >
-                <item.icon className="mr-3 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-orange-500" />
-                {item.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* User info at bottom */}
-          <div className="border-t border-gray-700 p-4">
-            <div className="flex items-center space-x-3">
-              <AdminUserButton />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
-                  {userName}
-                </p>
-                <p className="text-xs text-gray-400 truncate">Administrator</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main content */}
-      <div className="pl-64">
+      {/* Main content - responsive padding */}
+      <div className="md:pl-64">
         {/* Top header */}
-        <header className="sticky top-0 z-30 flex h-16 items-center border-b border-gray-200 bg-white px-6 shadow-sm">
+        <header className="sticky top-0 z-30 flex h-14 md:h-16 items-center border-b border-gray-200 bg-white px-4 md:px-6 shadow-sm">
           <div className="flex flex-1 items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">
+            {/* Spacer for mobile menu button */}
+            <div className="w-10 md:w-0" />
+
+            <div className="flex-1 md:flex-none">
+              <h1 className="text-lg md:text-xl font-semibold text-gray-900 text-center md:text-left">
                 Admin Dashboard
               </h1>
             </div>
@@ -150,8 +52,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="min-h-[calc(100vh-4rem)] p-6">{children}</main>
+        {/* Page content - responsive padding */}
+        <main className="min-h-[calc(100vh-3.5rem)] md:min-h-[calc(100vh-4rem)] p-4 md:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );
