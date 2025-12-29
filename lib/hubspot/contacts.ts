@@ -88,7 +88,7 @@ export async function findContactByEmail(email: string): Promise<HubSpotContact 
         filterGroups: [{
           filters: [{
             propertyName: 'email',
-            operator: 'EQ',
+            operator: 'EQ' as const,
             value: email.toLowerCase(),
           }],
         }],

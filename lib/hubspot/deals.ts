@@ -81,7 +81,7 @@ export async function findDealByOrderId(orderId: string): Promise<HubSpotDeal | 
         filterGroups: [{
           filters: [{
             propertyName: 'order_id',
-            operator: 'EQ',
+            operator: 'EQ' as const,
             value: orderId,
           }],
         }],
