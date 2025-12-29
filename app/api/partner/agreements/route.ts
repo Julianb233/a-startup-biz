@@ -19,7 +19,7 @@ export async function GET() {
     const partnerResult = await sql`
       SELECT id, status, onboarding_step, agreements_completed
       FROM partners
-      WHERE user_id = ${userId}
+      WHERE clerk_user_id = ${userId}
     `
 
     if (partnerResult.length === 0) {

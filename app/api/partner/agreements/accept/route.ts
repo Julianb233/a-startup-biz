@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     // Get partner ID
     const partnerResult = await sql`
-      SELECT id FROM partners WHERE user_id = ${userId}
+      SELECT id FROM partners WHERE clerk_user_id = ${userId}
     `
 
     if (partnerResult.length === 0) {

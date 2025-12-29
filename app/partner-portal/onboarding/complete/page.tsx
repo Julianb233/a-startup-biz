@@ -49,8 +49,12 @@ export default function CompletePage() {
   const fetchPartnerData = async () => {
     try {
       const response = await fetch('/api/partner/onboarding-status')
-      if (response.ok) {
-        const data = await response.json()
+      if (!response.ok) {
+        throw new Error('Failed to fetch partner data')
+      }
+      const data = await response.json()
+
+      if (data.success) {
         setPartnerData({
           companyName: data.partner?.company_name || 'Partner',
           firstName: data.partner?.first_name || 'there',

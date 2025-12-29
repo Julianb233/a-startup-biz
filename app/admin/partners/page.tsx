@@ -46,6 +46,7 @@ export default function AdminPartnersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'active' | 'suspended' | 'inactive'>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [processingId, setProcessingId] = useState<string | null>(null);
   const partnersPerPage = 20;
 
   const fetchPartners = useCallback(async () => {
@@ -99,6 +100,63 @@ export default function AdminPartnersPage() {
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  const handleApprovePartner = async (partnerId: string, companyName: string) => {
+    if (!confirm(`Approve ${companyName}? This will activate their account and send a welcome email.`)) {
+      return;
+    }
+
+    setProcessingId(partnerId);
+    try {
+      const response = await fetch(`/api/admin/partners/${partnerId}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to approve partner');
+      }
+
+      const data = await response.json();
+      alert(data.message || 'Partner approved successfully!');
+      await fetchPartners();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to approve partner');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleRejectPartner = async (partnerId: string, companyName: string) => {
+    const reason = prompt(`Reject ${companyName}?\n\nOptionally provide a reason for rejection:`);
+    if (reason === null) {
+      return; // User cancelled
+    }
+
+    setProcessingId(partnerId);
+    try {
+      const response = await fetch(`/api/admin/partners/${partnerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'inactive',
+          adminNote: reason || 'Rejected by admin',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reject partner');
+      }
+
+      alert('Partner rejected successfully');
+      await fetchPartners();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to reject partner');
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const totalPages = Math.ceil(total / partnersPerPage);
 
@@ -354,13 +412,44 @@ export default function AdminPartnersPage() {
                       )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-right">
-                      <Link
-                        href={`/admin/partners/${partner.id}`}
-                        className="inline-flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-700"
-                      >
-                        View
-                        <ExternalLink className="h-3 w-3" />
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        {partner.status === 'pending' ? (
+                          <>
+                            <button
+                              onClick={() => handleApprovePartner(partner.id, partner.company_name)}
+                              disabled={processingId === partner.id}
+                              className="inline-flex items-center gap-1 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {processingId === partner.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <CheckCircle className="h-3 w-3" />
+                              )}
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleRejectPartner(partner.id, partner.company_name)}
+                              disabled={processingId === partner.id}
+                              className="inline-flex items-center gap-1 rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {processingId === partner.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <XCircle className="h-3 w-3" />
+                              )}
+                              Reject
+                            </button>
+                          </>
+                        ) : (
+                          <Link
+                            href={`/admin/partners/${partner.id}`}
+                            className="inline-flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-700"
+                          >
+                            View
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
