@@ -11,6 +11,7 @@ import { CartProvider } from "@/lib/cart-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import SalesChatbot from "@/components/sales-chatbot"
 import CartDrawer from "@/components/cart-drawer"
+import { FloatingCallButton } from "@/components/floating-call-button"
 import "./globals.css"
 
 const montserrat = Montserrat({
@@ -154,6 +155,7 @@ export default function RootLayout({
                 <SmoothScroll>{children}</SmoothScroll>
                 <SalesChatbot />
                 <CartDrawer />
+                <FloatingCallButton />
                 <Toaster
                   position="top-right"
                   richColors

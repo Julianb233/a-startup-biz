@@ -323,7 +323,7 @@ export default function CTASection() {
                       Email Us Directly
                     </h4>
                     <p className="text-gray-400 mb-4">
-                      Prefer to write? Send us your questions and we'll respond within 24 hours.
+                      Prefer to write? Send us your questions and we'll respond promptly.
                     </p>
                     <a
                       href="mailto:contact@astartupbiz.com"

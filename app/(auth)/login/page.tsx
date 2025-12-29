@@ -1,8 +1,22 @@
 import { SignIn } from "@/components/clerk-safe"
+import Image from "next/image"
+import Link from "next/link"
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-50 px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-50 dark:from-[#0f1f3a] dark:via-[#1a365d] dark:to-[#0f1f3a] px-4 py-12">
+      {/* Logo */}
+      <Link href="/" className="mb-8">
+        <Image
+          src="/logo.webp"
+          alt="A Startup Biz"
+          width={280}
+          height={80}
+          className="h-16 w-auto object-contain"
+          priority
+        />
+      </Link>
+
       <SignIn
         appearance={{
           elements: {

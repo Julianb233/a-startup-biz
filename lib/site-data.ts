@@ -505,6 +505,6 @@ export const contactFormConfig = {
     }
   ],
   submitText: "Get My Free Consultation",
-  successMessage: "Thanks! I'll be in touch within 24 hours to schedule your free consultation.",
+  successMessage: "Thanks! I'll be in touch shortly to schedule your free consultation.",
   errorMessage: "Oops! Something went wrong. Please try again or email me directly at tory@astartupbiz.com"
 };

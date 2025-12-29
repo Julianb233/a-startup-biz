@@ -355,7 +355,7 @@ export default function OnboardingPage() {
                   Quick Question?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Not ready for the full intake? Send us a quick message and we'll get back to you within 24 hours.
+                  Not ready for the full intake? Send us a quick message and we'll get back to you shortly.
                 </p>
                 <form onSubmit={handleQuickSubmit} className="space-y-4">
                   <div>
@@ -421,7 +421,7 @@ export default function OnboardingPage() {
                   Message Sent!
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  We'll get back to you within 24 hours.
+                  We'll get back to you shortly.
                 </p>
               </div>
             )}
