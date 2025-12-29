@@ -1,6 +1,5 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import dynamic from "next/dynamic"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Montserrat, Lato } from "next/font/google"
@@ -12,13 +11,8 @@ import { CartProvider } from "@/lib/cart-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import SalesChatbot from "@/components/sales-chatbot"
 import CartDrawer from "@/components/cart-drawer"
+import { FloatingCallButtonWrapper } from "@/components/floating-call-button-wrapper"
 import "./globals.css"
-
-// Dynamic import to prevent SSR issues with Clerk hooks
-const FloatingCallButton = dynamic(
-  () => import("@/components/floating-call-button").then(mod => mod.FloatingCallButton),
-  { ssr: false }
-)
 
 const montserrat = Montserrat({
   weight: ["300", "400", "500", "600", "700", "800", "900"],
@@ -161,7 +155,7 @@ export default function RootLayout({
                 <SmoothScroll>{children}</SmoothScroll>
                 <SalesChatbot />
                 <CartDrawer />
-                <FloatingCallButton />
+                <FloatingCallButtonWrapper />
                 <Toaster
                   position="top-right"
                   richColors
