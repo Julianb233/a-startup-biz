@@ -10,13 +10,19 @@ interface FloatingCallButtonProps {
 }
 
 export function FloatingCallButton({ voiceApiUrl }: FloatingCallButtonProps) {
+  const [mounted, setMounted] = useState(false)
   const { isSignedIn, user } = useUser()
   const [isOpen, setIsOpen] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [isInCall, setIsInCall] = useState(false)
 
-  // Only show for signed-in users
-  if (!isSignedIn) return null
+  // Ensure client-side only rendering to avoid SSR issues with Clerk
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Only show for signed-in users on client side
+  if (!mounted || !isSignedIn) return null
 
   const handleStartCall = async () => {
     setIsConnecting(true)
