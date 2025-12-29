@@ -1,17 +1,24 @@
 {
   "version": "2.0",
   "project": "a-startup-biz",
-  "lastUpdated": "2025-12-29T15:30:00Z",
+  "lastUpdated": "2025-12-29T20:50:00Z",
   "expiresAt": "2026-01-01T06:00:00Z",
   "swarmId": "swarm_bubba_dashboard_1735448400",
   "swarmStatus": "completed",
   "currentWork": {
-    "description": "Voice Call Integration - LiveKit + AI Agent",
+    "description": "CI/CD Build Fixes - Database initialization & UI components",
     "status": "completed",
-    "phase": "Phone Integration",
-    "startedAt": "2025-12-29T08:53:00Z",
-    "completedAt": "2025-12-29T09:00:00Z",
-    "agents": ["Tyler-TypeScript"]
+    "phase": "Build Stabilization",
+    "startedAt": "2025-12-29T20:00:00Z",
+    "completedAt": "2025-12-29T20:50:00Z",
+    "agents": ["Claude-Opus"],
+    "fixes": [
+      "React hooks ordering in floating-call-button.tsx",
+      "Added missing dialog.tsx and switch.tsx UI components",
+      "TypeScript type annotation for Switch onCheckedChange",
+      "Lazy database initialization for chat/messages route",
+      "Lazy database initialization for chat/rooms route"
+    ]
   },
   "deployments": {
     "production": "https://a-startup-biz.vercel.app",
@@ -21,7 +28,7 @@
     "stagingPending": false,
     "stagingNotes": "CI/CD fully configured with GitHub Actions",
     "vercelConfigured": true,
-    "lastSuccessfulBuild": "2025-12-29T15:30:00Z"
+    "lastSuccessfulBuild": "2025-12-29T20:50:00Z"
   },
   "agents": {
     "Bubba-Orchestrator": {
@@ -135,7 +142,11 @@
     "Dropbox Sign document signing integration (lib/document-signing.ts)",
     "Document signing API endpoints (/api/documents/sign, webhook, status)",
     "DocumentSignature embedded signing component",
-    "Signature request database storage"
+    "Signature request database storage",
+    "Admin chatbot knowledge base management page",
+    "Chatbot knowledge API endpoints",
+    "Lazy database initialization for chat routes (build-safe)",
+    "Dialog and Switch shadcn/radix UI components"
   ],
   "inProgress": [],
   "pendingTasks": [],
