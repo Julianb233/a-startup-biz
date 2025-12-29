@@ -126,14 +126,35 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json();
 
-      const assistantMessage: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        content: data.message || "I'm here to help! What would you like to know about our services?",
-        timestamp: new Date()
-      };
+      // Check if API returned an error message (fallback response)
+      const isErrorResponse = data.message?.includes("having a moment") ||
+                              data.message?.includes("apologize") ||
+                              !data.success;
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      if (isErrorResponse) {
+        // Use local knowledge base instead
+        const { matchIntent, generateResponse } = await import("@/lib/chatbot-knowledge");
+        const intent = matchIntent(content);
+        const responseContent = generateResponse(intent, content);
+
+        const assistantMessage: ChatMessage = {
+          id: `assistant-${Date.now()}`,
+          role: "assistant",
+          content: responseContent,
+          timestamp: new Date()
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      } else {
+        const assistantMessage: ChatMessage = {
+          id: `assistant-${Date.now()}`,
+          role: "assistant",
+          content: data.message || "I'm here to help! What would you like to know about our services?",
+          timestamp: new Date()
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
     } catch (error) {
       // Fallback to local knowledge base if API fails
       const { matchIntent, generateResponse } = await import("@/lib/chatbot-knowledge");
