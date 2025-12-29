@@ -74,7 +74,7 @@ export default function SalesChatbot() {
 
             {/* Tooltip */}
             <span className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
-              Chat with Tory's Team
+              Ask the Butler
             </span>
           </motion.button>
         )}
@@ -106,11 +106,11 @@ export default function SalesChatbot() {
               <div className="bg-gradient-to-r from-[#ff6a1a] to-[#ff8a3a] text-white p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6" />
+                    <span className="text-lg">🎩</span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Chat with Tory's Team</h3>
-                    <p className="text-xs text-white/80">We typically reply instantly</p>
+                    <h3 className="font-bold text-lg">Startup Biz Butler</h3>
+                    <p className="text-xs text-white/80">At your service</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function SalesChatbot() {
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                  Powered by A Startup Biz
+                  Your concierge at A Startup Biz
                 </p>
               </div>
             </motion.div>

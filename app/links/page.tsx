@@ -1,229 +1,239 @@
-'use client';
+"use client"
 
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
+import { motion } from "framer-motion"
 import {
-  Globe,
-  Calendar,
-  Mail,
-  Phone,
-  FileText,
-  Briefcase,
-  Users,
-  MessageCircle,
-  Instagram,
   Linkedin,
   Twitter,
   Facebook,
-  Youtube,
+  Instagram,
+  Phone,
+  Mail,
+  Calendar,
+  Briefcase,
+  MessageCircle,
   ExternalLink,
-} from 'lucide-react';
-
-const links = [
-  {
-    title: 'Book a Free Consultation',
-    description: 'Schedule a 30-minute discovery call',
-    href: '/book-call',
-    icon: Calendar,
-    highlight: true,
-  },
-  {
-    title: 'Our Services',
-    description: 'LLC Formation, EIN Filing, Websites & More',
-    href: '/services',
-    icon: Briefcase,
-  },
-  {
-    title: 'Get a Quote',
-    description: 'Custom pricing for your needs',
-    href: '/contact',
-    icon: FileText,
-  },
-  {
-    title: 'Start Your Business',
-    description: 'Complete onboarding process',
-    href: '/onboarding/intake',
-    icon: Globe,
-  },
-  {
-    title: 'Become a Partner',
-    description: 'Earn commissions on referrals',
-    href: '/become-partner',
-    icon: Users,
-  },
-  {
-    title: 'Chat With Us',
-    description: 'Get instant answers',
-    href: '/#chat',
-    icon: MessageCircle,
-  },
-];
+  LogIn,
+  UserPlus
+} from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
 
 const socialLinks = [
-  { name: 'Instagram', href: 'https://instagram.com/astartupbiz', icon: Instagram },
-  { name: 'LinkedIn', href: 'https://linkedin.com/company/astartupbiz', icon: Linkedin },
-  { name: 'Twitter', href: 'https://twitter.com/astartupbiz', icon: Twitter },
-  { name: 'Facebook', href: 'https://facebook.com/astartupbiz', icon: Facebook },
-  { name: 'YouTube', href: 'https://youtube.com/@astartupbiz', icon: Youtube },
-];
+  {
+    name: "LinkedIn",
+    url: "https://linkedin.com/in/toryzweigle",
+    icon: Linkedin,
+    color: "bg-[#0077B5]",
+    hoverColor: "hover:bg-[#006097]"
+  },
+  {
+    name: "Twitter / X",
+    url: "https://twitter.com/astartupbiz",
+    icon: Twitter,
+    color: "bg-black",
+    hoverColor: "hover:bg-gray-800"
+  },
+  {
+    name: "Facebook",
+    url: "https://facebook.com/astartupbiz",
+    icon: Facebook,
+    color: "bg-[#1877F2]",
+    hoverColor: "hover:bg-[#1565D8]"
+  },
+  {
+    name: "Instagram",
+    url: "https://instagram.com/astartupbiz",
+    icon: Instagram,
+    color: "bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737]",
+    hoverColor: "hover:opacity-90"
+  }
+]
 
-const contactInfo = [
-  { label: 'Email', value: 'hello@astartupbiz.com', href: 'mailto:hello@astartupbiz.com', icon: Mail },
-  { label: 'Phone', value: '(555) 123-4567', href: 'tel:+15551234567', icon: Phone },
-  { label: 'Website', value: 'astartupbiz.com', href: 'https://astartupbiz.com', icon: Globe },
-];
+const actionLinks = [
+  {
+    name: "Book a Clarity Call",
+    description: "$1,000 • 90-minute strategy session",
+    url: "/quote",
+    icon: Calendar,
+    primary: true
+  },
+  {
+    name: "Browse Services",
+    description: "17 business services to help you grow",
+    url: "/services",
+    icon: Briefcase,
+    primary: false
+  },
+  {
+    name: "Contact Us",
+    description: "Get in touch with our team",
+    url: "/contact",
+    icon: MessageCircle,
+    primary: false
+  },
+  {
+    name: "Email Us",
+    description: "hello@astartupbiz.com",
+    url: "mailto:hello@astartupbiz.com",
+    icon: Mail,
+    primary: false,
+    external: true
+  }
+]
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" }
+  }
+}
 
 export default function LinksPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10" />
-
-      <div className="relative z-10 mx-auto max-w-lg px-4 py-12">
-        {/* Profile Section */}
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-50">
+      <div className="max-w-md mx-auto px-4 py-12">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
         >
-          {/* Logo/Avatar */}
-          <div className="relative mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-4 border-orange-500 bg-white shadow-xl shadow-orange-500/20">
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-500 to-orange-600">
-              <span className="text-3xl font-bold text-white">ASB</span>
+          {/* Profile Section */}
+          <motion.div variants={itemVariants} className="text-center">
+            {/* Logo/Avatar */}
+            <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-[#ff6a1a] flex items-center justify-center shadow-lg">
+              <span className="text-white text-3xl font-bold">ASB</span>
             </div>
-          </div>
 
-          <h1 className="text-2xl font-bold text-white mb-1">A Startup Biz</h1>
-          <p className="text-gray-400 text-sm mb-4">
-            Expert Business Consulting for Entrepreneurs
-          </p>
+            <h1 className="text-2xl font-bold text-gray-900">A Startup Biz</h1>
+            <p className="text-gray-600 mt-1">Business Clarity & Vetted Service Partners</p>
 
-          {/* Tagline */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-4 py-1.5 text-sm text-orange-400 border border-orange-500/20">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
-            </span>
-            Available for new clients
-          </div>
-        </motion.div>
+            {/* Tory intro */}
+            <p className="text-sm text-gray-500 mt-3 max-w-xs mx-auto">
+              46+ years of experience building 100+ businesses.
+              Get unstuck with Tory Zweigle.
+            </p>
+          </motion.div>
 
-        {/* Main Links */}
-        <div className="space-y-3 mb-8">
-          {links.map((link, index) => {
-            const Icon = link.icon;
-            return (
+          {/* Login/Register Buttons */}
+          <motion.div variants={itemVariants} className="flex gap-3">
+            <Link
+              href="/login"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-[#ff6a1a] text-[#ff6a1a] rounded-xl font-semibold hover:bg-orange-50 transition-colors"
+            >
+              <LogIn className="w-5 h-5" />
+              Login
+            </Link>
+            <Link
+              href="/register"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#ff6a1a] text-white rounded-xl font-semibold hover:bg-[#e55a0a] transition-colors"
+            >
+              <UserPlus className="w-5 h-5" />
+              Sign Up
+            </Link>
+          </motion.div>
+
+          {/* Action Links */}
+          <motion.div variants={itemVariants} className="space-y-3">
+            {actionLinks.map((link, index) => (
               <motion.div
-                key={link.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                key={link.name}
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <Link
-                  href={link.href}
-                  className={`group flex items-center gap-4 rounded-xl p-4 transition-all duration-300 ${
-                    link.highlight
-                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02]'
-                      : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-orange-500/50'
+                  href={link.url}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noopener noreferrer" : undefined}
+                  className={`block w-full p-4 rounded-xl transition-all shadow-sm hover:shadow-md ${
+                    link.primary
+                      ? "bg-[#ff6a1a] text-white"
+                      : "bg-white text-gray-800 border border-gray-200"
                   }`}
                 >
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${
-                    link.highlight ? 'bg-white/20' : 'bg-orange-500/10'
-                  }`}>
-                    <Icon className={`h-6 w-6 ${link.highlight ? 'text-white' : 'text-orange-500'}`} />
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      link.primary ? "bg-white/20" : "bg-orange-100"
+                    }`}>
+                      <link.icon className={`w-5 h-5 ${link.primary ? "text-white" : "text-[#ff6a1a]"}`} />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="font-semibold flex items-center gap-2">
+                        {link.name}
+                        {link.external && <ExternalLink className="w-4 h-4 opacity-60" />}
+                      </div>
+                      <div className={`text-sm ${link.primary ? "text-white/80" : "text-gray-500"}`}>
+                        {link.description}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{link.title}</h3>
-                    <p className={`text-sm ${link.highlight ? 'text-white/80' : 'text-gray-400'}`}>
-                      {link.description}
-                    </p>
-                  </div>
-                  <ExternalLink className={`h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100 ${
-                    link.highlight ? 'text-white' : 'text-orange-500'
-                  }`} />
                 </Link>
               </motion.div>
-            );
-          })}
-        </div>
+            ))}
+          </motion.div>
 
-        {/* Contact Info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mb-8"
-        >
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3 text-center">
-            Contact Us
-          </h2>
-          <div className="grid grid-cols-3 gap-2">
-            {contactInfo.map((item) => {
-              const Icon = item.icon;
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="flex flex-col items-center gap-1 rounded-lg bg-white/5 p-3 text-center transition-colors hover:bg-white/10 border border-white/5 hover:border-orange-500/30"
-                >
-                  <Icon className="h-5 w-5 text-orange-500" />
-                  <span className="text-xs text-gray-400">{item.label}</span>
-                </a>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Social Links */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-          className="text-center"
-        >
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
-            Follow Us
-          </h2>
-          <div className="flex justify-center gap-3">
-            {socialLinks.map((social) => {
-              const Icon = social.icon;
-              return (
-                <a
+          {/* Social Links */}
+          <motion.div variants={itemVariants}>
+            <p className="text-center text-sm text-gray-500 mb-4">Connect with us</p>
+            <div className="flex justify-center gap-4">
+              {socialLinks.map((social) => (
+                <motion.a
                   key={social.name}
-                  href={social.href}
+                  href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-gray-400 transition-all hover:bg-orange-500 hover:text-white hover:scale-110 border border-white/10 hover:border-orange-500"
-                  aria-label={social.name}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`w-12 h-12 rounded-full ${social.color} ${social.hoverColor} flex items-center justify-center text-white shadow-md transition-all`}
+                  title={social.name}
                 >
-                  <Icon className="h-5 w-5" />
-                </a>
-              );
-            })}
-          </div>
-        </motion.div>
+                  <social.icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
+          </motion.div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="mt-12 text-center"
-        >
-          <p className="text-xs text-gray-600">
-            © {new Date().getFullYear()} A Startup Biz. All rights reserved.
-          </p>
-          <a
-            href="https://astartupbiz.com"
-            className="mt-2 inline-flex items-center gap-1 text-xs text-orange-500 hover:text-orange-400"
-          >
-            <Globe className="h-3 w-3" />
-            astartupbiz.com
-          </a>
+          {/* Partner CTA */}
+          <motion.div variants={itemVariants} className="pt-4">
+            <Link
+              href="/get-approved"
+              className="block w-full p-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl text-center hover:from-gray-700 hover:to-gray-800 transition-all shadow-md"
+            >
+              <div className="font-semibold">Become a Partner</div>
+              <div className="text-sm text-gray-300">Earn commissions on referrals</div>
+            </Link>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.div variants={itemVariants} className="text-center pt-6">
+            <p className="text-xs text-gray-400">
+              © {new Date().getFullYear()} A Startup Biz, LLC
+            </p>
+            <div className="flex justify-center gap-4 mt-2">
+              <Link href="/privacy" className="text-xs text-gray-400 hover:text-gray-600">
+                Privacy
+              </Link>
+              <Link href="/terms" className="text-xs text-gray-400 hover:text-gray-600">
+                Terms
+              </Link>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </div>
-  );
+  )
 }
