@@ -5,6 +5,7 @@ import { stripe, formatAmountFromStripe } from '@/lib/stripe'
 import { createOrder, getUserByEmail, createUser } from '@/lib/db-queries'
 import { sendEmail, orderConfirmationEmail, adminNewOrderEmail, ADMIN_EMAIL } from '@/lib/email'
 import { isEventProcessed, markEventProcessed } from '@/lib/webhook-idempotency'
+import { syncCompletedOrder, markContactAsCustomer, isHubSpotConfigured } from '@/lib/hubspot'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
@@ -141,6 +142,36 @@ export async function POST(request: Request) {
             console.log(`Admin notification sent for order ${order.id}`)
           } catch (adminEmailError) {
             console.error('Failed to send admin order notification:', adminEmailError)
+          }
+
+          // Sync order to HubSpot as a deal
+          if (isHubSpotConfigured()) {
+            try {
+              // Sync the deal
+              const dealResult = await syncCompletedOrder({
+                orderId: order.id,
+                customerEmail: customerEmail,
+                customerName: customerName || undefined,
+                total: amountTotal,
+                items: items.length > 0 ? items : [{ name: 'Order', price: amountTotal, quantity: 1 }],
+                paymentMethod: session.payment_method_types?.[0] || 'card',
+              })
+
+              if (dealResult.success) {
+                console.log(`[HubSpot] Deal synced: ${order.id} (${dealResult.action})`)
+              } else {
+                console.warn(`[HubSpot] Deal sync failed: ${dealResult.error}`)
+              }
+
+              // Mark contact as customer
+              const customerResult = await markContactAsCustomer(customerEmail)
+              if (customerResult.success) {
+                console.log(`[HubSpot] Contact marked as customer: ${customerEmail}`)
+              }
+            } catch (hubspotError) {
+              // Don't fail the webhook if HubSpot sync fails
+              console.error('Failed to sync order to HubSpot:', hubspotError)
+            }
           }
         }
         break
