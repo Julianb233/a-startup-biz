@@ -191,60 +191,6 @@ export async function POST(request: NextRequest) {
       console.error('Failed to send admin onboarding notification:', adminEmailError);
     }
 
-    // Sync to HubSpot CRM (non-blocking)
-    if (process.env.HUBSPOT_API_KEY) {
-      try {
-        const { upsertContact } = await import('@/lib/hubspot/contacts');
-        const { createDealFromOnboarding } = await import('@/lib/hubspot/deals');
-
-        const hubspotData = {
-          contactEmail: validatedData.contactEmail,
-          contactName: validatedData.contactName,
-          contactPhone: validatedData.contactPhone,
-          companyName: validatedData.companyName,
-          website: validatedData.website,
-          industry: validatedData.industry,
-          businessGoals: validatedData.businessGoals,
-          primaryChallenge: validatedData.primaryChallenge,
-          timeline: validatedData.timeline,
-          budgetRange: validatedData.budgetRange,
-          servicesInterested: validatedData.servicesInterested,
-          priorityLevel: validatedData.priorityLevel,
-          referralSource: validatedData.referralSource,
-          referralCode: validatedData.referralCode,
-          socialFacebook: validatedData.socialFacebook,
-          socialInstagram: validatedData.socialInstagram,
-          socialLinkedin: validatedData.socialLinkedin,
-          socialTwitter: validatedData.socialTwitter,
-          socialYoutube: validatedData.socialYoutube,
-          socialTiktok: validatedData.socialTiktok,
-          companySize: validatedData.companySize,
-          revenueRange: validatedData.revenueRange,
-          yearsInBusiness: validatedData.yearsInBusiness,
-          bestTimeToCall: validatedData.bestTimeToCall,
-          timezone: validatedData.timezone,
-          communicationPreference: validatedData.communicationPreference,
-          additionalContext: validatedData.additionalContext,
-        };
-
-        const { contact, created } = await upsertContact(hubspotData);
-        console.log(`Contact ${created ? 'created' : 'updated'} in HubSpot: ${contact.id}`);
-
-        // Create deal if qualified (has budget or priority)
-        if (validatedData.budgetRange || validatedData.priorityLevel) {
-          const deal = await createDealFromOnboarding(hubspotData, contact.id, {
-            autoQualify: true,
-          });
-          console.log(`Deal created in HubSpot: ${deal.id}`);
-        }
-      } catch (hubspotError) {
-        // Don't fail the request if HubSpot sync fails
-        console.error('Failed to sync to HubSpot (non-fatal):', hubspotError);
-      }
-    } else {
-      console.log('HubSpot API key not configured - skipping CRM sync');
-    }
-
     return NextResponse.json(
       {
         success: true,
