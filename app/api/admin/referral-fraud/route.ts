@@ -15,7 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, query } from '@/lib/db'
 import { withRateLimit } from '@/lib/rate-limit'
-import { requireAdmin, withAuth } from '@/lib/api-auth'
+import { requireAdmin, withAuth, getCurrentUserId } from '@/lib/api-auth'
 
 /**
  * GET /api/admin/referral-fraud
@@ -33,7 +33,7 @@ import { requireAdmin, withAuth } from '@/lib/api-auth'
 export async function GET(request: NextRequest) {
   return withAuth(async () => {
     // Require admin role - throws 401/403 if not authorized
-    const { userId } = await requireAdmin()
+    await requireAdmin()
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams
@@ -153,7 +153,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return withAuth(async () => {
     // Require admin role - throws 401/403 if not authorized
-    const { userId } = await requireAdmin()
+    await requireAdmin()
+    const userId = await getCurrentUserId()
 
     // Rate limiting (use 'api' type for admin routes)
     const rateLimitResponse = await withRateLimit(request, 'api')

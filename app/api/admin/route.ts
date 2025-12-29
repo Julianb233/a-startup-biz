@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin, withAuth } from '@/lib/api-auth';
+import { requireAdmin, withAuth, getCurrentUserId } from '@/lib/api-auth';
 
 /**
  * GET /api/admin
@@ -12,13 +12,15 @@ import { requireAdmin, withAuth } from '@/lib/api-auth';
 export async function GET() {
   return withAuth(async () => {
     // Require admin role
-    const { userId } = await requireAdmin();
+    await requireAdmin();
+    const userId = await getCurrentUserId();
 
     // This endpoint is only accessible to admins
     return NextResponse.json({
       message: 'Admin access granted',
       admin: {
         id: userId,
+        role: 'admin',
       },
       // Example admin data
       stats: {
@@ -45,7 +47,8 @@ export async function GET() {
  */
 export async function POST(request: Request) {
   return withAuth(async () => {
-    const { userId } = await requireAdmin();
+    await requireAdmin();
+    const userId = await getCurrentUserId();
 
     const body = await request.json();
     const { action, data } = body;
@@ -102,7 +105,8 @@ export async function POST(request: Request) {
  */
 export async function DELETE(request: Request) {
   return withAuth(async () => {
-    const { userId } = await requireAdmin();
+    await requireAdmin();
+    const userId = await getCurrentUserId();
 
     const body = await request.json();
     const { resource, resourceId } = body;
