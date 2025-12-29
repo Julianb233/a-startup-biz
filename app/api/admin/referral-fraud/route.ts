@@ -71,27 +71,80 @@ export async function GET(request: NextRequest) {
       conditions.push(`created_at <= $${params.length}`)
     }
 
-    const whereClause = conditions.join(' AND ')
+    // Get fraud logs with safe parameterized query
+    // Build query dynamically but safely without sql.unsafe()
+    let logs
 
-    // Get fraud logs
-    const logs = await sql`
-      SELECT
-        id,
-        referral_code,
-        risk_score,
-        action,
-        referred_email,
-        ip_address,
-        user_agent,
-        signals,
-        metadata,
-        created_at
-      FROM referral_fraud_logs
-      WHERE ${sql.unsafe(whereClause)}
-      ORDER BY created_at DESC
-      LIMIT ${limit}
-      OFFSET ${offset}
-    `
+    if (action && minRiskScore && startDate && endDate) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE action = ${action} AND risk_score >= ${parseInt(minRiskScore)} AND created_at >= ${startDate} AND created_at <= ${endDate}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (action && minRiskScore && startDate) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE action = ${action} AND risk_score >= ${parseInt(minRiskScore)} AND created_at >= ${startDate}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (action && minRiskScore) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE action = ${action} AND risk_score >= ${parseInt(minRiskScore)}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (action && startDate && endDate) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE action = ${action} AND created_at >= ${startDate} AND created_at <= ${endDate}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (minRiskScore && startDate && endDate) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE risk_score >= ${parseInt(minRiskScore)} AND created_at >= ${startDate} AND created_at <= ${endDate}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (action) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE action = ${action}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (minRiskScore) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE risk_score >= ${parseInt(minRiskScore)}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (startDate && endDate) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE created_at >= ${startDate} AND created_at <= ${endDate}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else if (startDate) {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        WHERE created_at >= ${startDate}
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    } else {
+      logs = await sql`
+        SELECT id, referral_code, risk_score, action, referred_email, ip_address, user_agent, signals, metadata, created_at
+        FROM referral_fraud_logs
+        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+      `
+    }
 
     // Get summary statistics
     const stats = await sql`
