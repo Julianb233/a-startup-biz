@@ -166,23 +166,80 @@ async function handleContactEvent(event: HubSpotWebhookEvent): Promise<void> {
 
   if (isCreationEvent(subscriptionType)) {
     // A new contact was created in HubSpot
-    // You might want to sync this to your local database
+    // Fetch full contact details and optionally sync to local database
     console.log(`[HubSpot Webhook] Contact created: ${objectId}`)
-    // TODO: Implement local database sync if needed
+
+    try {
+      const client = getHubSpotClient()
+      const contactResponse = await client.crm.contacts.basicApi.getById(
+        String(objectId),
+        ['email', 'firstname', 'lastname', 'phone', 'company', 'lifecyclestage']
+      )
+
+      const email = contactResponse.properties.email
+      if (email) {
+        console.log(`[HubSpot Webhook] Contact ${objectId} has email: ${email}`)
+        // Check if this contact exists in our local database
+        const existingContact = await getContactSubmissionByEmail(email)
+        if (existingContact) {
+          console.log(`[HubSpot Webhook] Contact ${email} already exists locally, no action needed`)
+        } else {
+          console.log(`[HubSpot Webhook] Contact ${email} created in HubSpot but not in local DB - manual creation`)
+        }
+      }
+    } catch (error) {
+      console.error(`[HubSpot Webhook] Failed to fetch contact ${objectId}:`, error)
+    }
   } else if (isDeletionEvent(subscriptionType)) {
     // A contact was deleted in HubSpot
     console.log(`[HubSpot Webhook] Contact deleted: ${objectId}`)
-    // TODO: Handle deletion in local database if needed
+    // We don't automatically delete from local database - just log for awareness
+    console.log(`[HubSpot Webhook] Contact ${objectId} deleted in HubSpot - local record preserved`)
   } else if (isPropertyChangeEvent(subscriptionType)) {
     // A contact property was changed
     console.log(
       `[HubSpot Webhook] Contact ${objectId} property changed: ${propertyName} = ${propertyValue}`
     )
 
-    // Handle specific property changes
+    // Handle specific property changes - update local contact status based on lifecycle
     if (propertyName === 'lifecyclestage') {
       console.log(`[HubSpot Webhook] Contact ${objectId} lifecycle stage changed to: ${propertyValue}`)
-      // TODO: Update local contact status if needed
+
+      try {
+        // Fetch contact email to find local record
+        const client = getHubSpotClient()
+        const contactResponse = await client.crm.contacts.basicApi.getById(
+          String(objectId),
+          ['email']
+        )
+
+        const email = contactResponse.properties.email
+        if (email) {
+          const existingContact = await getContactSubmissionByEmail(email)
+          if (existingContact) {
+            // Map HubSpot lifecycle stages to local contact statuses
+            const statusMap: Record<string, 'new' | 'contacted' | 'qualified' | 'converted' | 'closed'> = {
+              'subscriber': 'new',
+              'lead': 'contacted',
+              'marketingqualifiedlead': 'qualified',
+              'salesqualifiedlead': 'qualified',
+              'opportunity': 'qualified',
+              'customer': 'converted',
+              'evangelist': 'converted',
+              'other': 'closed',
+            }
+
+            const newStatus = statusMap[propertyValue?.toLowerCase() || ''] || existingContact.status
+
+            if (newStatus !== existingContact.status) {
+              await updateContactStatus(existingContact.id, newStatus)
+              console.log(`[HubSpot Webhook] Updated contact ${email} status from ${existingContact.status} to ${newStatus}`)
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`[HubSpot Webhook] Failed to update contact ${objectId} status:`, error)
+      }
     }
   }
 }
