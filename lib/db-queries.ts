@@ -2111,9 +2111,9 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
   const orderStats = await sql`
     SELECT
       COUNT(*) as total_orders,
-      COALESCE(SUM(total_amount), 0) as total_revenue,
-      COALESCE(AVG(total_amount), 0) as avg_order_value,
-      COUNT(DISTINCT customer_email) as unique_customers
+      COALESCE(SUM(total), 0) as total_revenue,
+      COALESCE(AVG(total), 0) as avg_order_value,
+      COUNT(DISTINCT user_id) as unique_customers
     FROM orders
     WHERE status IN ('paid', 'completed')
   ` as unknown as any[]
@@ -2122,8 +2122,8 @@ export async function getAnalyticsStats(): Promise<AnalyticsStats> {
   const monthlyStats = await sql`
     SELECT
       COUNT(*) as orders_this_month,
-      COALESCE(SUM(total_amount), 0) as revenue_this_month,
-      COUNT(DISTINCT customer_email) as new_customers
+      COALESCE(SUM(total), 0) as revenue_this_month,
+      COUNT(DISTINCT user_id) as new_customers
     FROM orders
     WHERE status IN ('paid', 'completed')
     AND created_at >= DATE_TRUNC('month', NOW())
@@ -2181,7 +2181,7 @@ export async function getMonthlyRevenueTrend(): Promise<MonthlyRevenue[]> {
   const result = await sql`
     SELECT
       TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month,
-      COALESCE(SUM(total_amount), 0) as revenue,
+      COALESCE(SUM(total), 0) as revenue,
       COUNT(*) as orders
     FROM orders
     WHERE status IN ('paid', 'completed')
@@ -2201,15 +2201,17 @@ export async function getMonthlyRevenueTrend(): Promise<MonthlyRevenue[]> {
  * Get performance by service/product
  */
 export async function getServicePerformance(): Promise<ServicePerformance[]> {
+  // Since service_type is not in the orders table, we'll extract from items JSONB
   const result = await sql`
     SELECT
-      COALESCE(service_type, 'Other') as service,
+      COALESCE(item->>'name', 'Unknown Service') as service,
       COUNT(*) as orders,
-      COALESCE(SUM(total_amount), 0) as revenue,
-      COALESCE(AVG(total_amount), 0) as avg_value
-    FROM orders
+      COALESCE(SUM(total), 0) as revenue,
+      COALESCE(AVG(total), 0) as avg_value
+    FROM orders,
+    LATERAL jsonb_array_elements(items) as item
     WHERE status IN ('paid', 'completed')
-    GROUP BY service_type
+    GROUP BY item->>'name'
     ORDER BY revenue DESC
     LIMIT 10
   ` as unknown as any[]
@@ -2264,7 +2266,7 @@ export async function getDailyOrdersTrend(): Promise<{ date: string; orders: num
     SELECT
       TO_CHAR(DATE_TRUNC('day', created_at), 'YYYY-MM-DD') as date,
       COUNT(*) as orders,
-      COALESCE(SUM(total_amount), 0) as revenue
+      COALESCE(SUM(total), 0) as revenue
     FROM orders
     WHERE status IN ('paid', 'completed')
     AND created_at >= NOW() - INTERVAL '30 days'
@@ -2300,4 +2302,480 @@ export async function getReferralSourceBreakdown(): Promise<{ source: string; co
     count: parseInt(r.count || '0'),
     percentage: total > 0 ? Math.round((parseInt(r.count || '0') / total) * 100) : 0,
   }))
+}
+
+// ============================================
+// ANALYTICS WITH DATE RANGE SUPPORT
+// ============================================
+
+/**
+ * Get revenue data with date range filtering
+ */
+export async function getRevenueByDate(days?: number): Promise<Array<{ date: string; revenue: number; orders: number }>> {
+  let dateFilter = sql``
+
+  if (days) {
+    dateFilter = sql`AND created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const result = await sql`
+    SELECT
+      TO_CHAR(DATE_TRUNC('day', created_at), 'Mon DD') as date,
+      COALESCE(SUM(total), 0) as revenue,
+      COUNT(*) as orders
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+    ${dateFilter}
+    GROUP BY DATE_TRUNC('day', created_at)
+    ORDER BY DATE_TRUNC('day', created_at) ASC
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    date: r.date,
+    revenue: parseFloat(r.revenue || '0'),
+    orders: parseInt(r.orders || '0'),
+  }))
+}
+
+/**
+ * Get orders by status with date range
+ */
+export async function getOrdersByStatus(days?: number): Promise<Array<{ status: string; count: number; value: number }>> {
+  let dateFilter = sql``
+
+  if (days) {
+    dateFilter = sql`AND created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const result = await sql`
+    SELECT
+      status,
+      COUNT(*) as count,
+      COALESCE(SUM(total), 0) as value
+    FROM orders
+    WHERE 1=1 ${dateFilter}
+    GROUP BY status
+    ORDER BY count DESC
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    status: r.status,
+    count: parseInt(r.count || '0'),
+    value: parseFloat(r.value || '0'),
+  }))
+}
+
+/**
+ * Get partner performance data with date range
+ */
+export async function getPartnerPerformanceData(days?: number, limit = 10): Promise<Array<{
+  name: string
+  leads: number
+  converted: number
+  commission: number
+}>> {
+  let dateFilter = sql``
+
+  if (days) {
+    dateFilter = sql`AND pl.created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const result = await sql`
+    SELECT
+      p.company_name as name,
+      COUNT(pl.id) as leads,
+      COUNT(pl.id) FILTER (WHERE pl.status = 'converted') as converted,
+      COALESCE(SUM(pl.commission) FILTER (WHERE pl.status = 'converted'), 0) as commission
+    FROM partners p
+    LEFT JOIN partner_leads pl ON p.id = pl.partner_id ${dateFilter}
+    WHERE p.status = 'active'
+    GROUP BY p.id, p.company_name
+    HAVING COUNT(pl.id) > 0
+    ORDER BY commission DESC
+    LIMIT ${limit}
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    name: r.name,
+    leads: parseInt(r.leads || '0'),
+    converted: parseInt(r.converted || '0'),
+    commission: parseFloat(r.commission || '0'),
+  }))
+}
+
+/**
+ * Get lead funnel data with date range
+ */
+export async function getLeadFunnelData(days?: number): Promise<{
+  total: number
+  contacted: number
+  qualified: number
+  converted: number
+  lost: number
+}> {
+  let dateFilter = sql``
+
+  if (days) {
+    dateFilter = sql`AND created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const result = await sql`
+    SELECT
+      COUNT(*) as total,
+      COUNT(*) FILTER (WHERE status IN ('contacted', 'qualified', 'converted')) as contacted,
+      COUNT(*) FILTER (WHERE status IN ('qualified', 'converted')) as qualified,
+      COUNT(*) FILTER (WHERE status = 'converted') as converted,
+      COUNT(*) FILTER (WHERE status = 'lost') as lost
+    FROM partner_leads
+    WHERE 1=1 ${dateFilter}
+  ` as unknown as any[]
+
+  return {
+    total: parseInt(result[0]?.total || '0'),
+    contacted: parseInt(result[0]?.contacted || '0'),
+    qualified: parseInt(result[0]?.qualified || '0'),
+    converted: parseInt(result[0]?.converted || '0'),
+    lost: parseInt(result[0]?.lost || '0'),
+  }
+}
+
+/**
+ * Get user acquisition data with date range
+ */
+export async function getUserAcquisitionData(days?: number): Promise<Array<{
+  date: string
+  users: number
+  cumulative: number
+}>> {
+  let dateFilter = sql``
+
+  if (days) {
+    dateFilter = sql`AND created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const result = await sql`
+    SELECT
+      TO_CHAR(DATE_TRUNC('day', created_at), 'Mon DD') as date,
+      COUNT(*) as users,
+      SUM(COUNT(*)) OVER (ORDER BY DATE_TRUNC('day', created_at)) as cumulative
+    FROM users
+    WHERE 1=1 ${dateFilter}
+    GROUP BY DATE_TRUNC('day', created_at)
+    ORDER BY DATE_TRUNC('day', created_at) ASC
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    date: r.date,
+    users: parseInt(r.users || '0'),
+    cumulative: parseInt(r.cumulative || '0'),
+  }))
+}
+
+/**
+ * Get key metrics with date range
+ */
+export async function getKeyMetrics(days?: number): Promise<{
+  totalRevenue: number
+  totalOrders: number
+  totalPartners: number
+  conversionRate: number
+  avgOrderValue: number
+  revenueGrowth: number
+}> {
+  let dateFilter = sql``
+
+  if (days) {
+    dateFilter = sql`AND created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const [orderStats, partnerStats, leadStats] = await Promise.all([
+    sql`
+      SELECT
+        COUNT(*) as total_orders,
+        COALESCE(SUM(total), 0) as total_revenue,
+        COALESCE(AVG(total), 0) as avg_order_value
+      FROM orders
+      WHERE status IN ('paid', 'completed') ${dateFilter}
+    ` as unknown as any[],
+    sql`
+      SELECT COUNT(*) as total_partners
+      FROM partners
+      WHERE status = 'active'
+    ` as unknown as any[],
+    sql`
+      SELECT
+        COUNT(*) as total_leads,
+        COUNT(*) FILTER (WHERE status = 'converted') as converted_leads
+      FROM partner_leads
+      WHERE 1=1 ${dateFilter}
+    ` as unknown as any[]
+  ])
+
+  const totalRevenue = parseFloat(orderStats[0]?.total_revenue || '0')
+  const totalOrders = parseInt(orderStats[0]?.total_orders || '0')
+  const avgOrderValue = parseFloat(orderStats[0]?.avg_order_value || '0')
+  const totalPartners = parseInt(partnerStats[0]?.total_partners || '0')
+
+  const totalLeads = parseInt(leadStats[0]?.total_leads || '0')
+  const convertedLeads = parseInt(leadStats[0]?.converted_leads || '0')
+  const conversionRate = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0
+
+  // Calculate growth (compare to previous period)
+  let growthFilter = sql``
+  if (days) {
+    growthFilter = sql`
+      AND created_at >= NOW() - INTERVAL '1 day' * ${days * 2}
+      AND created_at < NOW() - INTERVAL '1 day' * ${days}
+    `
+  }
+
+  const previousStats = await sql`
+    SELECT COALESCE(SUM(total), 0) as previous_revenue
+    FROM orders
+    WHERE status IN ('paid', 'completed') ${growthFilter}
+  ` as unknown as any[]
+
+  const previousRevenue = parseFloat(previousStats[0]?.previous_revenue || '0')
+  const revenueGrowth = previousRevenue > 0 ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0
+
+  return {
+    totalRevenue,
+    totalOrders,
+    totalPartners,
+    conversionRate,
+    avgOrderValue,
+    revenueGrowth,
+  }
+}
+
+// ============================================
+// VOICE CALLS
+// ============================================
+
+export interface VoiceCall {
+  id: string
+  room_name: string
+  caller_id: string
+  callee_id: string | null
+  call_type: 'support' | 'user-to-user' | 'conference'
+  status: 'pending' | 'ringing' | 'connected' | 'completed' | 'missed' | 'failed'
+  started_at: Date | null
+  connected_at: Date | null
+  ended_at: Date | null
+  duration_seconds: number | null
+  recording_url: string | null
+  transcript: string | null
+  metadata: Record<string, any>
+  created_at: Date
+}
+
+export interface CallParticipant {
+  id: number
+  call_id: string
+  user_id: string
+  participant_name: string | null
+  joined_at: Date
+  left_at: Date | null
+  duration_seconds: number | null
+  is_muted: boolean
+}
+
+export async function createVoiceCall(data: {
+  roomName: string
+  callerId: string
+  calleeId?: string
+  callType?: 'support' | 'user-to-user' | 'conference'
+  metadata?: Record<string, any>
+}): Promise<VoiceCall> {
+  const result = await sql`
+    INSERT INTO voice_calls (room_name, caller_id, callee_id, call_type, status, metadata)
+    VALUES (
+      ${data.roomName},
+      ${data.callerId},
+      ${data.calleeId || null},
+      ${data.callType || 'support'},
+      'pending',
+      ${JSON.stringify(data.metadata || {})}
+    )
+    RETURNING *
+  ` as unknown as VoiceCall[]
+  return result[0]
+}
+
+export async function getVoiceCallByRoom(roomName: string): Promise<VoiceCall | null> {
+  const result = await sql`
+    SELECT * FROM voice_calls WHERE room_name = ${roomName}
+  ` as unknown as VoiceCall[]
+  return result[0] || null
+}
+
+export async function updateVoiceCallStatus(
+  roomName: string,
+  status: string,
+  additionalData?: {
+    connectedAt?: boolean
+    endedAt?: boolean
+    durationSeconds?: number
+    recordingUrl?: string
+  }
+): Promise<VoiceCall | null> {
+  if (status === 'connected' && additionalData?.connectedAt) {
+    const result = await sql`
+      UPDATE voice_calls
+      SET status = ${status}, connected_at = NOW(), started_at = COALESCE(started_at, NOW())
+      WHERE room_name = ${roomName}
+      RETURNING *
+    ` as unknown as VoiceCall[]
+    return result[0]
+  }
+
+  if (status === 'completed' && additionalData?.endedAt) {
+    const result = await sql`
+      UPDATE voice_calls
+      SET
+        status = ${status},
+        ended_at = NOW(),
+        duration_seconds = ${additionalData.durationSeconds || null},
+        recording_url = COALESCE(${additionalData.recordingUrl || null}, recording_url)
+      WHERE room_name = ${roomName}
+      RETURNING *
+    ` as unknown as VoiceCall[]
+    return result[0]
+  }
+
+  const result = await sql`
+    UPDATE voice_calls
+    SET status = ${status}
+    WHERE room_name = ${roomName}
+    RETURNING *
+  ` as unknown as VoiceCall[]
+  return result[0]
+}
+
+export async function getVoiceCallHistory(options: {
+  userId?: string
+  callType?: string
+  status?: string
+  limit?: number
+  offset?: number
+}): Promise<{ calls: VoiceCall[]; total: number }> {
+  const limit = options.limit || 20
+  const offset = options.offset || 0
+
+  let whereClause = sql`WHERE 1=1`
+
+  if (options.userId) {
+    whereClause = sql`${whereClause} AND (caller_id = ${options.userId} OR callee_id = ${options.userId})`
+  }
+
+  if (options.callType) {
+    whereClause = sql`${whereClause} AND call_type = ${options.callType}`
+  }
+
+  if (options.status) {
+    whereClause = sql`${whereClause} AND status = ${options.status}`
+  }
+
+  const [calls, countResult] = await Promise.all([
+    sql`
+      SELECT * FROM voice_calls
+      ${whereClause}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as VoiceCall[],
+    sql`
+      SELECT COUNT(*) as total FROM voice_calls ${whereClause}
+    ` as unknown as { total: string }[]
+  ])
+
+  return {
+    calls,
+    total: parseInt(countResult[0]?.total || '0')
+  }
+}
+
+export async function addCallParticipant(data: {
+  callId: string
+  userId: string
+  participantName?: string
+}): Promise<CallParticipant> {
+  const result = await sql`
+    INSERT INTO call_participants (call_id, user_id, participant_name)
+    VALUES (${data.callId}, ${data.userId}, ${data.participantName || null})
+    ON CONFLICT (call_id, user_id) DO UPDATE SET joined_at = NOW()
+    RETURNING *
+  ` as unknown as CallParticipant[]
+  return result[0]
+}
+
+export async function updateCallParticipantLeft(
+  callId: string,
+  userId: string
+): Promise<CallParticipant | null> {
+  const result = await sql`
+    UPDATE call_participants
+    SET
+      left_at = NOW(),
+      duration_seconds = EXTRACT(EPOCH FROM (NOW() - joined_at))::INTEGER
+    WHERE call_id = ${callId} AND user_id = ${userId}
+    RETURNING *
+  ` as unknown as CallParticipant[]
+  return result[0]
+}
+
+export async function getCallParticipants(callId: string): Promise<CallParticipant[]> {
+  return sql`
+    SELECT * FROM call_participants
+    WHERE call_id = ${callId}
+    ORDER BY joined_at ASC
+  ` as unknown as CallParticipant[]
+}
+
+export async function getVoiceCallStats(days?: number): Promise<{
+  totalCalls: number
+  completedCalls: number
+  averageDuration: number
+  missedCalls: number
+}> {
+  let dateFilter = sql``
+  if (days) {
+    dateFilter = sql`AND created_at >= NOW() - INTERVAL '1 day' * ${days}`
+  }
+
+  const result = await sql`
+    SELECT
+      COUNT(*) as total_calls,
+      COUNT(*) FILTER (WHERE status = 'completed') as completed_calls,
+      COUNT(*) FILTER (WHERE status IN ('missed', 'failed')) as missed_calls,
+      COALESCE(AVG(duration_seconds) FILTER (WHERE status = 'completed'), 0) as avg_duration
+    FROM voice_calls
+    WHERE 1=1 ${dateFilter}
+  ` as unknown as any[]
+
+  return {
+    totalCalls: parseInt(result[0]?.total_calls || '0'),
+    completedCalls: parseInt(result[0]?.completed_calls || '0'),
+    missedCalls: parseInt(result[0]?.missed_calls || '0'),
+    averageDuration: parseFloat(result[0]?.avg_duration || '0')
+  }
+}
+
+export async function setCallRecordingUrl(roomName: string, recordingUrl: string): Promise<VoiceCall | null> {
+  const result = await sql`
+    UPDATE voice_calls
+    SET recording_url = ${recordingUrl}
+    WHERE room_name = ${roomName}
+    RETURNING *
+  ` as unknown as VoiceCall[]
+  return result[0]
+}
+
+export async function setCallTranscript(roomName: string, transcript: string): Promise<VoiceCall | null> {
+  const result = await sql`
+    UPDATE voice_calls
+    SET transcript = ${transcript}
+    WHERE room_name = ${roomName}
+    RETURNING *
+  ` as unknown as VoiceCall[]
+  return result[0]
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Header from "@/components/header"
 import HeroSection from "@/components/hero-section"
+import { HomepageAnimations } from "@/components/homepage-animations"
 import StatisticsShowcase from "@/components/statistics-showcase"
 import ServicesShowcase from "@/components/services-showcase"
 import HowItWorks from "@/components/how-it-works"

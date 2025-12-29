@@ -123,19 +123,21 @@ export async function sendNotificationEmail(
 
     switch (notificationType) {
       case 'account_approved': {
-        const data: PartnerApprovedData = {
+        const portalUrl = notification.data.portalUrl || 'https://astartupbiz.com/partner-portal'
+        const data = {
           partnerName: userName,
           companyName: notification.data.companyName,
           commissionRate: notification.data.commissionRate || notification.data.commission_rate || 20,
           referralCode: notification.data.referralCode || notification.data.referral_code || 'PARTNER',
-          portalUrl: notification.data.portalUrl || 'https://astartupbiz.com/partner-portal',
+          portalUrl,
         }
         emailContent = partnerApprovedEmail(data)
         break
       }
 
       case 'payout_completed': {
-        const data: PayoutCompletedData = {
+        const completedPortalUrl = notification.data.portalUrl || 'https://astartupbiz.com/partner-portal'
+        const data = {
           partnerName: userName,
           payoutId: notification.data.payoutId || notification.data.payout_id,
           amount: parseFloat(notification.data.amount),
@@ -149,14 +151,15 @@ export async function sendNotificationEmail(
               day: 'numeric',
             }),
           transactionCount: notification.data.transactionCount || notification.data.transaction_count || 1,
-          portalUrl: notification.data.portalUrl || 'https://astartupbiz.com/partner-portal',
+          portalUrl: completedPortalUrl,
         }
         emailContent = partnerPayoutCompletedEmail(data)
         break
       }
 
       case 'payout_failed': {
-        const data: PayoutSentData = {
+        const failedPortalUrl = notification.data.portalUrl || 'https://astartupbiz.com/partner-portal'
+        const data = {
           partnerName: userName,
           payoutId: notification.data.payoutId || notification.data.payout_id,
           amount: parseFloat(notification.data.amount),
@@ -165,7 +168,7 @@ export async function sendNotificationEmail(
           transactionCount: notification.data.transactionCount || notification.data.transaction_count || 1,
           periodStart: notification.data.periodStart || 'N/A',
           periodEnd: notification.data.periodEnd || 'N/A',
-          portalUrl: notification.data.portalUrl || 'https://astartupbiz.com/partner-portal',
+          portalUrl: failedPortalUrl,
         }
         // Use payout sent template but with failure context
         emailContent = {
@@ -179,7 +182,8 @@ export async function sendNotificationEmail(
       }
 
       case 'lead_converted': {
-        const data: LeadConvertedData = {
+        const leadPortalUrl = notification.data.portalUrl || 'https://astartupbiz.com/partner-portal'
+        const data = {
           partnerName: userName,
           leadName: notification.data.leadName || notification.data.client_name || 'Client',
           orderValue: parseFloat(notification.data.orderValue || notification.data.order_value || 0),
@@ -194,7 +198,7 @@ export async function sendNotificationEmail(
               month: 'long',
               day: 'numeric',
             }),
-          portalUrl: notification.data.portalUrl || 'https://astartupbiz.com/partner-portal',
+          portalUrl: leadPortalUrl,
         }
         emailContent = partnerLeadConvertedEmail(data)
         break

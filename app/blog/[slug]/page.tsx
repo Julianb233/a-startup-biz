@@ -5,7 +5,9 @@ import Image from "next/image"
 import { ArrowLeft, Calendar, Clock, User, Tag } from "lucide-react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import { getBlogPost, getAllBlogSlugs } from "@/lib/blog-data"
+import BlogPost from "@/components/blog/BlogPost"
+import BlogCard from "@/components/blog/BlogCard"
+import { getBlogPost, getAllBlogSlugs, getRecentPosts } from "@/lib/blog-data"
 import { Button } from "@/components/ui/button"
 
 type Props = {
@@ -56,47 +58,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// Helper function to convert markdown to HTML
-function markdownToHtml(markdown: string): string {
-  let html = markdown
-
-  // Headers - with Montserrat font
-  html = html.replace(/^### (.*$)/gim, '<h3 class="text-2xl font-bold mt-12 mb-4 text-gray-900" style="font-family: Montserrat, sans-serif">$1</h3>')
-  html = html.replace(/^## (.*$)/gim, '<h2 class="text-3xl md:text-4xl font-bold mt-16 mb-6 text-gray-900" style="font-family: Montserrat, sans-serif">$1</h2>')
-  html = html.replace(/^# (.*$)/gim, '<h1 class="text-4xl md:text-5xl font-bold mt-8 mb-6 text-gray-900" style="font-family: Montserrat, sans-serif">$1</h1>')
-
-  // Bold text
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>')
-
-  // Italic text
-  html = html.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
-
-  // Ordered lists
-  html = html.replace(/^\d+\.\s+(.*)$/gim, '<li class="ml-6 mb-3" style="font-family: Montserrat, sans-serif">$1</li>')
-
-  // Unordered lists
-  html = html.replace(/^[-*]\s+(.*)$/gim, '<li class="ml-6 mb-3" style="font-family: Montserrat, sans-serif">$1</li>')
-
-  // Wrap consecutive list items
-  html = html.replace(/(<li class="ml-6 mb-3".*?<\/li>\n?)+/g, '<ul class="list-disc space-y-2 mb-8 pl-4">$&</ul>')
-
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#ff6a1a] hover:text-[#e55f17] font-semibold underline transition-colors">$1</a>')
-
-  // Paragraphs (lines that aren't already HTML tags)
-  html = html.split('\n').map(line => {
-    if (line.trim() === '' || line.trim().startsWith('<')) {
-      return line
-    }
-    return `<p class="mb-6 text-lg leading-relaxed text-gray-700" style="font-family: Montserrat, sans-serif">${line}</p>`
-  }).join('\n')
-
-  // Horizontal rules
-  html = html.replace(/^---$/gim, '<hr class="my-12 border-t-2 border-gray-200" />')
-
-  return html
-}
-
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
   const post = getBlogPost(slug)
@@ -105,15 +66,19 @@ export default async function BlogPostPage({ params }: Props) {
     notFound()
   }
 
-  const htmlContent = markdownToHtml(post.content)
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   })
 
+  // Get related posts (same category, excluding current post)
+  const relatedPosts = getRecentPosts(6)
+    .filter(p => p.slug !== post.slug && p.category === post.category)
+    .slice(0, 3)
+
   return (
-    <main className="relative overflow-x-hidden max-w-full bg-white">
+    <main className="relative overflow-x-hidden max-w-full bg-white dark:bg-dark-bg">
       <Header />
 
       {/* Hero Section with Featured Image */}
@@ -201,59 +166,36 @@ export default async function BlogPostPage({ params }: Props) {
       <article className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            {/* Excerpt */}
-            <div className="mb-12 p-6 bg-orange-50 border-l-4 border-[#ff6a1a] rounded-r-lg">
-              <p
-                className="text-xl text-gray-700 leading-relaxed italic"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                {post.excerpt}
-              </p>
-            </div>
-
-            {/* Main Content */}
-            <div
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-            />
-
-            {/* Author Bio */}
-            <div className="mt-16 p-8 bg-gray-50 rounded-2xl border border-gray-200">
-              <div className="flex flex-col sm:flex-row items-start gap-6">
-                <div className="flex-shrink-0">
-                  <div
-                    className="w-20 h-20 bg-gradient-to-br from-[#ff6a1a] to-[#e55f17] rounded-full flex items-center justify-center text-white text-3xl font-bold"
-                    style={{ fontFamily: 'Montserrat, sans-serif' }}
-                  >
-                    {post.author.charAt(0)}
-                  </div>
-                </div>
-                <div>
-                  <h3
-                    className="text-2xl font-bold text-gray-900 mb-2"
-                    style={{ fontFamily: 'Montserrat, sans-serif' }}
-                  >
-                    About {post.author}
-                  </h3>
-                  <p
-                    className="text-gray-700 leading-relaxed mb-4"
-                    style={{ fontFamily: 'Montserrat, sans-serif' }}
-                  >
-                    Tory R. Zweigle has started over 100 businesses in 46 years, beginning at age 11.
-                    He&apos;s a serial entrepreneur, business consultant, and expert in helping entrepreneurs
-                    avoid costly mistakes through honest, experience-based guidance.
-                  </p>
-                  <Link href="/about">
-                    <Button variant="outline" size="sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                      Learn More About Tory
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <BlogPost post={post} />
           </div>
         </div>
       </article>
+
+      {/* Related Posts Section */}
+      {relatedPosts.length > 0 && (
+        <section className="py-16 md:py-24 bg-gray-50 dark:bg-dark-card">
+          <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+            <h2
+              className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-dark-text mb-12 text-center"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Related Articles
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedPosts.map((relatedPost, index) => (
+                <BlogCard key={relatedPost.slug} post={relatedPost} index={index} />
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link href="/blog">
+                <Button size="lg" variant="outline" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  View All Articles
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-black relative overflow-hidden">

@@ -5,7 +5,9 @@ import LeadTable from '@/components/partner/LeadTable'
 import AnalyticsWidget from '@/components/partner/AnalyticsWidget'
 import ReferralFunnel from '@/components/partner/ReferralFunnel'
 import PerformanceTrends from '@/components/partner/PerformanceTrends'
-import { ArrowRight, Plus, FileText } from 'lucide-react'
+import { PartnerPerformanceCard } from '@/components/partner/PartnerPerformanceCard'
+import { PayoutHistoryTable } from '@/components/partner/PayoutHistoryTable'
+import { ArrowRight, Plus, FileText, TrendingUp, DollarSign, Users } from 'lucide-react'
 import Link from 'next/link'
 
 // Mock data fallback
@@ -129,28 +131,101 @@ export default async function PartnerDashboardPage() {
     )
   }
 
+  // Mock payout data
+  const mockPayouts = [
+    {
+      id: 'po_1',
+      amount: 1500,
+      currency: 'usd',
+      status: 'paid' as const,
+      method: 'standard',
+      destinationLast4: '4242',
+      arrivalDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
+      paidAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
+    },
+    {
+      id: 'po_2',
+      amount: 2300,
+      currency: 'usd',
+      status: 'in_transit' as const,
+      method: 'standard',
+      destinationLast4: '4242',
+      arrivalDate: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
+      paidAt: null,
+    },
+    {
+      id: 'po_3',
+      amount: 850,
+      currency: 'usd',
+      status: 'paid' as const,
+      method: 'standard',
+      destinationLast4: '4242',
+      arrivalDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14),
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15),
+      paidAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14),
+    },
+  ]
+
   return (
     <div className="space-y-8">
-      {/* Analytics Overview */}
-      <AnalyticsWidget stats={stats} showDetailed />
+      {/* Quick Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6" />
+            </div>
+            <TrendingUp className="w-5 h-5 opacity-75" />
+          </div>
+          <p className="text-blue-100 text-sm mb-1">Total Referrals</p>
+          <p className="text-3xl font-bold">{stats.totalReferrals}</p>
+          <p className="text-xs text-blue-100 mt-2">
+            {stats.pendingReferrals} pending
+          </p>
+        </div>
 
-      {/* Dashboard Overview */}
-      <PartnerDashboard
-        stats={stats}
-        recentActivity={[
-          {
-            id: '1',
-            type: 'New Lead',
-            description: 'Acme Ventures LLC referred for EIN Filing',
-            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-          },
-          {
-            id: '2',
-            type: 'Lead Converted',
-            description: 'Tech Startup Inc completed Legal Formation',
-            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-          },
-        ]}
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-6 h-6" />
+            </div>
+            <TrendingUp className="w-5 h-5 opacity-75" />
+          </div>
+          <p className="text-green-100 text-sm mb-1">Total Earnings</p>
+          <p className="text-3xl font-bold">
+            ${stats.totalEarnings.toLocaleString()}
+          </p>
+          <p className="text-xs text-green-100 mt-2">
+            ${stats.pendingEarnings.toLocaleString()} pending
+          </p>
+        </div>
+
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <FileText className="w-6 h-6" />
+            </div>
+            <TrendingUp className="w-5 h-5 opacity-75" />
+          </div>
+          <p className="text-purple-100 text-sm mb-1">Completed</p>
+          <p className="text-3xl font-bold">{stats.completedReferrals}</p>
+          <p className="text-xs text-purple-100 mt-2">
+            {((stats.completedReferrals / stats.totalReferrals) * 100).toFixed(1)}% conversion
+          </p>
+        </div>
+      </div>
+
+      {/* Performance Card */}
+      <PartnerPerformanceCard
+        stats={{
+          totalReferrals: stats.totalReferrals,
+          conversions: stats.completedReferrals,
+          totalEarnings: stats.totalEarnings,
+          thisMonthEarnings: stats.totalEarnings - stats.paidEarnings,
+          lastMonthEarnings: stats.paidEarnings,
+        }}
       />
 
       {/* Referral Funnel and Performance Trends */}
@@ -161,6 +236,9 @@ export default async function PartnerDashboardPage() {
           lastMonthEarnings={stats.paidEarnings}
         />
       </div>
+
+      {/* Payout History */}
+      <PayoutHistoryTable payouts={mockPayouts} />
 
       {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

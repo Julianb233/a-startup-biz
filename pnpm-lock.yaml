@@ -11,6 +11,9 @@ importers:
       '@clerk/nextjs':
         specifier: ^6.36.5
         version: 6.36.5(next@16.1.0(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@dropbox/sign':
+        specifier: ^1.10.0
+        version: 1.10.0
       '@emotion/is-prop-valid':
         specifier: latest
         version: 1.4.0
@@ -26,9 +29,15 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.69.0(react@19.2.3))
+      '@hubspot/api-client':
+        specifier: ^13.4.0
+        version: 13.4.0
       '@livekit/components-react':
         specifier: ^2.9.17
         version: 2.9.17(livekit-client@2.16.1(@types/dom-mediacapture-record@1.0.22))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(tslib@2.8.1)
+      '@livekit/components-styles':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@neondatabase/serverless':
         specifier: ^1.0.2
         version: 1.0.2
@@ -321,6 +330,9 @@ importers:
       '@types/three':
         specifier: ^0.181.0
         version: 0.181.0
+      '@types/web-push':
+        specifier: ^3.6.4
+        version: 3.6.4
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.7.0(vite@5.4.21(@types/node@22.19.3)(lightningcss@1.30.2)(terser@5.44.1))
@@ -994,6 +1006,9 @@ packages:
   '@dimforge/rapier3d-compat@0.12.0':
     resolution: {integrity: sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow==}
 
+  '@dropbox/sign@1.10.0':
+    resolution: {integrity: sha512-1SqJ38iEHx6mgT10OsAKZJnZ/A4GciDenYa6KX0J/euABTfWzvMKkuxCECkZbQTXq1E78wyRnW1XIXPzCiyCvA==}
+
   '@emnapi/core@1.7.1':
     resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
 
@@ -1487,6 +1502,10 @@ packages:
     peerDependencies:
       react-hook-form: ^7.0.0
 
+  '@hubspot/api-client@13.4.0':
+    resolution: {integrity: sha512-B2Bu/F/nxzqvF0LlEIgA28G6ObANXkYosJSFLW3bdYXOOgH9kbVLJwPGze0H6L+dQJ+vmzZ1LeRpl5REXyHShA==}
+    engines: {node: '>=18.0.0'}
+
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
@@ -1727,6 +1746,10 @@ packages:
     peerDependenciesMeta:
       '@livekit/krisp-noise-filter':
         optional: true
+
+  '@livekit/components-styles@1.2.0':
+    resolution: {integrity: sha512-74/rt0lDh6aHmOPmWAeDE9C4OrNW9RIdmhX/YRbovQBVNGNVWojRjl3FgQZ5LPFXO6l1maKB4JhXcBFENVxVvw==}
+    engines: {node: '>=18'}
 
   '@livekit/mutex@1.1.1':
     resolution: {integrity: sha512-EsshAucklmpuUAfkABPxJNhzj9v2sG7JuzFDL4ML1oJQSV14sqrpTYnsaOudMAw9yOaW53NU3QQTlUQoRs4czw==}
@@ -3354,6 +3377,9 @@ packages:
   '@types/mysql@2.15.27':
     resolution: {integrity: sha512-YfWiV16IY0OeBfBCk8+hXKmdTKrKlwKN1MNKAPBu5JYxLwBEZl7QzeEpGnlZb3VMGJrrGmB84gXiH+ofs/TezA==}
 
+  '@types/node-fetch@2.6.13':
+    resolution: {integrity: sha512-QGpRVpzSaUs30JBSGPjOg4Uveu384erbHBoT1zeONvyCfwQxIkUshLAOqN/k9EjGviPRmWTTe6aH2qySWKTVSw==}
+
   '@types/node@22.19.3':
     resolution: {integrity: sha512-1N9SBnWYOJTrNZCdh/yJE+t910Y128BoyY+zBLWhL3r0TYzlTmFdXrPwHL9DyFZmlEXNQQolTZh3KHV31QDhyA==}
 
@@ -3415,6 +3441,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/web-push@3.6.4':
+    resolution: {integrity: sha512-GnJmSr40H3RAnj0s34FNTcJi1hmWFV5KXugE0mYWnYhgTAHLJ/dJKAwDmvPJYMke0RplY2XE9LnM4hqSqKIjhQ==}
 
   '@types/webxr@0.5.24':
     resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
@@ -4048,8 +4077,14 @@ packages:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
 
+  bluebird@3.7.2:
+    resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
+
   bn.js@4.12.2:
     resolution: {integrity: sha512-n4DSx829VRTRByMRGdjQ9iqsN0Bh4OolPsFnaZBLcbi8iXcB+kJ9s7EnRt4wILZNV3kPLHkRVfOc/HvhC3ovDw==}
+
+  bottleneck@2.19.5:
+    resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
 
   bplist-creator@0.1.0:
     resolution: {integrity: sha512-sXaHZicyEEmY86WyueLTQesbeoH/mquvarJaQNbjuOQO+7gbFcDEWqKmcWA4cOTLzFlfgvkiVxolk1k5bBIpmg==}
@@ -8748,6 +8783,15 @@ snapshots:
 
   '@dimforge/rapier3d-compat@0.12.0': {}
 
+  '@dropbox/sign@1.10.0':
+    dependencies:
+      axios: 1.13.2
+      bluebird: 3.7.2
+      form-data: 4.0.5
+      qs: 6.14.0
+    transitivePeerDependencies:
+      - debug
+
   '@emnapi/core@1.7.1':
     dependencies:
       '@emnapi/wasi-threads': 1.1.0
@@ -9290,6 +9334,18 @@ snapshots:
     dependencies:
       react-hook-form: 7.69.0(react@19.2.3)
 
+  '@hubspot/api-client@13.4.0':
+    dependencies:
+      '@types/node': 22.19.3
+      '@types/node-fetch': 2.6.13
+      bottleneck: 2.19.5
+      es6-promise: 4.2.8
+      form-data: 4.0.5
+      lodash.merge: 4.6.2
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -9525,6 +9581,8 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       tslib: 2.8.1
       usehooks-ts: 3.1.1(react@19.2.3)
+
+  '@livekit/components-styles@1.2.0': {}
 
   '@livekit/mutex@1.1.1': {}
 
@@ -11369,6 +11427,11 @@ snapshots:
     dependencies:
       '@types/node': 22.19.3
 
+  '@types/node-fetch@2.6.13':
+    dependencies:
+      '@types/node': 22.19.3
+      form-data: 4.0.5
+
   '@types/node@22.19.3':
     dependencies:
       undici-types: 6.21.0
@@ -11442,6 +11505,10 @@ snapshots:
 
   '@types/trusted-types@2.0.7':
     optional: true
+
+  '@types/web-push@3.6.4':
+    dependencies:
+      '@types/node': 22.19.3
 
   '@types/webxr@0.5.24': {}
 
@@ -12137,7 +12204,11 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
+  bluebird@3.7.2: {}
+
   bn.js@4.12.2: {}
+
+  bottleneck@2.19.5: {}
 
   bplist-creator@0.1.0:
     dependencies:

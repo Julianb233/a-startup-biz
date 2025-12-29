@@ -281,6 +281,137 @@ export default function SettingsPage() {
                 className="w-5 h-5 text-[#ff6a1a] border-gray-300 rounded focus:ring-[#ff6a1a]"
               />
             </label>
+
+            <label className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-all cursor-pointer">
+              <div>
+                <p className="font-medium text-gray-900">New Lead Notifications</p>
+                <p className="text-sm text-gray-500">
+                  Get notified when a new lead is assigned
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                name="newLeadNotifications"
+                defaultChecked
+                className="w-5 h-5 text-[#ff6a1a] border-gray-300 rounded focus:ring-[#ff6a1a]"
+              />
+            </label>
+
+            <label className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-all cursor-pointer">
+              <div>
+                <p className="font-medium text-gray-900">Payout Notifications</p>
+                <p className="text-sm text-gray-500">
+                  Receive alerts about payout processing
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                name="payoutNotifications"
+                defaultChecked
+                className="w-5 h-5 text-[#ff6a1a] border-gray-300 rounded focus:ring-[#ff6a1a]"
+              />
+            </label>
+          </div>
+        </motion.div>
+
+        {/* Payment Methods */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-200"
+        >
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Payment Methods
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Manage your payout preferences and Stripe Connect status
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-4">
+            {/* Stripe Connect Status */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    Stripe Connect
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Connect your Stripe account to receive payouts
+                  </p>
+                </div>
+                <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                  Connected
+                </div>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Account Status</span>
+                  <span className="font-semibold text-gray-900">Active</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Payouts Enabled</span>
+                  <span className="font-semibold text-green-600">Yes</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Bank Account</span>
+                  <span className="font-semibold text-gray-900">****4242</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="w-full px-4 py-2 text-sm font-medium text-blue-700 bg-white border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                Manage Stripe Account
+              </button>
+            </div>
+
+            {/* Payout Preferences */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">
+                Payout Preferences
+              </h4>
+              <div className="space-y-3">
+                <label className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-all cursor-pointer">
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">
+                      Automatic Payouts
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Receive payouts automatically when threshold is met
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-5 h-5 text-[#ff6a1a] border-gray-300 rounded focus:ring-[#ff6a1a]"
+                  />
+                </label>
+
+                <div className="p-3 rounded-lg border border-gray-200">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Minimum Payout Amount
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ff6a1a] focus:border-transparent outline-none transition-all text-sm">
+                    <option value="50">$50</option>
+                    <option value="100">$100</option>
+                    <option value="250">$250</option>
+                    <option value="500">$500</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
 
@@ -288,7 +419,7 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.4 }}
           className="bg-white rounded-xl shadow-sm border border-gray-200"
         >
           <div className="p-6 border-b border-gray-200">

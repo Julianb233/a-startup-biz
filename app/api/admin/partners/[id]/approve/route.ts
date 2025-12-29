@@ -59,6 +59,21 @@ export async function POST(request: Request, { params }: RouteParams) {
       )
     }
 
+    // Trigger n8n automation workflow (fire and forget)
+    if (process.env.N8N_HOST) {
+      fetch(`${process.env.N8N_HOST}/webhook/partner-approved`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partnerId,
+          companyName: result.partner?.companyName,
+          micrositeSlug: result.microsite?.slug,
+          approvedBy: userId,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(err => console.log('n8n webhook failed (non-blocking):', err.message))
+    }
+
     return NextResponse.json({
       success: true,
       partner: result.partner,

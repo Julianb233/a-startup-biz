@@ -12,7 +12,39 @@ if (!resendApiKey && typeof window === 'undefined') {
   console.warn('RESEND_API_KEY is not set - Email functionality will not work')
 }
 
-export const resend = new Resend(resendApiKey || 'placeholder')
+// Lazy initialization to avoid build-time errors
+let _resend: Resend | null = null
+export function getResend(): Resend {
+  if (!_resend) {
+    if (!resendApiKey) {
+      throw new Error('RESEND_API_KEY is not configured')
+    }
+    _resend = new Resend(resendApiKey)
+  }
+  return _resend
+}
+
+// Getter for lazy initialization
+export const resend = {
+  get emails() {
+    return getResend().emails
+  },
+  get apiKeys() {
+    return getResend().apiKeys
+  },
+  get audiences() {
+    return getResend().audiences
+  },
+  get contacts() {
+    return getResend().contacts
+  },
+  get domains() {
+    return getResend().domains
+  },
+  get batch() {
+    return getResend().batch
+  }
+}
 
 // Email sender configuration
 const FROM_EMAIL = process.env.EMAIL_FROM || 'A Startup Biz <noreply@astartupbiz.com>'

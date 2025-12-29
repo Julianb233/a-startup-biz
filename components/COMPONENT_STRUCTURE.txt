@@ -1,0 +1,171 @@
+LiveKit Voice Call Integration - Component Structure
+=====================================================
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         User Interface                               │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    FloatingCallButton.tsx                            │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ State Management                                               │ │
+│  │  • mounted (client-side check)                                 │ │
+│  │  • isOpen (panel visibility)                                   │ │
+│  │  • isConnecting (loading state)                                │ │
+│  │  • isInCall (active call)                                      │ │
+│  │  • credentials (LiveKit token data)                            │ │
+│  │  • error (error messages)                                      │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ Event Handlers                                                  │ │
+│  │  • handleStartCall() → Fetch token from API                    │ │
+│  │  • handleEndCall() → Clean up and close                        │ │
+│  │  • handleError() → Display error messages                      │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ UI Components                                                   │ │
+│  │  • Floating Action Button (when closed)                        │ │
+│  │  • Call Panel (when open)                                      │ │
+│  │  • Error Display (on failure)                                  │ │
+│  │  • VoiceCallInterface (during call)                            │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    API Communication                                 │
+│  POST /api/voice/token                                              │
+│  {                                                                   │
+│    participantName: "John Doe",                                     │
+│    roomType: "support"                                              │
+│  }                                                                   │
+│                                                                       │
+│  Response:                                                           │
+│  {                                                                   │
+│    token: "eyJhbGc...",                                             │
+│    roomName: "support-user_123",                                    │
+│    participantName: "John Doe",                                     │
+│    livekitHost: "wss://..."                                         │
+│  }                                                                   │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                  VoiceCallInterface.tsx                              │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ LiveKitRoom Component                                           │ │
+│  │  Props:                                                          │ │
+│  │   • token: string                                               │ │
+│  │   • serverUrl: string                                           │ │
+│  │   • connect: true                                               │ │
+│  │   • audio: true                                                 │ │
+│  │   • video: false                                                │ │
+│  │   • onError: (error) => void                                    │ │
+│  │   • onDisconnected: () => void                                  │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ CallControls Component                                          │ │
+│  │  ┌─────────────────────────────────────────────────────────┐  │ │
+│  │  │ LiveKit Hooks                                             │  │ │
+│  │  │  • useRoomContext() → Room instance                       │  │ │
+│  │  │  • useLocalParticipant() → Mic state                      │  │ │
+│  │  │  • useTracks() → Remote audio                             │  │ │
+│  │  └─────────────────────────────────────────────────────────┘  │ │
+│  │                                                                   │ │
+│  │  ┌─────────────────────────────────────────────────────────┐  │ │
+│  │  │ State Management                                          │  │ │
+│  │  │  • isMuted (mic state)                                    │  │ │
+│  │  │  • isSpeakerMuted (speaker state)                         │  │ │
+│  │  │  • callDuration (timer)                                   │  │ │
+│  │  │  • isConnected (connection status)                        │  │ │
+│  │  │  • connectionState (detailed state)                       │  │ │
+│  │  └─────────────────────────────────────────────────────────┘  │ │
+│  │                                                                   │ │
+│  │  ┌─────────────────────────────────────────────────────────┐  │ │
+│  │  │ Controls                                                  │  │ │
+│  │  │  • Microphone Toggle                                      │  │ │
+│  │  │  • End Call Button                                        │  │ │
+│  │  │  • Speaker Toggle                                         │  │ │
+│  │  │  • Call Duration Display                                  │  │ │
+│  │  │  • Connection Status Indicator                            │  │ │
+│  │  │  • Audio Level Visualization                              │  │ │
+│  │  └─────────────────────────────────────────────────────────┘  │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ RoomAudioRenderer                                               │ │
+│  │  • Automatically plays remote audio tracks                      │ │
+│  │  • Handles audio element creation                              │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                        LiveKit WebRTC                                │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ Connection States                                               │ │
+│  │  1. Disconnected → Initial state                               │ │
+│  │  2. Connecting → WebSocket handshake                           │ │
+│  │  3. Connected → Active call                                    │ │
+│  │  4. Reconnecting → Connection recovery                         │ │
+│  │  5. Disconnected → Clean shutdown                              │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ Audio Tracks                                                    │ │
+│  │  • Local Microphone → Published to room                        │ │
+│  │  • Remote Audio → Subscribed from AI assistant                 │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌───────────────────────────────────────────────────────────────┐ │
+│  │ Features                                                        │ │
+│  │  • WebRTC peer connection                                      │ │
+│  │  • OPUS audio codec                                            │ │
+│  │  • Adaptive bitrate                                            │ │
+│  │  • Jitter buffer                                               │ │
+│  │  • Echo cancellation                                           │ │
+│  │  • Noise suppression                                           │ │
+│  └───────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+
+Data Flow
+=========
+
+User Action                API Call                LiveKit Connection
+───────────              ──────────              ──────────────────
+Click Button    ──────>  POST /api/voice/token
+
+                         Response: {token, ...}  ──────>  Connect to room
+
+                                                          Audio tracks enabled
+
+                         <──────────────────────────────  Remote audio received
+
+Click Mute      ──────>  room.setMicrophoneEnabled(false)
+
+Click End Call  ──────>  room.disconnect()      ──────>  Clean shutdown
+
+                         UI cleanup
+
+
+File Structure
+==============
+
+components/
+├── floating-call-button.tsx          # Main UI component
+├── voice-call-interface.tsx          # LiveKit integration
+├── VOICE_CALL_INTEGRATION.md         # Technical documentation
+├── USAGE_EXAMPLE.md                  # Usage examples
+├── INTEGRATION_SUMMARY.md            # This summary
+└── COMPONENT_STRUCTURE.txt           # This file
+
+app/api/voice/
+└── token/
+    └── route.ts                       # Token generation endpoint
+
+lib/
+└── livekit.ts                         # LiveKit helper functions
