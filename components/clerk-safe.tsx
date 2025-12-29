@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import { ReactNode, useState, useEffect } from "react"
 import {
   SignInButton as ClerkSignInButton,
   SignUpButton as ClerkSignUpButton,
@@ -21,8 +21,22 @@ const isClerkConfigured = () => {
   return key && !key.includes('placeholder') && key.startsWith('pk_')
 }
 
+// Check if we're on the server (during SSR/SSG)
+const isServer = typeof window === 'undefined'
+
 // Safe SignedOut - renders children when not signed in or when Clerk isn't configured
 export function SignedOut({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // During SSR/SSG, show the signed out content (safe fallback)
+  if (!mounted) {
+    return <>{children}</>
+  }
+
   if (!isClerkConfigured()) {
     // When Clerk isn't configured, always show the signed out content
     return <>{children}</>
@@ -32,6 +46,17 @@ export function SignedOut({ children }: { children: ReactNode }) {
 
 // Safe SignedIn - renders children only when signed in (nothing when Clerk isn't configured)
 export function SignedIn({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // During SSR/SSG, don't show signed-in content (safe fallback)
+  if (!mounted) {
+    return null
+  }
+
   if (!isClerkConfigured()) {
     // When Clerk isn't configured, don't show signed-in content
     return null
@@ -67,6 +92,17 @@ export function SignUpButton({ children, mode, ...props }: { children?: ReactNod
 
 // Safe UserButton
 export function UserButton(props: { afterSignOutUrl?: string } & Record<string, unknown>) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // During SSR/SSG, show nothing (safe fallback)
+  if (!mounted) {
+    return null
+  }
+
   if (!isClerkConfigured()) {
     // When Clerk isn't configured, show nothing
     return null

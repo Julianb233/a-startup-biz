@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@/lib/clerk-server-safe'
 import { headers } from 'next/headers'
 import { sql } from '@/lib/db'
 import { acceptAgreement, hasSignedAllRequiredAgreements } from '@/lib/partner-onboarding'

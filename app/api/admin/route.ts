@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin, withAuth, getCurrentUserId } from '@/lib/api-auth';
+import { getAdminStats } from '@/lib/db-queries';
 
 /**
  * GET /api/admin
@@ -15,6 +16,9 @@ export async function GET() {
     await requireAdmin();
     const userId = await getCurrentUserId();
 
+    // Fetch real stats from database
+    const dbStats = await getAdminStats();
+
     // This endpoint is only accessible to admins
     return NextResponse.json({
       message: 'Admin access granted',
@@ -22,10 +26,16 @@ export async function GET() {
         id: userId,
         role: 'admin',
       },
-      // Example admin data
       stats: {
-        totalUsers: 150, // Replace with actual data
-        activeUsers: 89,
+        totalUsers: parseInt(dbStats.users?.total || '0'),
+        newUsersThisWeek: parseInt(dbStats.users?.new_this_week || '0'),
+        newUsersThisMonth: parseInt(dbStats.users?.new_this_month || '0'),
+        totalOrders: parseInt(dbStats.orders?.total || '0'),
+        pendingOrders: parseInt(dbStats.orders?.pending || '0'),
+        totalRevenue: parseFloat(dbStats.revenue?.total_revenue || '0'),
+        revenueThisMonth: parseFloat(dbStats.revenue?.revenue_this_month || '0'),
+        totalConsultations: parseInt(dbStats.consultations?.total || '0'),
+        pendingConsultations: parseInt(dbStats.consultations?.pending || '0'),
         systemStatus: 'operational',
       },
       permissions: [

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@/lib/clerk-server-safe'
 import { sql } from '@/lib/db'
 import { encrypt, getLast4, maskValue } from '@/lib/encryption'
 

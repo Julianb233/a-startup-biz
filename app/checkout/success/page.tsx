@@ -33,22 +33,41 @@ function CheckoutSuccessContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [orderDetails, setOrderDetails] = useState<{
     email?: string
+    name?: string
     total?: number
-    items?: string[]
+    items?: Array<{ name: string; quantity: number; price: number }>
   } | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Simulate fetching order details (in production, verify with Stripe)
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-      setOrderDetails({
-        email: 'customer@example.com',
-        total: 0,
-        items: []
-      })
-    }, 1000)
+    if (!sessionId) return
 
-    return () => clearTimeout(timer)
+    async function verifySession() {
+      try {
+        const response = await fetch(`/api/checkout/verify?session_id=${sessionId}`)
+        const data = await response.json()
+
+        if (!response.ok) {
+          setError(data.error || 'Failed to verify payment')
+          setIsLoading(false)
+          return
+        }
+
+        setOrderDetails({
+          email: data.order.email,
+          name: data.order.name,
+          total: data.order.total,
+          items: data.order.items,
+        })
+        setIsLoading(false)
+      } catch (err) {
+        console.error('Error verifying session:', err)
+        setError('Failed to verify payment. Please contact support.')
+        setIsLoading(false)
+      }
+    }
+
+    verifySession()
   }, [sessionId])
 
   if (!sessionId) {
@@ -82,6 +101,40 @@ function CheckoutSuccessContent() {
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-orange-500 animate-spin mx-auto mb-4" />
           <p className="text-gray-600 font-lato">Confirming your order...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-10 h-10 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4 font-montserrat">
+            Verification Issue
+          </h1>
+          <p className="text-gray-600 mb-8 font-lato">
+            {error}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all font-montserrat"
+            >
+              Go to Dashboard
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <a
+              href="mailto:support@astartupbiz.com"
+              className="inline-flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-50 transition-all font-montserrat"
+            >
+              <Mail className="w-5 h-5" />
+              Contact Support
+            </a>
+          </div>
         </div>
       </main>
     )

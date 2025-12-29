@@ -5,7 +5,7 @@
  * the case when Clerk isn't configured with valid credentials.
  */
 
-import { auth as clerkAuth } from '@clerk/nextjs/server';
+import { auth as clerkAuth, currentUser as clerkCurrentUser } from '@clerk/nextjs/server';
 
 // Check if Clerk is properly configured (not using placeholder keys)
 const isClerkConfigured = () => {
@@ -31,6 +31,16 @@ export async function auth() {
     };
   }
   return clerkAuth();
+}
+
+/**
+ * Safe currentUser() wrapper that returns null when Clerk isn't configured
+ */
+export async function currentUser() {
+  if (!isClerkConfigured()) {
+    return null;
+  }
+  return clerkCurrentUser();
 }
 
 export { isClerkConfigured };
