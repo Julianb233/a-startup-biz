@@ -1944,3 +1944,360 @@ export async function logConnectEvent(data: {
       error_message = EXCLUDED.error_message
   `
 }
+
+// ============================================
+// NOTIFICATION SYSTEM
+// ============================================
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: string
+  title: string
+  message: string
+  data: Record<string, any>
+  read: boolean
+  read_at: Date | null
+  created_at: Date
+}
+
+export type NotificationType =
+  | 'lead_converted'
+  | 'payout_completed'
+  | 'payout_failed'
+  | 'account_approved'
+  | 'account_suspended'
+  | 'referral_signup'
+  | 'lead_qualified'
+  | 'commission_earned'
+
+/**
+ * Create a notification for a user
+ */
+export async function createNotification(
+  userId: string,
+  type: NotificationType,
+  title: string,
+  message: string,
+  data?: Record<string, any>
+): Promise<Notification> {
+  const result = await sql`
+    INSERT INTO notifications (user_id, type, title, message, data)
+    VALUES (${userId}, ${type}, ${title}, ${message}, ${JSON.stringify(data || {})})
+    RETURNING *
+  ` as unknown as Notification[]
+  return result[0]
+}
+
+/**
+ * Get user notifications with pagination
+ */
+export async function getUserNotifications(
+  userId: string,
+  limit = 20,
+  unreadOnly = false
+): Promise<Notification[]> {
+  if (unreadOnly) {
+    return sql`
+      SELECT * FROM notifications
+      WHERE user_id = ${userId} AND read = false
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+    ` as unknown as Notification[]
+  }
+
+  return sql`
+    SELECT * FROM notifications
+    WHERE user_id = ${userId}
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+  ` as unknown as Notification[]
+}
+
+/**
+ * Mark a notification as read
+ */
+export async function markNotificationRead(
+  notificationId: string,
+  userId: string
+): Promise<boolean> {
+  const result = await sql`
+    UPDATE notifications
+    SET read = true, read_at = NOW()
+    WHERE id = ${notificationId} AND user_id = ${userId}
+    RETURNING id
+  ` as unknown as any[]
+  return result.length > 0
+}
+
+/**
+ * Mark all notifications as read for a user
+ */
+export async function markAllNotificationsRead(userId: string): Promise<number> {
+  const result = await sql`
+    UPDATE notifications
+    SET read = true, read_at = NOW()
+    WHERE user_id = ${userId} AND read = false
+    RETURNING id
+  ` as unknown as any[]
+  return result.length
+}
+
+/**
+ * Get unread notification count
+ */
+export async function getUnreadNotificationCount(userId: string): Promise<number> {
+  const result = await sql`
+    SELECT COUNT(*) as count FROM notifications
+    WHERE user_id = ${userId} AND read = false
+  ` as unknown as any[]
+  return parseInt(result[0]?.count || '0')
+}
+
+/**
+ * Delete old read notifications (maintenance)
+ */
+export async function deleteOldNotifications(daysOld = 90): Promise<number> {
+  const result = await sql`
+    DELETE FROM notifications
+    WHERE read = true AND read_at < NOW() - INTERVAL '1 day' * ${daysOld}
+    RETURNING id
+  ` as unknown as any[]
+  return result.length
+}
+
+// ============================================
+// ADMIN ANALYTICS
+// ============================================
+
+export interface AnalyticsStats {
+  conversionRate: number
+  avgOrderValue: number
+  customerLTV: number
+  activeRate: number
+  totalRevenue: number
+  totalOrders: number
+  totalCustomers: number
+  newCustomersThisMonth: number
+}
+
+export interface MonthlyRevenue {
+  month: string
+  revenue: number
+  orders: number
+}
+
+export interface ServicePerformance {
+  service: string
+  orders: number
+  revenue: number
+  avgValue: number
+}
+
+export interface PartnerPerformance {
+  partnerId: string
+  companyName: string
+  totalLeads: number
+  convertedLeads: number
+  conversionRate: number
+  totalCommission: number
+}
+
+/**
+ * Get comprehensive analytics stats for admin dashboard
+ */
+export async function getAnalyticsStats(): Promise<AnalyticsStats> {
+  // Get order stats
+  const orderStats = await sql`
+    SELECT
+      COUNT(*) as total_orders,
+      COALESCE(SUM(total_amount), 0) as total_revenue,
+      COALESCE(AVG(total_amount), 0) as avg_order_value,
+      COUNT(DISTINCT customer_email) as unique_customers
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+  ` as unknown as any[]
+
+  // Get this month's stats
+  const monthlyStats = await sql`
+    SELECT
+      COUNT(*) as orders_this_month,
+      COALESCE(SUM(total_amount), 0) as revenue_this_month,
+      COUNT(DISTINCT customer_email) as new_customers
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+    AND created_at >= DATE_TRUNC('month', NOW())
+  ` as unknown as any[]
+
+  // Get lead conversion rate
+  const leadStats = await sql`
+    SELECT
+      COUNT(*) as total_leads,
+      COUNT(*) FILTER (WHERE status = 'converted') as converted_leads
+    FROM partner_leads
+  ` as unknown as any[]
+
+  // Get user engagement (active users in last 30 days)
+  const userStats = await sql`
+    SELECT
+      COUNT(*) as total_users,
+      COUNT(*) FILTER (WHERE updated_at > NOW() - INTERVAL '30 days') as active_users
+    FROM users
+  ` as unknown as any[]
+
+  const totalOrders = parseInt(orderStats[0]?.total_orders || '0')
+  const totalRevenue = parseFloat(orderStats[0]?.total_revenue || '0')
+  const avgOrderValue = parseFloat(orderStats[0]?.avg_order_value || '0')
+  const totalCustomers = parseInt(orderStats[0]?.unique_customers || '0')
+  const newCustomersThisMonth = parseInt(monthlyStats[0]?.new_customers || '0')
+
+  const totalLeads = parseInt(leadStats[0]?.total_leads || '0')
+  const convertedLeads = parseInt(leadStats[0]?.converted_leads || '0')
+  const conversionRate = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0
+
+  const totalUsers = parseInt(userStats[0]?.total_users || '0')
+  const activeUsers = parseInt(userStats[0]?.active_users || '0')
+  const activeRate = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0
+
+  // Estimate LTV based on average orders per customer
+  const customerLTV = totalCustomers > 0 ? totalRevenue / totalCustomers : 0
+
+  return {
+    conversionRate: Math.round(conversionRate * 10) / 10,
+    avgOrderValue: Math.round(avgOrderValue * 100) / 100,
+    customerLTV: Math.round(customerLTV * 100) / 100,
+    activeRate: Math.round(activeRate),
+    totalRevenue: Math.round(totalRevenue * 100) / 100,
+    totalOrders,
+    totalCustomers,
+    newCustomersThisMonth,
+  }
+}
+
+/**
+ * Get monthly revenue trend for the last 12 months
+ */
+export async function getMonthlyRevenueTrend(): Promise<MonthlyRevenue[]> {
+  const result = await sql`
+    SELECT
+      TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month,
+      COALESCE(SUM(total_amount), 0) as revenue,
+      COUNT(*) as orders
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+    AND created_at >= NOW() - INTERVAL '12 months'
+    GROUP BY DATE_TRUNC('month', created_at)
+    ORDER BY DATE_TRUNC('month', created_at) ASC
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    month: r.month,
+    revenue: parseFloat(r.revenue || '0'),
+    orders: parseInt(r.orders || '0'),
+  }))
+}
+
+/**
+ * Get performance by service/product
+ */
+export async function getServicePerformance(): Promise<ServicePerformance[]> {
+  const result = await sql`
+    SELECT
+      COALESCE(service_type, 'Other') as service,
+      COUNT(*) as orders,
+      COALESCE(SUM(total_amount), 0) as revenue,
+      COALESCE(AVG(total_amount), 0) as avg_value
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+    GROUP BY service_type
+    ORDER BY revenue DESC
+    LIMIT 10
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    service: r.service,
+    orders: parseInt(r.orders || '0'),
+    revenue: parseFloat(r.revenue || '0'),
+    avgValue: parseFloat(r.avg_value || '0'),
+  }))
+}
+
+/**
+ * Get top partner performance
+ */
+export async function getTopPartnerPerformance(limit = 10): Promise<PartnerPerformance[]> {
+  const result = await sql`
+    SELECT
+      p.id as partner_id,
+      p.company_name,
+      COUNT(pl.id) as total_leads,
+      COUNT(pl.id) FILTER (WHERE pl.status = 'converted') as converted_leads,
+      CASE
+        WHEN COUNT(pl.id) > 0
+        THEN ROUND((COUNT(pl.id) FILTER (WHERE pl.status = 'converted')::DECIMAL / COUNT(pl.id)::DECIMAL) * 100, 1)
+        ELSE 0
+      END as conversion_rate,
+      COALESCE(SUM(pl.commission) FILTER (WHERE pl.status = 'converted'), 0) as total_commission
+    FROM partners p
+    LEFT JOIN partner_leads pl ON p.id = pl.partner_id
+    WHERE p.status = 'active'
+    GROUP BY p.id, p.company_name
+    ORDER BY total_commission DESC
+    LIMIT ${limit}
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    partnerId: r.partner_id,
+    companyName: r.company_name,
+    totalLeads: parseInt(r.total_leads || '0'),
+    convertedLeads: parseInt(r.converted_leads || '0'),
+    conversionRate: parseFloat(r.conversion_rate || '0'),
+    totalCommission: parseFloat(r.total_commission || '0'),
+  }))
+}
+
+/**
+ * Get daily orders for the last 30 days
+ */
+export async function getDailyOrdersTrend(): Promise<{ date: string; orders: number; revenue: number }[]> {
+  const result = await sql`
+    SELECT
+      TO_CHAR(DATE_TRUNC('day', created_at), 'YYYY-MM-DD') as date,
+      COUNT(*) as orders,
+      COALESCE(SUM(total_amount), 0) as revenue
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+    AND created_at >= NOW() - INTERVAL '30 days'
+    GROUP BY DATE_TRUNC('day', created_at)
+    ORDER BY DATE_TRUNC('day', created_at) ASC
+  ` as unknown as any[]
+
+  return result.map(r => ({
+    date: r.date,
+    orders: parseInt(r.orders || '0'),
+    revenue: parseFloat(r.revenue || '0'),
+  }))
+}
+
+/**
+ * Get referral source breakdown
+ */
+export async function getReferralSourceBreakdown(): Promise<{ source: string; count: number; percentage: number }[]> {
+  const result = await sql`
+    SELECT
+      COALESCE(referral_source, 'Direct') as source,
+      COUNT(*) as count
+    FROM orders
+    WHERE status IN ('paid', 'completed')
+    GROUP BY referral_source
+    ORDER BY count DESC
+  ` as unknown as any[]
+
+  const total = result.reduce((sum, r) => sum + parseInt(r.count || '0'), 0)
+
+  return result.map(r => ({
+    source: r.source,
+    count: parseInt(r.count || '0'),
+    percentage: total > 0 ? Math.round((parseInt(r.count || '0') / total) * 100) : 0,
+  }))
+}

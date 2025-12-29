@@ -1,4 +1,9 @@
 import { Resend } from 'resend'
+import { partnerApprovedEmail } from './email/templates/partner-approved'
+import { partnerLeadConvertedEmail } from './email/templates/partner-lead-converted'
+import { partnerPayoutSentEmail } from './email/templates/partner-payout-sent'
+import { partnerPayoutCompletedEmail } from './email/templates/partner-payout-completed'
+import { partnerWeeklySummaryEmail } from './email/templates/partner-weekly-summary'
 
 const resendApiKey = process.env.RESEND_API_KEY || ''
 
@@ -1237,6 +1242,174 @@ export async function sendPartnerAccountCreated(data: {
   loginUrl?: string
 }) {
   const emailContent = partnerAccountCreatedEmail(data)
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+// ============================================
+// PARTNER NOTIFICATION FUNCTIONS
+// ============================================
+
+/**
+ * Send partner approved notification
+ * Called when a partner application is approved and account is activated
+ */
+export async function sendPartnerApprovedEmail(data: {
+  email: string
+  partnerName: string
+  companyName?: string
+  commissionRate: number
+  referralCode: string
+  portalUrl?: string
+}) {
+  const emailContent = partnerApprovedEmail({
+    partnerName: data.partnerName,
+    companyName: data.companyName,
+    commissionRate: data.commissionRate,
+    referralCode: data.referralCode,
+    portalUrl: data.portalUrl || 'https://astartupbiz.com/partner-portal',
+  })
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send lead converted notification
+ * Called when a referred lead converts to a paying customer
+ */
+export async function sendLeadConvertedEmail(data: {
+  email: string
+  partnerName: string
+  leadName: string
+  orderValue: number
+  commissionAmount: number
+  commissionRate: number
+  orderId: string
+  conversionDate?: string
+  portalUrl?: string
+}) {
+  const emailContent = partnerLeadConvertedEmail({
+    partnerName: data.partnerName,
+    leadName: data.leadName,
+    orderValue: data.orderValue,
+    commissionAmount: data.commissionAmount,
+    commissionRate: data.commissionRate,
+    orderId: data.orderId,
+    conversionDate: data.conversionDate || new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+    portalUrl: data.portalUrl || 'https://astartupbiz.com/partner-portal',
+  })
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send payout notification
+ * Called when payout is initiated or completed
+ */
+export async function sendPayoutEmail(data: {
+  email: string
+  partnerName: string
+  payoutId: string
+  amount: number
+  payoutMethod: string
+  transactionCount: number
+  type: 'sent' | 'completed'
+  periodStart?: string
+  periodEnd?: string
+  estimatedArrival?: string
+  completedDate?: string
+  portalUrl?: string
+}) {
+  let emailContent
+
+  if (data.type === 'sent') {
+    emailContent = partnerPayoutSentEmail({
+      partnerName: data.partnerName,
+      payoutId: data.payoutId,
+      amount: data.amount,
+      payoutMethod: data.payoutMethod,
+      estimatedArrival: data.estimatedArrival || new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      transactionCount: data.transactionCount,
+      periodStart: data.periodStart || 'N/A',
+      periodEnd: data.periodEnd || 'N/A',
+      portalUrl: data.portalUrl || 'https://astartupbiz.com/partner-portal',
+    })
+  } else {
+    emailContent = partnerPayoutCompletedEmail({
+      partnerName: data.partnerName,
+      payoutId: data.payoutId,
+      amount: data.amount,
+      payoutMethod: data.payoutMethod,
+      completedDate: data.completedDate || new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      transactionCount: data.transactionCount,
+      portalUrl: data.portalUrl || 'https://astartupbiz.com/partner-portal',
+    })
+  }
+
+  return sendEmail({
+    to: data.email,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  })
+}
+
+/**
+ * Send weekly summary email
+ * Called by scheduled job every Monday
+ */
+export async function sendWeeklySummaryEmail(data: {
+  email: string
+  partnerName: string
+  weekStart: string
+  weekEnd: string
+  totalClicks: number
+  totalLeads: number
+  totalConversions: number
+  weeklyEarnings: number
+  monthToDateEarnings: number
+  conversionRate: number
+  topReferralSource?: string
+  pendingPayout: number
+  portalUrl?: string
+}) {
+  const emailContent = partnerWeeklySummaryEmail({
+    partnerName: data.partnerName,
+    weekStart: data.weekStart,
+    weekEnd: data.weekEnd,
+    totalClicks: data.totalClicks,
+    totalLeads: data.totalLeads,
+    totalConversions: data.totalConversions,
+    weeklyEarnings: data.weeklyEarnings,
+    monthToDateEarnings: data.monthToDateEarnings,
+    conversionRate: data.conversionRate,
+    topReferralSource: data.topReferralSource,
+    pendingPayout: data.pendingPayout,
+    portalUrl: data.portalUrl || 'https://astartupbiz.com/partner-portal',
+  })
 
   return sendEmail({
     to: data.email,
