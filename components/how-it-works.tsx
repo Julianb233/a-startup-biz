@@ -69,7 +69,7 @@ const lineVariants = {
 
 export default function HowItWorks() {
   return (
-    <section className="py-20 px-6 bg-white">
+    <section className="py-20 px-6 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -79,10 +79,10 @@ export default function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-4">
             How It Works
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Our simple three-step process takes you from idea to execution seamlessly
           </p>
         </motion.div>
@@ -101,11 +101,11 @@ export default function HowItWorks() {
             <div className="absolute top-20 left-0 right-0 flex items-center justify-between px-[20%] pointer-events-none">
               <motion.div
                 variants={lineVariants}
-                className="h-0.5 bg-[#c0c0c0] flex-1 origin-left"
+                className="h-0.5 bg-[#c0c0c0] dark:bg-gray-600 flex-1 origin-left"
               />
               <motion.div
                 variants={lineVariants}
-                className="h-0.5 bg-[#c0c0c0] flex-1 origin-left ml-[33.33%]"
+                className="h-0.5 bg-[#c0c0c0] dark:bg-gray-600 flex-1 origin-left ml-[33.33%]"
               />
             </div>
 
@@ -117,7 +117,7 @@ export default function HowItWorks() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <ArrowRight className="w-6 h-6 text-[#c0c0c0]" />
+                <ArrowRight className="w-6 h-6 text-[#c0c0c0] dark:text-gray-500" />
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
@@ -125,7 +125,7 @@ export default function HowItWorks() {
                 viewport={{ once: true }}
                 transition={{ delay: 1, duration: 0.5 }}
               >
-                <ArrowRight className="w-6 h-6 text-[#c0c0c0]" />
+                <ArrowRight className="w-6 h-6 text-[#c0c0c0] dark:text-gray-500" />
               </motion.div>
             </div>
 
@@ -154,7 +154,7 @@ export default function HowItWorks() {
                   <div className="flex justify-center py-4">
                     <motion.div
                       variants={lineVariants}
-                      className="w-0.5 h-12 bg-[#c0c0c0] origin-top"
+                      className="w-0.5 h-12 bg-[#c0c0c0] dark:bg-gray-600 origin-top"
                     />
                   </div>
                 )}
@@ -199,15 +199,15 @@ function StepCard({ step }: { step: Step }) {
         <motion.div
           whileHover={{ scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300 }}
-          className="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center border-4 border-[#ff6a1a] shadow-md"
+          className="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-full flex items-center justify-center border-4 border-[#ff6a1a] shadow-md"
         >
           <Icon className="w-10 h-10 text-[#ff6a1a]" />
         </motion.div>
       </div>
 
       {/* Content */}
-      <h3 className="text-2xl font-bold text-black mb-3">{step.title}</h3>
-      <p className="text-gray-600 leading-relaxed max-w-xs">{step.description}</p>
+      <h3 className="text-2xl font-bold text-black dark:text-white mb-3">{step.title}</h3>
+      <p className="text-gray-600 dark:text-gray-400 leading-relaxed max-w-xs">{step.description}</p>
     </div>
   );
 }

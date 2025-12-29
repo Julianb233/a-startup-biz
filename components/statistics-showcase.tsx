@@ -71,7 +71,7 @@ export default function StatisticsShowcase() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-gradient-to-b from-white via-gray-50 to-white py-24 sm:py-32 overflow-hidden"
+      className="relative bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-24 sm:py-32 overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
@@ -106,7 +106,7 @@ export default function StatisticsShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             The Numbers{' '}
@@ -119,7 +119,7 @@ export default function StatisticsShowcase() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
+            className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Real statistics from the business landscape—and why experience matters more than credentials
@@ -143,9 +143,9 @@ export default function StatisticsShowcase() {
               className="group relative"
             >
               {/* Card Container */}
-              <div className="relative rounded-2xl overflow-hidden bg-white shadow-lg border border-gray-200 hover:shadow-2xl transition-all duration-500">
+              <div className="relative rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-all duration-500">
                 {/* Image Container */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+                <div className="relative aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-gray-700">
                   <Image
                     src={stat.image}
                     alt={stat.alt}
@@ -178,13 +178,13 @@ export default function StatisticsShowcase() {
                 {/* Content */}
                 <div className="p-6">
                   <motion.h3
-                    className="text-xl font-bold text-gray-900 mb-2"
+                    className="text-xl font-bold text-gray-900 dark:text-white mb-2"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     {stat.label}
                   </motion.h3>
                   <motion.p
-                    className="text-gray-600 text-sm leading-relaxed"
+                    className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     {stat.description}
@@ -213,19 +213,19 @@ export default function StatisticsShowcase() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-16 text-center"
         >
-          <div className="bg-gradient-to-br from-[#ff6a1a]/5 via-orange-50/50 to-[#ff6a1a]/5 rounded-2xl p-8 border border-[#ff6a1a]/20 max-w-4xl mx-auto">
+          <div className="bg-gradient-to-br from-[#ff6a1a]/5 via-orange-50/50 to-[#ff6a1a]/5 dark:from-[#ff6a1a]/10 dark:via-gray-800/50 dark:to-[#ff6a1a]/10 rounded-2xl p-8 border border-[#ff6a1a]/20 max-w-4xl mx-auto">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Award className="w-8 h-8 text-[#ff6a1a]" />
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Experience Over Theory
               </h3>
             </div>
-            <p className="text-lg text-gray-700 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-lg text-gray-700 dark:text-gray-300 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               While millions start businesses every year, only a select few have launched{' '}
               <span className="font-bold text-[#ff6a1a]">100+ ventures</span> over{' '}
               <span className="font-bold text-[#ff6a1a]">46+ years</span>.
             </p>
-            <p className="text-base text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-base text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Theory doesn't pay the bills. Real-world experience does.
             </p>
           </div>

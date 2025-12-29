@@ -193,7 +193,7 @@ const item = {
 
 export default function ServicesShowcase() {
   return (
-    <section className="relative py-20 md:py-28 bg-gradient-to-b from-white via-gray-50 to-white overflow-hidden">
+    <section className="relative py-20 md:py-28 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,106,26,0.05)_0%,transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,106,26,0.03)_0%,transparent_50%)]" />
@@ -220,11 +220,11 @@ export default function ServicesShowcase() {
             </span>
           </motion.div>
 
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white mb-6 leading-tight">
             Everything Your Business Needs
           </h2>
 
-          <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
             From formation to optimization, we provide end-to-end services to
             start, grow, and scale your business with confidence.
           </p>
@@ -251,7 +251,7 @@ export default function ServicesShowcase() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center mt-16"
         >
-          <p className="text-gray-600 mb-6 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">
             Not sure which service you need?
           </p>
           <Link
@@ -297,7 +297,7 @@ function ServiceCard({
               y: -8,
               transition: { duration: 0.3, ease: "easeOut" },
             }}
-            className="relative h-full bg-white rounded-xl border-2 border-[#c0c0c0]/30 p-6 transition-all duration-300 hover:border-[#ff6a1a]/50 hover:shadow-xl hover:shadow-[#ff6a1a]/10 overflow-hidden"
+            className="relative h-full bg-white dark:bg-gray-800 rounded-xl border-2 border-[#c0c0c0]/30 dark:border-gray-700 p-6 transition-all duration-300 hover:border-[#ff6a1a]/50 hover:shadow-xl hover:shadow-[#ff6a1a]/10 overflow-hidden"
           >
             {/* Hover gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/0 via-[#ff6a1a]/0 to-[#ff6a1a]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -316,11 +316,11 @@ function ServiceCard({
               </motion.div>
 
               {/* Content */}
-              <h3 className="text-xl font-bold text-black mb-3 group-hover:text-[#ff6a1a] transition-colors duration-300">
+              <h3 className="text-xl font-bold text-black dark:text-white mb-3 group-hover:text-[#ff6a1a] transition-colors duration-300">
                 {service.title}
               </h3>
 
-              <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-3">
                 {service.description}
               </p>
 

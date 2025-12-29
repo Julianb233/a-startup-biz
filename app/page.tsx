@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="relative overflow-x-hidden max-w-full bg-white scroll-smooth">
+    <main className="relative overflow-x-hidden max-w-full bg-white dark:bg-gray-900 scroll-smooth">
       {/* GSAP Scroll Animations */}
       <HomepageAnimations />
 

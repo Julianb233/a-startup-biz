@@ -47,8 +47,8 @@ export interface CalculatorConfig {
 export const calculatorConfigs: Record<string, CalculatorConfig> = {
   'ein-filing': {
     type: 'time-saved',
-    title: 'Time & Money Saved Calculator',
-    description: 'See how much time and money you save by letting us handle your EIN filing',
+    title: 'EIN Filing Value Calculator',
+    description: 'See how much you save by letting us handle your EIN filing (typically takes 5 hours DIY)',
     inputs: [
       {
         id: 'hourlyRate',
@@ -57,43 +57,32 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         min: 25,
         max: 500,
         step: 25,
-        defaultValue: 100,
+        defaultValue: 75,
         prefix: '$',
         tooltip: 'What is your time worth per hour?'
-      },
-      {
-        id: 'hoursSpent',
-        label: 'Hours You Would Spend DIY',
-        type: 'slider',
-        min: 2,
-        max: 20,
-        step: 1,
-        defaultValue: 8,
-        suffix: ' hrs',
-        tooltip: 'Average time spent researching, filling forms, and dealing with IRS corrections'
       }
     ],
     outputs: [
-      { id: 'timeSaved', label: 'Time Saved', format: 'hours', color: 'primary', description: 'Hours you can focus on your business' },
-      { id: 'moneySaved', label: 'Value of Time Saved', format: 'currency', color: 'success', description: 'Based on your hourly rate' },
-      { id: 'netSavings', label: 'Net Savings', format: 'currency', color: 'success', description: 'After our $160 service fee' },
-      { id: 'roi', label: 'ROI', format: 'percentage', color: 'info', description: 'Return on investment' }
+      { id: 'timeSaved', label: 'Time Saved', format: 'hours', color: 'primary', description: 'Based on 5-hour average DIY time' },
+      { id: 'moneySaved', label: 'Value of Your Time', format: 'currency', color: 'success', description: '5 hours × your hourly rate' },
+      { id: 'serviceCost', label: 'Our Service Fee', format: 'currency', color: 'info', description: 'One-time flat fee' },
+      { id: 'netSavings', label: 'Your Net Savings', format: 'currency', color: 'success', description: 'Time value minus our fee' }
     ],
     calculate: (inputs) => {
-      const timeSaved = inputs.hoursSpent;
-      const moneySaved = inputs.hourlyRate * inputs.hoursSpent;
+      const fixedHours = 5; // Fixed 5-hour baseline
+      const timeSaved = fixedHours;
+      const moneySaved = inputs.hourlyRate * fixedHours;
       const serviceCost = 160;
       const netSavings = moneySaved - serviceCost;
-      const roi = ((moneySaved - serviceCost) / serviceCost) * 100;
 
       return {
         timeSaved,
         moneySaved,
-        netSavings,
-        roi
+        serviceCost,
+        netSavings
       };
     },
-    comparisonLabel: 'DIY vs Our Service',
+    comparisonLabel: 'DIY (5 hrs) vs Our Service',
     ctaText: 'Get Your EIN Filed Today'
   },
 
@@ -154,15 +143,15 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
     description: 'Estimate how much you could save with professional accounting',
     inputs: [
       {
-        id: 'annualRevenue',
-        label: 'Annual Revenue',
+        id: 'monthlyRevenue',
+        label: 'Monthly Revenue',
         type: 'slider',
-        min: 50000,
-        max: 5000000,
-        step: 50000,
-        defaultValue: 500000,
+        min: 5000,
+        max: 500000,
+        step: 5000,
+        defaultValue: 40000,
         prefix: '$',
-        tooltip: 'Your gross annual revenue'
+        tooltip: 'Your gross monthly revenue'
       },
       {
         id: 'currentTaxRate',
@@ -177,23 +166,23 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
-      { id: 'currentTaxBill', label: 'Current Annual Taxes', format: 'currency', color: 'warning', description: 'Your estimated tax liability' },
-      { id: 'potentialSavings', label: 'Potential Tax Savings', format: 'currency', color: 'success', description: 'Through strategic planning' },
-      { id: 'netSavings', label: 'Net Annual Savings', format: 'currency', color: 'success', description: 'After service fees' },
+      { id: 'currentMonthlyTax', label: 'Current Monthly Taxes', format: 'currency', color: 'warning', description: 'Your estimated monthly tax' },
+      { id: 'monthlySavings', label: 'Monthly Tax Savings', format: 'currency', color: 'success', description: 'Through strategic planning' },
+      { id: 'annualSavings', label: 'Annual Tax Savings', format: 'currency', color: 'success', description: 'Total yearly savings' },
       { id: 'paybackPeriod', label: 'Payback Period', format: 'number', color: 'info', description: 'Months to recoup investment' }
     ],
     calculate: (inputs) => {
-      const currentTaxBill = (inputs.annualRevenue * inputs.currentTaxRate) / 100;
+      const currentMonthlyTax = (inputs.monthlyRevenue * inputs.currentTaxRate) / 100;
       const savingsPercentage = 8; // Average 8% tax savings through optimization
-      const potentialSavings = currentTaxBill * (savingsPercentage / 100);
+      const monthlySavings = currentMonthlyTax * (savingsPercentage / 100);
+      const annualSavings = monthlySavings * 12;
       const serviceCost = 3000; // Annual accounting service
-      const netSavings = potentialSavings - serviceCost;
-      const paybackPeriod = serviceCost / (potentialSavings / 12);
+      const paybackPeriod = serviceCost / monthlySavings;
 
       return {
-        currentTaxBill,
-        potentialSavings,
-        netSavings,
+        currentMonthlyTax,
+        monthlySavings,
+        annualSavings,
         paybackPeriod: Math.max(0, paybackPeriod)
       };
     },
@@ -241,10 +230,10 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
+      { id: 'additionalRevenue', label: 'Additional Monthly Revenue', format: 'currency', color: 'success', description: 'Extra revenue per month with optimization' },
+      { id: 'annualAdditionalRevenue', label: 'Additional Annual Revenue', format: 'currency', color: 'success', description: 'Yearly increase' },
       { id: 'currentRevenue', label: 'Current Monthly Revenue', format: 'currency', color: 'info', description: 'From current marketing' },
-      { id: 'improvedRevenue', label: 'Projected Revenue', format: 'currency', color: 'success', description: 'With optimization' },
-      { id: 'additionalRevenue', label: 'Additional Revenue', format: 'currency', color: 'success', description: 'Monthly increase' },
-      { id: 'roi', label: 'Marketing ROI', format: 'percentage', color: 'primary', description: 'Return on ad spend' }
+      { id: 'roi', label: 'Monthly ROI', format: 'percentage', color: 'primary', description: 'Return on ad spend' }
     ],
     calculate: (inputs) => {
       const clicksPerMonth = (inputs.monthlyAdSpend / 2); // Assume $2 CPC
@@ -256,14 +245,15 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       const improvedRevenue = improvedConversions * inputs.avgOrderValue;
 
       const additionalRevenue = improvedRevenue - currentRevenue;
+      const annualAdditionalRevenue = additionalRevenue * 12;
       const serviceCost = 2000; // Monthly marketing service
       const totalInvestment = inputs.monthlyAdSpend + serviceCost;
       const roi = ((improvedRevenue - totalInvestment) / totalInvestment) * 100;
 
       return {
         currentRevenue,
-        improvedRevenue,
         additionalRevenue,
+        annualAdditionalRevenue,
         roi
       };
     },
@@ -373,23 +363,24 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
-      { id: 'hoursAutomated', label: 'Annual Hours Automated', format: 'hours', color: 'primary', description: 'Time saved per year' },
-      { id: 'annualSavings', label: 'Annual Labor Savings', format: 'currency', color: 'success', description: 'Cost reduction' },
-      { id: 'netAnnualSavings', label: 'Net Annual Savings', format: 'currency', color: 'success', description: 'After automation costs' },
+      { id: 'monthlyHoursSaved', label: 'Monthly Hours Saved', format: 'hours', color: 'primary', description: 'Time saved per month' },
+      { id: 'monthlySavings', label: 'Monthly Savings', format: 'currency', color: 'success', description: 'Cost reduction per month' },
+      { id: 'annualSavings', label: 'Annual Savings', format: 'currency', color: 'success', description: 'Total yearly value' },
       { id: 'paybackPeriod', label: 'Payback Period', format: 'number', color: 'info', description: 'Months to break even' }
     ],
     calculate: (inputs) => {
       const automationEfficiency = 0.7; // 70% of tasks can be automated
-      const hoursAutomated = inputs.employeeCount * inputs.hoursPerWeek * 52 * automationEfficiency;
-      const annualSavings = hoursAutomated * inputs.avgHourlyWage;
+      const weeklyHoursSaved = inputs.employeeCount * inputs.hoursPerWeek * automationEfficiency;
+      const monthlyHoursSaved = weeklyHoursSaved * 4.33;
+      const monthlySavings = monthlyHoursSaved * inputs.avgHourlyWage;
+      const annualSavings = monthlySavings * 12;
       const automationCost = 15000; // One-time + annual subscription
-      const netAnnualSavings = annualSavings - automationCost;
-      const paybackPeriod = (automationCost / (annualSavings / 12));
+      const paybackPeriod = (automationCost / monthlySavings);
 
       return {
-        hoursAutomated,
+        monthlyHoursSaved,
+        monthlySavings,
         annualSavings,
-        netAnnualSavings,
         paybackPeriod: Math.max(0, paybackPeriod)
       };
     },
@@ -438,10 +429,10 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
+      { id: 'additionalRevenue', label: 'Additional Monthly Revenue', format: 'currency', color: 'success', description: 'Extra revenue per month' },
+      { id: 'annualAdditionalRevenue', label: 'Additional Annual Revenue', format: 'currency', color: 'success', description: 'Yearly increase' },
       { id: 'currentRevenue', label: 'Current Monthly Revenue', format: 'currency', color: 'info', description: 'From current social marketing' },
-      { id: 'improvedRevenue', label: 'Projected Revenue', format: 'currency', color: 'success', description: 'With expert management' },
-      { id: 'additionalRevenue', label: 'Additional Revenue', format: 'currency', color: 'success', description: 'Monthly increase' },
-      { id: 'roi', label: 'Social Media ROI', format: 'percentage', color: 'primary', description: 'Return on ad spend' }
+      { id: 'roi', label: 'Monthly ROI', format: 'percentage', color: 'primary', description: 'Return on ad spend' }
     ],
     calculate: (inputs) => {
       const clicksPerMonth = (inputs.monthlyAdSpend / 1.5); // $1.50 CPC for social
@@ -453,14 +444,15 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       const improvedRevenue = improvedConversions * inputs.avgOrderValue;
 
       const additionalRevenue = improvedRevenue - currentRevenue;
+      const annualAdditionalRevenue = additionalRevenue * 12;
       const serviceCost = 1500;
       const totalInvestment = inputs.monthlyAdSpend + serviceCost;
       const roi = ((improvedRevenue - totalInvestment) / totalInvestment) * 100;
 
       return {
         currentRevenue,
-        improvedRevenue,
         additionalRevenue,
+        annualAdditionalRevenue,
         roi
       };
     },
@@ -508,10 +500,10 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
+      { id: 'additionalRevenue', label: 'Additional Monthly Revenue', format: 'currency', color: 'success', description: 'Organic revenue per month from SEO' },
+      { id: 'annualAdditionalRevenue', label: 'Additional Annual Revenue', format: 'currency', color: 'success', description: 'Yearly organic traffic value' },
       { id: 'currentRevenue', label: 'Current Monthly Revenue', format: 'currency', color: 'info', description: 'From paid traffic' },
-      { id: 'improvedRevenue', label: 'Projected Revenue', format: 'currency', color: 'success', description: 'Paid + Organic traffic' },
-      { id: 'additionalRevenue', label: 'Additional Organic Revenue', format: 'currency', color: 'success', description: 'From SEO efforts' },
-      { id: 'roi', label: 'SEO ROI', format: 'percentage', color: 'primary', description: 'Return on SEO investment' }
+      { id: 'roi', label: 'Monthly SEO ROI', format: 'percentage', color: 'primary', description: 'Return on SEO investment' }
     ],
     calculate: (inputs) => {
       const paidClicks = (inputs.monthlyAdSpend / 2);
@@ -520,17 +512,16 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
 
       const organicClicks = paidClicks * 0.8; // SEO can drive 80% of paid traffic organically
       const organicConversions = organicClicks * (inputs.conversionRate / 100);
-      const organicRevenue = organicConversions * inputs.avgOrderValue;
-      const improvedRevenue = currentRevenue + organicRevenue;
+      const additionalRevenue = organicConversions * inputs.avgOrderValue;
+      const annualAdditionalRevenue = additionalRevenue * 12;
 
-      const additionalRevenue = organicRevenue;
       const serviceCost = 2500;
       const roi = ((additionalRevenue - serviceCost) / serviceCost) * 100;
 
       return {
         currentRevenue,
-        improvedRevenue,
         additionalRevenue,
+        annualAdditionalRevenue,
         roi
       };
     },
@@ -561,9 +552,9 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
         min: 5,
         max: 40,
         step: 5,
-        defaultValue: 15,
+        defaultValue: 20,
         suffix: ' hrs',
-        tooltip: 'Time spent on manual tracking and data entry'
+        tooltip: 'Time spent on manual tracking and data entry per employee'
       },
       {
         id: 'avgHourlyWage',
@@ -578,23 +569,24 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
-      { id: 'hoursAutomated', label: 'Annual Hours Saved', format: 'hours', color: 'primary', description: 'Time back for selling' },
-      { id: 'annualSavings', label: 'Annual Time Value', format: 'currency', color: 'success', description: 'Value of saved time' },
-      { id: 'netAnnualSavings', label: 'Net Annual Savings', format: 'currency', color: 'success', description: 'After CRM costs' },
+      { id: 'monthlyHoursSaved', label: 'Monthly Hours Saved', format: 'hours', color: 'primary', description: 'Time back for selling each month' },
+      { id: 'monthlySavings', label: 'Monthly Savings', format: 'currency', color: 'success', description: 'Value of saved time per month' },
+      { id: 'annualSavings', label: 'Annual Savings', format: 'currency', color: 'success', description: 'Total yearly value' },
       { id: 'paybackPeriod', label: 'Payback Period', format: 'number', color: 'info', description: 'Months to ROI' }
     ],
     calculate: (inputs) => {
       const automationEfficiency = 0.8; // CRM automates 80% of manual work
-      const hoursAutomated = inputs.employeeCount * inputs.hoursPerWeek * 52 * automationEfficiency;
-      const annualSavings = hoursAutomated * inputs.avgHourlyWage;
+      const weeklyHoursSaved = inputs.employeeCount * inputs.hoursPerWeek * automationEfficiency;
+      const monthlyHoursSaved = weeklyHoursSaved * 4.33; // Average weeks per month
+      const monthlySavings = monthlyHoursSaved * inputs.avgHourlyWage;
+      const annualSavings = monthlySavings * 12;
       const crmCost = 8000; // Setup + annual subscription
-      const netAnnualSavings = annualSavings - crmCost;
-      const paybackPeriod = (crmCost / (annualSavings / 12));
+      const paybackPeriod = (crmCost / monthlySavings);
 
       return {
-        hoursAutomated,
+        monthlyHoursSaved,
+        monthlySavings,
         annualSavings,
-        netAnnualSavings,
         paybackPeriod: Math.max(0, paybackPeriod)
       };
     },
@@ -641,23 +633,24 @@ export const calculatorConfigs: Record<string, CalculatorConfig> = {
       }
     ],
     outputs: [
-      { id: 'hoursAutomated', label: 'Annual Downtime Prevented', format: 'hours', color: 'primary', description: 'Productive hours saved' },
-      { id: 'annualSavings', label: 'Annual Productivity Savings', format: 'currency', color: 'success', description: 'Value of prevented downtime' },
-      { id: 'netAnnualSavings', label: 'Net Annual Savings', format: 'currency', color: 'success', description: 'After IT service costs' },
+      { id: 'monthlyHoursSaved', label: 'Monthly Downtime Prevented', format: 'hours', color: 'primary', description: 'Productive hours saved per month' },
+      { id: 'monthlySavings', label: 'Monthly Savings', format: 'currency', color: 'success', description: 'Value of prevented downtime per month' },
+      { id: 'annualSavings', label: 'Annual Savings', format: 'currency', color: 'success', description: 'Total yearly value' },
       { id: 'paybackPeriod', label: 'Payback Period', format: 'number', color: 'info', description: 'Months to ROI' }
     ],
     calculate: (inputs) => {
       const preventionEfficiency = 0.75; // Managed IT prevents 75% of issues
-      const hoursAutomated = inputs.hoursPerWeek * 52 * preventionEfficiency;
-      const annualSavings = hoursAutomated * inputs.avgHourlyWage;
+      const weeklyHoursSaved = inputs.hoursPerWeek * preventionEfficiency;
+      const monthlyHoursSaved = weeklyHoursSaved * 4.33;
+      const monthlySavings = monthlyHoursSaved * inputs.avgHourlyWage;
+      const annualSavings = monthlySavings * 12;
       const itServiceCost = 6000; // Annual managed IT
-      const netAnnualSavings = annualSavings - itServiceCost;
-      const paybackPeriod = (itServiceCost / (annualSavings / 12));
+      const paybackPeriod = (itServiceCost / monthlySavings);
 
       return {
-        hoursAutomated,
+        monthlyHoursSaved,
+        monthlySavings,
         annualSavings,
-        netAnnualSavings,
         paybackPeriod: Math.max(0, paybackPeriod)
       };
     },

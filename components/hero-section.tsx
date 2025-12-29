@@ -35,7 +35,7 @@ export default function HeroSection() {
   ]
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Subtle animated gradient background */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-[#ff6a1a] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -68,7 +68,7 @@ export default function HeroSection() {
           {/* Main headline */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black leading-tight mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white leading-tight mb-6"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Get{' '}
@@ -84,24 +84,24 @@ export default function HeroSection() {
             </span>{' '}
             of Lived Experience
             <br className="hidden sm:block" />
-            <span className="text-gray-700">Focused on Your Business</span>
+            <span className="text-gray-700 dark:text-gray-300">Focused on Your Business</span>
           </motion.h1>
 
           {/* Subheadline */}
           <motion.p
             variants={itemVariants}
-            className="text-xl sm:text-2xl md:text-3xl text-gray-700 mb-4 font-medium"
+            className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4 font-medium"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Are You an{' '}
-            <span className="font-bold text-black">Entrepreneur</span>{' '}
+            <span className="font-bold text-black dark:text-white">Entrepreneur</span>{' '}
             or a{' '}
             <span className="font-bold text-[#ff6a1a]">Wantrepreneur?</span>
           </motion.p>
 
           <motion.p
             variants={itemVariants}
-            className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto"
+            className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Real-world strategy from someone who's started 100+ businesses—not textbook theory from consultants who've never built anything.
@@ -113,7 +113,7 @@ export default function HeroSection() {
             className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-10"
           >
             {highlights.map((highlight, index) => (
-              <div key={index} className="flex items-center gap-2 text-gray-700">
+              <div key={index} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                 <CheckCircle className="w-5 h-5 text-[#ff6a1a] flex-shrink-0" />
                 <span className="text-sm sm:text-base font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   {highlight}
@@ -146,7 +146,7 @@ export default function HeroSection() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-gray-300 text-gray-700 font-bold text-lg rounded-xl hover:border-[#ff6a1a] hover:text-[#ff6a1a] transition-all duration-300"
+                className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold text-lg rounded-xl hover:border-[#ff6a1a] hover:text-[#ff6a1a] transition-all duration-300"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
                 Meet Tory
@@ -157,22 +157,22 @@ export default function HeroSection() {
           {/* Trust indicator */}
           <motion.div
             variants={itemVariants}
-            className="mt-12 pt-8 border-t border-gray-200"
+            className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
           >
-            <p className="text-sm text-gray-500 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               The $1,000 investment that could save you everything
             </p>
-            <div className="flex flex-wrap justify-center gap-8 text-gray-600">
+            <div className="flex flex-wrap justify-center gap-8 text-gray-600 dark:text-gray-400">
               <div className="text-center">
-                <div className="text-3xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>$1,000</div>
+                <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>$1,000</div>
                 <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>30-Min Clarity Call</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>100+</div>
+                <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>100+</div>
                 <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Businesses Started</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>46+</div>
+                <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>46+</div>
                 <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Years Experience</div>
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function HeroSection() {
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="flex flex-col items-center gap-2 text-gray-400"
+            className="flex flex-col items-center gap-2 text-gray-400 dark:text-gray-500"
           >
             <span className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Scroll</span>
             <svg

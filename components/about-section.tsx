@@ -29,7 +29,7 @@ export default function AboutSection() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative bg-gradient-to-b from-white via-gray-50 to-white py-24 sm:py-32 overflow-hidden"
+      className="relative bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-24 sm:py-32 overflow-hidden"
     >
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
@@ -59,7 +59,7 @@ export default function AboutSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Meet{' '}
@@ -71,7 +71,7 @@ export default function AboutSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
+            className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Serial Entrepreneur & Business Mentor
@@ -139,13 +139,13 @@ export default function AboutSection() {
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
                   whileHover={{ scale: 1.05, y: -4 }}
-                  className="bg-white border border-gray-200 rounded-xl p-4 shadow-lg backdrop-blur-sm"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-lg backdrop-blur-sm"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <cred.icon className="w-5 h-5 text-[#ff6a1a]" />
-                    <span className="text-xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>{cred.value}</span>
+                    <span className="text-xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>{cred.value}</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-600 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 leading-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                     {cred.label}
                   </p>
                 </motion.div>
@@ -165,10 +165,10 @@ export default function AboutSection() {
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="space-y-6 text-gray-700 leading-relaxed"
+              className="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed"
             >
               <div>
-                <h3 className="text-2xl font-bold text-black mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <h3 className="text-2xl font-bold text-black dark:text-white mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   A Lifetime Devoted to Business
                 </h3>
                 <p className="text-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -185,11 +185,11 @@ export default function AboutSection() {
                 regulations, legal issues, ergonomics, human nature, and hopefully some common sense.
               </p>
 
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                <h4 className="text-lg font-bold text-black mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <h4 className="text-lg font-bold text-black dark:text-white mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   Lessons From a Lifetime of Business
                 </h4>
-                <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <p className="text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   You learn a lot from a single business venture. If you're lucky enough to build two
                   successful businesses, then you're on a path of hard work and intentional growth.
                   Being self-employed means you learn every day, every month, and every year. Those
@@ -206,23 +206,23 @@ export default function AboutSection() {
               transition={{ duration: 0.6, delay: 0.7 }}
               className="space-y-4"
             >
-              <h4 className="text-xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h4 className="text-xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 What 100+ Startups Taught Me About True Success
               </h4>
-              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 I have been in thousands of situations across the many businesses I've run. For every
                 business I start, it's always a new journey, with new insights at new times in new places.
                 I still learn every day.
               </p>
-              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 There are not many people on this planet who have started over 100 businesses. And I do
                 not recommend it to anyone. Even though entrepreneurship can build great wealth, it comes
                 with a price.
               </p>
-              <div className="flex items-start gap-3 bg-[#ff6a1a]/5 rounded-xl p-4 border border-[#ff6a1a]/20">
+              <div className="flex items-start gap-3 bg-[#ff6a1a]/5 dark:bg-[#ff6a1a]/10 rounded-xl p-4 border border-[#ff6a1a]/20">
                 <Target className="w-6 h-6 text-[#ff6a1a] flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  <span className="text-black font-bold">Family is the key to life.</span> If you can build
+                <p className="text-gray-700 dark:text-gray-300 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <span className="text-black dark:text-white font-bold">Family is the key to life.</span> If you can build
                   both—a good business and a good family life—you are wealthy beyond dreams.
                 </p>
               </div>
@@ -235,21 +235,21 @@ export default function AboutSection() {
               transition={{ duration: 0.6, delay: 0.8 }}
               className="space-y-4"
             >
-              <h4 className="text-xl font-bold text-black flex items-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h4 className="text-xl font-bold text-black dark:text-white flex items-center gap-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <AlertTriangle className="w-5 h-5 text-[#ff6a1a]" />
                 Why Most Business Advice Fails You
               </h4>
-              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 I've had so many startups that I can see what others do not. Your business is in a
                 fishbowl to me. I can see all around it while you're inside the bowl trying to keep
                 things going. I see the ups, the downs, the patterns, the blind spots, the opportunities,
                 and the dangers.
               </p>
-              <p className="text-gray-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-gray-600 dark:text-gray-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Most business consultants have never started a business before starting their consulting
                 career. How do you give advice on something you've never done? Just like professors
                 teaching business all over the world—they've likely never started a business.{' '}
-                <span className="font-bold text-black">Most consultants teach theory. And theory does not pay the bills.</span>
+                <span className="font-bold text-black dark:text-white">Most consultants teach theory. And theory does not pay the bills.</span>
               </p>
             </motion.div>
 
@@ -259,7 +259,7 @@ export default function AboutSection() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.9 }}
             >
-              <h4 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>Areas of Expertise</h4>
+              <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>Areas of Expertise</h4>
               <div className="grid sm:grid-cols-2 gap-3">
                 {expertise.map((item, index) => (
                   <motion.div
@@ -270,7 +270,7 @@ export default function AboutSection() {
                     className="flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-5 h-5 text-[#ff6a1a] flex-shrink-0" />
-                    <span className="text-gray-700 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
                   </motion.div>
                 ))}
               </div>
@@ -360,16 +360,16 @@ export default function AboutSection() {
           transition={{ duration: 0.8, delay: 1.1 }}
           className="mt-16 text-center max-w-3xl mx-auto"
         >
-          <div className="bg-gradient-to-br from-gray-50 to-orange-50 rounded-2xl p-8 border border-gray-200">
-            <h4 className="text-xl font-bold text-black mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <div className="bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-800 dark:to-gray-800/50 rounded-2xl p-8 border border-gray-200 dark:border-gray-700">
+            <h4 className="text-xl font-bold text-black dark:text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               The Ultimate Goal & The Stark Warning
             </h4>
-            <p className="text-gray-600 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-gray-600 dark:text-gray-400 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               I firmly believe most people do not belong in business. Some statistics show that 90% of
               businesses fail within the first five years. Why become a statistic when solid advice from
               someone seasoned like me can help you avoid the biggest potholes?
             </p>
-            <p className="text-gray-700 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-gray-700 dark:text-gray-300 font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               <span className="text-[#ff6a1a] font-bold">My goal</span> is to help people understand
               whether they are true entrepreneurs—or wantrepreneurs.
             </p>

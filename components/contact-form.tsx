@@ -132,21 +132,21 @@ export default function ContactForm() {
 
   if (submitted) {
     return (
-      <main className="relative overflow-x-hidden max-w-full bg-white">
+      <main className="relative overflow-x-hidden max-w-full bg-white dark:bg-gray-900">
         <Header />
-        <section className="pt-32 pb-20 px-4 min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-gray-50 to-white">
+        <section className="pt-32 pb-20 px-4 min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center max-w-lg"
           >
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
-            <h1 className="text-3xl font-bold text-black mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h1 className="text-3xl font-bold text-black dark:text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Message Sent!
             </h1>
-            <p className="text-gray-600 mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-gray-600 dark:text-gray-400 mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Thank you for reaching out! I'll get back to you as soon as possible.
             </p>
             <a
@@ -165,11 +165,11 @@ export default function ContactForm() {
   }
 
   return (
-    <main className="relative overflow-x-hidden max-w-full bg-white">
+    <main className="relative overflow-x-hidden max-w-full bg-white dark:bg-gray-900">
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 bg-gradient-to-br from-white via-gray-50 to-white">
+      <section className="pt-32 pb-16 px-4 bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -178,14 +178,14 @@ export default function ContactForm() {
             className="text-center max-w-3xl mx-auto mb-12"
           >
             <h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
               Ready to Stop Dreaming and{" "}
               <span className="text-[#ff6a1a]">Start Building?</span>
             </h1>
             <p
-              className="text-lg md:text-xl text-gray-600 leading-relaxed"
+              className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
               Book your consultation and let's turn your business idea into reality.
@@ -196,7 +196,7 @@ export default function ContactForm() {
       </section>
 
       {/* Contact Form Section */}
-      <section className="py-16 px-4 bg-white">
+      <section className="py-16 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
@@ -207,16 +207,16 @@ export default function ContactForm() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-2"
             >
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 md:p-10">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8 md:p-10">
                 <div className="mb-8">
                   <h2
-                    className="text-2xl md:text-3xl font-bold text-gray-900 mb-3"
+                    className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     Start Your Consultation
                   </h2>
                   <p
-                    className="text-gray-600"
+                    className="text-gray-600 dark:text-gray-400"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     Fill out the form below and I'll get back to you shortly.
@@ -230,17 +230,17 @@ export default function ContactForm() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4 }}
-                      className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start gap-3"
+                      className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700/50 rounded-xl p-4 flex items-start gap-3"
                     >
                       <Info className="w-5 h-5 text-[#ff6a1a] mt-0.5 flex-shrink-0" />
                       <div>
-                        <p className="text-sm font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                           Inquiring about:
                         </p>
                         <p className="text-base font-bold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                           {selectedServiceName}
                         </p>
-                        <p className="text-xs text-gray-600 mt-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                           You can select additional services below if needed
                         </p>
                       </div>
@@ -249,7 +249,7 @@ export default function ContactForm() {
 
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Full Name <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <input
@@ -257,14 +257,14 @@ export default function ContactForm() {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="John Smith"
-                      className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                      className={`w-full h-12 px-4 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     />
                     {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Email Address <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <input
@@ -273,7 +273,7 @@ export default function ContactForm() {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="john@company.com"
-                      className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                      className={`w-full h-12 px-4 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     />
                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                   </div>
@@ -281,7 +281,7 @@ export default function ContactForm() {
                   {/* Phone & Company */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         Phone Number
                       </label>
                       <input
@@ -290,11 +290,11 @@ export default function ContactForm() {
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="(555) 123-4567"
-                        className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all"
+                        className="w-full h-12 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         Company Name
                       </label>
                       <input
@@ -302,21 +302,21 @@ export default function ContactForm() {
                         value={formData.company}
                         onChange={handleChange}
                         placeholder="Your Company LLC"
-                        className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all"
+                        className="w-full h-12 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all"
                       />
                     </div>
                   </div>
 
                   {/* Business Stage */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Where are you in your business journey? <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <select
                       name="businessStage"
                       value={formData.businessStage}
                       onChange={handleChange}
-                      className={`w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.businessStage ? 'border-red-500' : 'border-gray-300'}`}
+                      className={`w-full h-12 px-4 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.businessStage ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     >
                       <option value="">Select your stage</option>
                       <option value="idea">Just an idea - Haven't started yet</option>
@@ -329,7 +329,7 @@ export default function ContactForm() {
 
                   {/* Services */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       What services are you interested in?
                     </label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -346,9 +346,9 @@ export default function ContactForm() {
                             type="checkbox"
                             checked={formData.services.includes(option.value)}
                             onChange={() => handleCheckboxChange(option.value)}
-                            className="w-5 h-5 rounded border-gray-300 text-[#ff6a1a] focus:ring-[#ff6a1a]"
+                            className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-[#ff6a1a] focus:ring-[#ff6a1a] bg-white dark:bg-gray-700"
                           />
-                          <span className="text-gray-700" style={{ fontFamily: 'Montserrat, sans-serif' }}>{option.label}</span>
+                          <span className="text-gray-700 dark:text-gray-300" style={{ fontFamily: 'Montserrat, sans-serif' }}>{option.label}</span>
                         </label>
                       ))}
                     </div>
@@ -356,7 +356,7 @@ export default function ContactForm() {
 
                   {/* Message */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Tell me about your business goals <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <textarea
@@ -365,7 +365,7 @@ export default function ContactForm() {
                       onChange={handleChange}
                       placeholder="What are you trying to accomplish? What's holding you back?"
                       rows={5}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all resize-y ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
+                      className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all resize-y ${errors.message ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     />
                     {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
                   </div>
@@ -438,8 +438,8 @@ export default function ContactForm() {
               </div>
 
               {/* Trust Indicators */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <h3 className="text-xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   Why Work With Me?
                 </h3>
 
@@ -453,8 +453,8 @@ export default function ContactForm() {
                     <div key={index} className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-[#ff6a1a] mt-1 flex-shrink-0" />
                       <div>
-                        <p className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item.title}</p>
-                        <p className="text-sm text-gray-600">{item.description}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item.title}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
                       </div>
                     </div>
                   ))}
@@ -462,10 +462,10 @@ export default function ContactForm() {
               </div>
 
               {/* Quick Note */}
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-start gap-3">
                   <MessageSquare className="w-5 h-5 text-[#ff6a1a] mt-1 flex-shrink-0" />
-                  <p className="text-sm text-gray-700 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                     <strong>Note:</strong> This is a no-pressure conversation about your business goals. I'll give you honest recommendations—whether you work with me or not.
                   </p>
                 </div>

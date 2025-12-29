@@ -128,7 +128,7 @@ export default function AboutContent() {
       </section>
 
       {/* Introduction */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -140,14 +140,14 @@ export default function AboutContent() {
               <div className="w-12 h-12 bg-[#ff6a1a]/10 rounded-xl flex items-center justify-center">
                 <Briefcase className="w-6 h-6 text-[#ff6a1a]" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 {about.tagline}
               </h2>
             </div>
-            <p className="text-lg text-black/80 leading-relaxed mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-lg text-black/80 dark:text-white/80 leading-relaxed mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {about.intro}
             </p>
-            <p className="text-lg text-black/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-lg text-black/80 dark:text-white/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {about.experience}
             </p>
           </motion.div>
@@ -155,7 +155,7 @@ export default function AboutContent() {
       </section>
 
       {/* Lessons Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -167,11 +167,11 @@ export default function AboutContent() {
               <div className="w-12 h-12 bg-[#ff6a1a]/10 rounded-xl flex items-center justify-center">
                 <Lightbulb className="w-6 h-6 text-[#ff6a1a]" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 {about.lessons.title}
               </h2>
             </div>
-            <p className="text-lg text-black/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-lg text-black/80 dark:text-white/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {about.lessons.content}
             </p>
           </motion.div>
@@ -179,7 +179,7 @@ export default function AboutContent() {
       </section>
 
       {/* Why Most Advice Fails */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -191,11 +191,11 @@ export default function AboutContent() {
               <div className="w-12 h-12 bg-[#ff6a1a]/10 rounded-xl flex items-center justify-center">
                 <Target className="w-6 h-6 text-[#ff6a1a]" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 {about.perspective.title}
               </h2>
             </div>
-            <div className="space-y-6 text-lg text-black/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <div className="space-y-6 text-lg text-black/80 dark:text-white/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {about.perspective.content.split('\n\n').map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
@@ -231,7 +231,7 @@ export default function AboutContent() {
       </section>
 
       {/* Real-World Strategy */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -243,11 +243,11 @@ export default function AboutContent() {
               <div className="w-12 h-12 bg-[#ff6a1a]/10 rounded-xl flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-[#ff6a1a]" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 {about.strategy.title}
               </h2>
             </div>
-            <div className="space-y-6 text-lg text-black/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <div className="space-y-6 text-lg text-black/80 dark:text-white/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {about.strategy.content.split('\n\n').map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
@@ -257,7 +257,7 @@ export default function AboutContent() {
       </section>
 
       {/* Warning Section */}
-      <section className="py-20 bg-[#ff6a1a]/5 border-y border-[#ff6a1a]/20">
+      <section className="py-20 bg-[#ff6a1a]/5 dark:bg-[#ff6a1a]/10 border-y border-[#ff6a1a]/20 dark:border-[#ff6a1a]/30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -269,11 +269,11 @@ export default function AboutContent() {
               <div className="w-12 h-12 bg-[#ff6a1a]/20 rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6 text-[#ff6a1a]" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-black" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 {about.warning.title}
               </h2>
             </div>
-            <div className="space-y-6 text-lg text-black/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <div className="space-y-6 text-lg text-black/80 dark:text-white/80 leading-relaxed" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               {about.warning.content.split('\n\n').map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
@@ -283,7 +283,7 @@ export default function AboutContent() {
       </section>
 
       {/* Why Tory is Different - Authority Grid */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -292,10 +292,10 @@ export default function AboutContent() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Why Tory is Different
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               The difference between a consultant and someone who has lived it
             </p>
           </motion.div>
@@ -307,11 +307,11 @@ export default function AboutContent() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-gray-100 rounded-2xl p-8 border-2 border-gray-200"
+              className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-8 border-2 border-gray-200 dark:border-gray-700"
             >
               <div className="text-center mb-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-300 rounded-full mb-4">
-                  <span className="text-gray-700 font-bold text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-full mb-4">
+                  <span className="text-gray-700 dark:text-gray-200 font-bold text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                     TRADITIONAL CONSULTANTS
                   </span>
                 </div>
@@ -326,7 +326,7 @@ export default function AboutContent() {
                 ].map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="text-red-500 font-bold text-xl">✗</span>
-                    <span className="text-gray-700" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
+                    <span className="text-gray-700 dark:text-gray-300" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -338,7 +338,7 @@ export default function AboutContent() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-gradient-to-br from-[#ff6a1a]/10 to-[#ff6a1a]/5 rounded-2xl p-8 border-2 border-[#ff6a1a]"
+              className="bg-gradient-to-br from-[#ff6a1a]/10 to-[#ff6a1a]/5 dark:from-[#ff6a1a]/20 dark:to-[#ff6a1a]/10 rounded-2xl p-8 border-2 border-[#ff6a1a]"
             >
               <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#ff6a1a] rounded-full mb-4">
@@ -357,7 +357,7 @@ export default function AboutContent() {
                 ].map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="text-[#ff6a1a] font-bold text-xl">✓</span>
-                    <span className="text-black font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
+                    <span className="text-black dark:text-white font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>{item}</span>
                   </li>
                 ))}
               </ul>
