@@ -6,6 +6,8 @@ import {
   getTopPartnerPerformance,
   getDailyOrdersTrend,
 } from '@/lib/db-queries'
+import { ExportButton } from '@/components/admin/ExportButton'
+import { CSVColumn } from '@/lib/csv-export'
 
 // Format currency
 function formatCurrency(amount: number): string {
@@ -37,6 +39,28 @@ export default async function AnalyticsPage() {
   const prevMonth = monthlyRevenue[monthlyRevenue.length - 2]?.revenue || 0
   const revenueTrend = prevMonth > 0 ? ((currentMonth - prevMonth) / prevMonth) * 100 : 0
   const revenueTrendUp = revenueTrend >= 0
+
+  // CSV export column configurations
+  const revenueCSVColumns: CSVColumn[] = [
+    { key: 'month', label: 'Month' },
+    { key: 'revenue', label: 'Revenue ($)' },
+    { key: 'orders', label: 'Orders' },
+  ];
+
+  const serviceCSVColumns: CSVColumn[] = [
+    { key: 'service', label: 'Service' },
+    { key: 'orders', label: 'Orders' },
+    { key: 'revenue', label: 'Revenue ($)' },
+    { key: 'avgValue', label: 'Avg Order Value ($)' },
+  ];
+
+  const partnerCSVColumns: CSVColumn[] = [
+    { key: 'companyName', label: 'Partner' },
+    { key: 'totalLeads', label: 'Total Leads' },
+    { key: 'convertedLeads', label: 'Converted Leads' },
+    { key: 'conversionRate', label: 'Conversion Rate (%)' },
+    { key: 'totalCommission', label: 'Total Commission ($)' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -150,9 +174,18 @@ export default async function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Monthly Revenue Chart */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Monthly Revenue Trend
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Monthly Revenue Trend
+            </h2>
+            <ExportButton
+              data={monthlyRevenue}
+              columns={revenueCSVColumns}
+              filename="monthly_revenue"
+              label="Export"
+              className="text-xs"
+            />
+          </div>
           {monthlyRevenue.length > 0 ? (
             <div className="space-y-3">
               {monthlyRevenue.slice(-6).map((month, idx) => {
@@ -213,9 +246,18 @@ export default async function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Service Performance */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Service Performance
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Service Performance
+            </h2>
+            <ExportButton
+              data={servicePerformance}
+              columns={serviceCSVColumns}
+              filename="service_performance"
+              label="Export"
+              className="text-xs"
+            />
+          </div>
           {servicePerformance.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -250,9 +292,18 @@ export default async function AnalyticsPage() {
 
         {/* Top Partners */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Top Partner Performance
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Top Partner Performance
+            </h2>
+            <ExportButton
+              data={topPartners}
+              columns={partnerCSVColumns}
+              filename="top_partners"
+              label="Export"
+              className="text-xs"
+            />
+          </div>
           {topPartners.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

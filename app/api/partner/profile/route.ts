@@ -7,6 +7,7 @@ import type { Partner } from '@/lib/db-queries'
  * Partner profile settings interface
  */
 interface PartnerProfile extends Partner {
+  referral_code?: string | null
   payment_email?: string | null
   payment_method?: string | null
   bank_account_last4?: string | null
@@ -87,7 +88,7 @@ export async function GET() {
 
     // Return profile data
     return NextResponse.json({
-      profile: {
+      partner: {
         // Basic information
         id: partner.id,
         userId: partner.user_id,
@@ -96,6 +97,7 @@ export async function GET() {
         commissionRate: Number(partner.commission_rate),
         rank: partner.rank || 'Bronze',
         memberSince: partner.created_at,
+        referral_code: partner.referral_code,
 
         // Payment information
         paymentEmail: partner.payment_email,

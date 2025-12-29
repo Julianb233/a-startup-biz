@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import PartnerLayout from "@/components/partner-layout"
+import ReferralLinkGenerator from "@/components/partner/ReferralLinkGenerator"
 import {
   Search,
   Filter,
@@ -202,6 +203,15 @@ export default function ReferralsPage() {
             <Download className="w-5 h-5" />
             Export Report
           </motion.button>
+        </motion.div>
+
+        {/* Referral Link Generator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <ReferralLinkGenerator />
         </motion.div>
 
         {/* Stats Summary */}

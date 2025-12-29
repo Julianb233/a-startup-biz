@@ -16,6 +16,8 @@ import {
   ExternalLink,
   Building2,
 } from 'lucide-react';
+import { ExportButton } from '@/components/admin/ExportButton';
+import { CSVColumn } from '@/lib/csv-export';
 
 interface Partner {
   id: string;
@@ -160,6 +162,23 @@ export default function AdminPartnersPage() {
 
   const totalPages = Math.ceil(total / partnersPerPage);
 
+  // CSV export columns configuration
+  const partnerCSVColumns: CSVColumn[] = [
+    { key: 'company_name', label: 'Company Name' },
+    { key: 'user_email', label: 'Email' },
+    { key: 'status', label: 'Status' },
+    { key: 'commission_rate', label: 'Commission Rate (%)' },
+    { key: 'total_referrals', label: 'Total Referrals' },
+    { key: 'active_leads', label: 'Active Leads' },
+    { key: 'converted_leads', label: 'Converted Leads' },
+    { key: 'conversion_rate', label: 'Conversion Rate (%)' },
+    { key: 'total_earnings', label: 'Total Earnings ($)' },
+    { key: 'paid_earnings', label: 'Paid Earnings ($)' },
+    { key: 'pending_earnings', label: 'Pending Earnings ($)' },
+    { key: 'stripe_payouts_enabled', label: 'Stripe Connected' },
+    { key: 'created_at', label: 'Created At' },
+  ];
+
   const getStatusBadge = (status: string) => {
     const styles = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -203,14 +222,22 @@ export default function AdminPartnersPage() {
             Manage partner accounts, approvals, and payouts
           </p>
         </div>
-        <button
-          onClick={fetchPartners}
-          disabled={isLoading}
-          className="flex items-center space-x-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>Refresh</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <ExportButton
+            data={partners}
+            columns={partnerCSVColumns}
+            filename="partners"
+            label="Export Partners"
+          />
+          <button
+            onClick={fetchPartners}
+            disabled={isLoading}
+            className="flex items-center space-x-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Error State */}

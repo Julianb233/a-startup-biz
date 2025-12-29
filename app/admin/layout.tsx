@@ -3,6 +3,7 @@ import { checkRole, requireAuth } from '@/lib/auth';
 import { auth } from '@/lib/clerk-server-safe';
 import Link from 'next/link';
 import { AdminSidebar } from './admin-sidebar';
+import { NotificationBell } from '@/components/admin/NotificationBell';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -42,6 +43,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             <div className="flex items-center space-x-4">
+              <NotificationBell />
               <Link
                 href="/"
                 className="text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors"

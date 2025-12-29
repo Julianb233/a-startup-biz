@@ -8,6 +8,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { getAdminStats, getRecentOrders, getUpcomingConsultations } from '@/lib/db-queries';
+import { getPartnerLeaderboard } from '@/lib/db-queries-leaderboard';
+import PartnerLeaderboard from '@/components/admin/PartnerLeaderboard';
 
 // Extended order type for admin display (includes user info)
 interface AdminOrder {
@@ -113,15 +115,21 @@ export default async function AdminDashboard() {
   let stats = mockStats;
   let recentOrders: AdminOrder[] = mockOrders;
   let upcomingConsultations: AdminConsultation[] = mockConsultations;
+  let leaderboardByConversions: any[] = [];
+  let leaderboardByEarnings: any[] = [];
 
   try {
-    const [adminStats, dbOrders, dbConsultations] = await Promise.all([
+    const [adminStats, dbOrders, dbConsultations, conversionLeaderboard, earningsLeaderboard] = await Promise.all([
       getAdminStats(),
       getRecentOrders(10),
-      getUpcomingConsultations(7)
+      getUpcomingConsultations(7),
+      getPartnerLeaderboard('conversions', 10),
+      getPartnerLeaderboard('earnings', 10)
     ]);
 
     stats = adminStats;
+    leaderboardByConversions = conversionLeaderboard;
+    leaderboardByEarnings = earningsLeaderboard;
 
     // Map database orders to AdminOrder format
     if (dbOrders && dbOrders.length > 0) {
@@ -416,6 +424,12 @@ export default async function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Partner Leaderboard */}
+      <PartnerLeaderboard
+        leaderboardByConversions={leaderboardByConversions}
+        leaderboardByEarnings={leaderboardByEarnings}
+      />
     </div>
   );
 }

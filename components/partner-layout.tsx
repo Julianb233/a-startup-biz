@@ -14,6 +14,7 @@ import {
   X,
   ChevronRight,
 } from "lucide-react"
+import NotificationBell from "./partner/NotificationBell"
 
 interface PartnerLayoutProps {
   children: React.ReactNode
@@ -193,6 +194,7 @@ export default function PartnerLayout({ children }: PartnerLayoutProps) {
           </div>
 
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-sm font-medium text-gray-700">Active</span>

@@ -1,0 +1,357 @@
+{
+  "name": "Partner Onboarding Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "partner-approved",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Partner Approved Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 500],
+      "webhookId": "partner-approved"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ASTARTUPBIZ_URL }}/api/webhooks/n8n/partner-automation",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "scrape_website"
+            },
+            {
+              "name": "partnerId",
+              "value": "={{ $json.partnerId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "scrape-website",
+      "name": "Scrape Partner Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [640, 400],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "partner-webhook-auth",
+          "name": "Partner Webhook Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-scrape-success",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-scrape-result",
+      "name": "Scrape Successful?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [860, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ASTARTUPBIZ_URL }}/api/webhooks/n8n/partner-automation",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "create_microsite"
+            },
+            {
+              "name": "partnerId",
+              "value": "={{ $('Scrape Partner Website').item.json.partnerId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "create-microsite",
+      "name": "Create Microsite",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "partner-webhook-auth",
+          "name": "Partner Webhook Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.ASTARTUPBIZ_URL }}/api/webhooks/n8n/partner-automation",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "action",
+              "value": "send_welcome_email"
+            },
+            {
+              "name": "partnerId",
+              "value": "={{ $('Create Microsite').item.json.partnerId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-welcome-email",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "partner-webhook-auth",
+          "name": "Partner Webhook Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#partners",
+        "text": "=🎉 New Partner Onboarded!\n\n*Company:* {{ $('Scrape Partner Website').item.json.companyName }}\n*Microsite:* {{ $env.ASTARTUPBIZ_URL }}/p/{{ $json.microsite.slug }}\n*Website Scraped:* {{ $('Scrape Partner Website').item.json.micrositeUpdated ? '✅' : '❌' }}\n\nWelcome email sent! 📧",
+        "otherOptions": {}
+      },
+      "id": "notify-slack",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [1520, 300],
+      "credentials": {
+        "slackApi": {
+          "id": "slack-creds",
+          "name": "Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "channel": "#partners",
+        "text": "=⚠️ Partner Scrape Failed\n\n*Partner ID:* {{ $('Scrape Partner Website').item.json.partnerId }}\n*Reason:* No website URL or scraping failed\n\nManual review needed.",
+        "otherOptions": {}
+      },
+      "id": "notify-failure",
+      "name": "Notify Scrape Failed",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [1080, 500],
+      "credentials": {
+        "slackApi": {
+          "id": "slack-creds",
+          "name": "Slack Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Partner onboarding initiated' }) }}",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1520, 500]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-partner-id",
+              "name": "partnerId",
+              "value": "={{ $json.body.partnerId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract-partner-id",
+      "name": "Extract Partner ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [440, 500]
+    }
+  ],
+  "connections": {
+    "Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Scrape Partner Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Partner Approved Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Partner ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Partner ID": {
+      "main": [
+        [
+          {
+            "node": "Scrape Partner Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Partner Website": {
+      "main": [
+        [
+          {
+            "node": "Check Scrape Result?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Scrape Result?": {
+      "main": [
+        [
+          {
+            "node": "Create Microsite",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Scrape Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Microsite": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Slack": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Scrape Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "a-startup-biz"
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 0,
+  "tags": [
+    {
+      "name": "partner-automation",
+      "id": "partner-automation"
+    }
+  ]
+}
