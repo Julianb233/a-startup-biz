@@ -110,6 +110,16 @@ export const rateLimiters = {
         prefix: 'ratelimit:crm',
       })
     : null,
+
+  // Referral tracking: 10 requests per hour per IP (prevent abuse)
+  referral: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:referral',
+      })
+    : null,
 }
 
 // Clear in-memory store (for testing)
@@ -158,6 +168,7 @@ const configs: Record<RateLimitType, RateLimitConfig> = {
   pdf: { maxRequests: 10, windowMs: 600000 }, // 10 per 10 minutes
   quote: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
   crm: { maxRequests: 20, windowMs: 60000 }, // 20 per minute
+  referral: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
 }
 
 // Get client IP from request

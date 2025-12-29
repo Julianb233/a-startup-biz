@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
 
 export interface ChatMessage {
   id: string;
@@ -22,16 +22,27 @@ interface ChatbotContextType {
 
 const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
 
+const WELCOME_MESSAGE = "Hey there! 👋 I'm here to help you learn about Tory's services and how we can help your business grow.\n\nTory is a serial entrepreneur with 46+ years of experience who's started over 100 businesses. He's NOT a consultant—he's lived it.\n\nWhat brings you here today?";
+
 export function ChatbotProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: "Hey there! 👋 I'm here to help you learn about Tory's services and how we can help your business grow.\n\nTory is a serial entrepreneur with 46+ years of experience who's started over 100 businesses. He's NOT a consultant—he's lived it.\n\nWhat brings you here today?",
-      timestamp: new Date()
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Initialize welcome message only on client to avoid hydration mismatch
+  useEffect(() => {
+    if (!isInitialized) {
+      setMessages([
+        {
+          id: "welcome",
+          role: "assistant",
+          content: WELCOME_MESSAGE,
+          timestamp: new Date()
+        }
+      ]);
+      setIsInitialized(true);
     }
-  ]);
+  }, [isInitialized]);
   const [isTyping, setIsTyping] = useState(false);
 
   const openChat = useCallback(() => setIsOpen(true), []);
@@ -81,7 +92,7 @@ export function ChatbotProvider({ children }: { children: ReactNode }) {
       {
         id: "welcome",
         role: "assistant",
-        content: "Hey there! 👋 I'm here to help you learn about Tory's services and how we can help your business grow.\n\nTory is a serial entrepreneur with 46+ years of experience who's started over 100 businesses. He's NOT a consultant—he's lived it.\n\nWhat brings you here today?",
+        content: WELCOME_MESSAGE,
         timestamp: new Date()
       }
     ]);
