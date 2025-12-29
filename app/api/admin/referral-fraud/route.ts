@@ -184,8 +184,8 @@ export async function POST(request: NextRequest) {
     // For now, allow any authenticated user
     // In production, check: if (!isAdmin(userId)) return 403
 
-    // Rate limiting
-    const rateLimitResponse = await withRateLimit(request, 'admin')
+    // Rate limiting (use 'api' type for admin routes)
+    const rateLimitResponse = await withRateLimit(request, 'api')
     if (rateLimitResponse) {
       return rateLimitResponse
     }

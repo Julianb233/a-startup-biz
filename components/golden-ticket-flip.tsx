@@ -65,6 +65,10 @@ export function GoldenTicketFlip() {
   const textOpacity = useTransform(scrollYProgress, [0.03, 0.10], [0, 1])
   const textY = useTransform(scrollYProgress, [0.03, 0.10], [40, 0])
 
+  // Bio section animations - defined before early return to follow React hooks rules
+  const bioOpacity = useTransform(scrollYProgress, [0.20, 0.28], [0, 1])
+  const bioY = useTransform(scrollYProgress, [0.20, 0.28], [20, 0])
+
   if (!isMounted) {
     return (
       <section ref={sectionRef} className="relative h-[200vh] bg-[#0A4D3C]">
@@ -283,8 +287,8 @@ export function GoldenTicketFlip() {
           <motion.div
             className="max-w-4xl mx-auto space-y-5"
             style={{
-              opacity: useTransform(scrollYProgress, [0.20, 0.28], [0, 1]),
-              y: useTransform(scrollYProgress, [0.20, 0.28], [20, 0]),
+              opacity: bioOpacity,
+              y: bioY,
             }}
           >
             <p

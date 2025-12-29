@@ -171,6 +171,6 @@ export const INTEGRATIONS = {
     fromName: 'A Startup Biz',
   },
   crm: {
-    provider: 'hubspot', // or 'salesforce', 'pipedrive'
+    provider: 'none', // options: 'hubspot', 'salesforce', 'pipedrive' (not currently configured)
   },
 } as const;

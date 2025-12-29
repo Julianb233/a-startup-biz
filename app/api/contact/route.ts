@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { createContactSubmission, getContactSubmissionByEmail } from '@/lib/db-queries'
 import { sendEmail, consultationBookedEmail, adminNewContactEmail, ADMIN_EMAIL } from '@/lib/email'
 import { withRateLimit, getClientIp } from '@/lib/rate-limit'
-import { upsertContact, isHubSpotConfigured } from '@/lib/hubspot'
 
 // Validation schema for contact form
 const contactSchema = z.object({
@@ -137,36 +136,6 @@ export async function POST(request: NextRequest) {
     } catch (adminEmailError) {
       // Don't fail the request if admin email fails
       console.error('Failed to send admin notification email:', adminEmailError)
-    }
-
-    // Sync contact to HubSpot CRM (non-blocking)
-    if (isHubSpotConfigured()) {
-      try {
-        const nameParts = validatedData.name.trim().split(/\s+/)
-        const firstName = nameParts[0]
-        const lastName = nameParts.slice(1).join(' ') || undefined
-
-        const hubspotResult = await upsertContact({
-          email: validatedData.email,
-          firstName,
-          lastName,
-          phone: validatedData.phone,
-          company: validatedData.company,
-          businessStage: validatedData.businessStage,
-          services: validatedData.services,
-          source: validatedData.source || 'contact_form',
-          message: validatedData.message,
-        })
-
-        if (hubspotResult.success) {
-          console.log(`[HubSpot] Contact synced: ${validatedData.email} (${hubspotResult.action})`)
-        } else {
-          console.warn(`[HubSpot] Contact sync failed: ${hubspotResult.error}`)
-        }
-      } catch (hubspotError) {
-        // Don't fail the request if HubSpot sync fails
-        console.error('Failed to sync contact to HubSpot:', hubspotError)
-      }
     }
 
     return NextResponse.json(

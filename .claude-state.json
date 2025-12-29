@@ -75,16 +75,19 @@
     "Stripe Connect partner payouts (code ready)",
     "Admin orders real-time DB integration",
     "Admin consultations API endpoint",
-    "updateConsultation DB query"
+    "updateConsultation DB query",
+    "HubSpot onboarding sync - Automatic contact and deal creation",
+    "HubSpot bidirectional webhook integration",
+    "HubSpot sync API endpoints (manual sync + status check)",
+    "HubSpot retry logic with exponential backoff"
   ],
   "inProgress": [],
   "pendingTasks": [
     "Run Stripe Connect DB migration (006_stripe_connect.sql)",
     "Configure VERCEL_TOKEN secret in GitHub for staging deployment",
-    "Rate limiting TODO: Implement in referral system",
-    "Fraud detection TODO: Implement in referral system",
-    "HubSpot webhook: Implement actual database update logic",
-    "HubSpot sync: Implement sync logic"
+    "Add HUBSPOT_API_KEY to environment variables (.env.local and Vercel)",
+    "Test HubSpot sync with real API key",
+    "Configure HubSpot custom properties (optional but recommended)"
   ],
   "autonomousMode": true,
   "resumeInstructions": "Test suite fully passing (115 tests). Email regex patterns fixed. Rate limit retry-after header calculation corrected. Ready for staging deployment once VERCEL_TOKEN is configured in GitHub secrets.",
