@@ -268,6 +268,6 @@ export interface SyncReport {
   successful: number;
   failed: number;
   skipped: number;
-  errors: Array<{ entityId: string; error: string }>;
   durationMs?: number;
+  errors: Array<{ entityId: string; error: string }>;
 }

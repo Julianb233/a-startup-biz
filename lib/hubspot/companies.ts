@@ -1,7 +1,7 @@
 /**
  * HubSpot CRM Integration - Companies Module
  *
- * Handles company creation, updates, and lookup
+ * Handles company creation, updates, and duplicate detection
  */
 
 import { getHubSpotClient } from './client';
@@ -44,6 +44,7 @@ export async function findCompanyByDomain(
           'country',
           'numberofemployees',
           'annualrevenue',
+          'description',
         ],
         limit: 1,
       }
@@ -156,3 +157,4 @@ export async function deleteCompany(companyId: string): Promise<void> {
     throw error;
   }
 }
+

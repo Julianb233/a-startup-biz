@@ -1,126 +1,260 @@
 # Hero Section Component
 
-A professional, B2B-focused hero section for Daily Event Insurance with clean design and subtle animations.
-
-## Component Location
-`/root/github-repos/daily-event-insurance/components/hero-section.tsx`
-
-## Preview
-Visit `/hero-demo` to see the component in isolation.
+A modern, animated hero section component for A Startup Biz featuring Framer Motion animations, video embed support, and responsive design.
 
 ## Features
 
-### Design
-- Clean, professional B2B aesthetic
-- Light background with subtle gradient (white to slate-50)
-- Teal accent color (#14B8A6) from the project palette
-- Minimal dotted background pattern
-- Large typography with clear hierarchy
-- Mobile-first responsive design
+- **Animated Entrance**: Staggered fade-in animations using Framer Motion
+- **Video Support**: YouTube and Vimeo embed-ready with play button overlay
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Brand Colors**: Orange (#ff6a1a), Black (#000000), Silver (#c0c0c0), White (#ffffff)
+- **Typography**: Montserrat (headings) and Lato (body) from Google Fonts
+- **Interactive Elements**: Hover effects, scale animations, gradient backgrounds
+- **Scroll Indicator**: Animated scroll prompt (desktop only)
 
-### Content
-- **Headline**: "Daily Event Insurance" with teal accent
-- **Subheadline**: "Same-Day Coverage for Your Members"
-- **Description**: Value proposition for B2B customers
-- **Primary CTA**: "Get Started Today" (teal button)
-- **Secondary CTA**: "See How It Works" (outline button)
-- **Trust Indicators**: Three key benefits with checkmarks
+## Props
 
-### Animations (Framer Motion)
-All animations are subtle and professional:
-- Fade in + slide up for content sections
-- Staggered delays for hierarchy
-- Hover effects on buttons (scale + shadow)
-- Floating cards on desktop view
-- Gentle floating decorative elements
-
-### Visual Elements (Desktop Only)
-- Center card showcasing insurance policy with pricing
-- Stats card showing "+42% Revenue Increase"
-- Users card showing "1,247 Happy Members"
-- Subtle gradient blob backgrounds
-- Floating decorative circles with gentle motion
-
-### Responsive Breakpoints
-- **Mobile**: Content-only, centered layout
-- **Tablet (sm)**: 2-column button layout
-- **Desktop (lg)**: 2-column grid with visual showcase
-
-## Usage
-
-```tsx
-import HeroSection from "@/components/hero-section"
-
-export default function Page() {
-  return <HeroSection />
+```typescript
+interface HeroSectionProps {
+  videoUrl?: string              // Optional YouTube/Vimeo embed URL
+  onGetStartedClick?: () => void // Callback for "Get Started" button
+  onWatchVideoClick?: () => void // Callback for "Watch Video" button
 }
 ```
 
-## Dependencies
-- `framer-motion` - Animations
-- `lucide-react` - Icons (ArrowRight, PlayCircle)
-- Tailwind CSS - Styling
+## Usage
 
-## Color Palette
-Uses the project's teal color scheme:
-- Primary: `#14B8A6` (teal-600)
-- Light: `#F8FAFC` (slate-50)
-- Text: `#1E293B` (slate-900)
-- Secondary: `#0EA5E9` (sky-500)
-
-## Customization
-
-### Update CTA Links
-Edit the button elements to add proper routing:
+### Basic Usage (No Video)
 
 ```tsx
-<motion.button
-  onClick={() => router.push('/get-started')}
-  // ... rest of props
->
+import HeroSection from '@/components/hero-section'
+
+export default function HomePage() {
+  return (
+    <HeroSection
+      onGetStartedClick={() => console.log('Get Started clicked')}
+    />
+  )
+}
 ```
 
-### Change Content
-All content is hardcoded for easy customization:
-- Line 36-45: Headline
-- Line 54-56: Subheadline
-- Line 65-67: Description
-- Line 82: Primary CTA text
-- Line 94: Secondary CTA text
+### With YouTube Video
 
-### Adjust Colors
-The component uses Tailwind classes aligned with globals.css:
-- `text-teal-600` - Primary accent
-- `bg-teal-600` - Primary button
-- `text-slate-900` - Headings
-- `text-slate-600` - Body text
+```tsx
+import HeroSection from '@/components/hero-section'
 
-## Performance Considerations
-- All animations use GPU-accelerated properties
-- Motion components respect `prefers-reduced-motion`
-- Desktop-only visual elements hidden on mobile
-- SVG icons for crisp rendering at all sizes
+export default function HomePage() {
+  const handleGetStarted = () => {
+    // Navigate to signup, open modal, etc.
+    router.push('/get-started')
+  }
+
+  const handleWatchVideo = () => {
+    // Track analytics
+    trackEvent('video_play', { location: 'hero' })
+  }
+
+  return (
+    <HeroSection
+      videoUrl="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1"
+      onGetStartedClick={handleGetStarted}
+      onWatchVideoClick={handleWatchVideo}
+    />
+  )
+}
+```
+
+### With Vimeo Video
+
+```tsx
+<HeroSection
+  videoUrl="https://player.vimeo.com/video/YOUR_VIDEO_ID?autoplay=1"
+  onGetStartedClick={handleGetStarted}
+  onWatchVideoClick={handleWatchVideo}
+/>
+```
+
+## Video URL Formats
+
+### YouTube
+```
+https://www.youtube.com/embed/VIDEO_ID?autoplay=1
+```
+
+Additional YouTube parameters:
+- `autoplay=1` - Auto-play when loaded
+- `mute=1` - Start muted
+- `controls=0` - Hide controls
+- `rel=0` - Don't show related videos
+
+Example:
+```
+https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=1
+```
+
+### Vimeo
+```
+https://player.vimeo.com/video/VIDEO_ID?autoplay=1
+```
+
+Additional Vimeo parameters:
+- `autoplay=1` - Auto-play when loaded
+- `muted=1` - Start muted
+- `controls=1` - Show controls
+- `title=0` - Hide title
+
+Example:
+```
+https://player.vimeo.com/video/76979871?autoplay=1&muted=1
+```
+
+## Content Customization
+
+To customize the headline and subheadline, edit the component directly:
+
+```tsx
+// In hero-section.tsx
+
+// Main headline (line 85-96)
+<motion.h1 className="...">
+  Are You an{' '}
+  <span className="text-[#ff6a1a] relative inline-block">
+    Entrepreneur
+    {/* Animated underline */}
+  </span>{' '}
+  or Wantrepreneur?
+</motion.h1>
+
+// Subheadline (line 100-106)
+<motion.p className="...">
+  Stop dreaming about success.{' '}
+  <span className="font-semibold text-black">We help you build it.</span>
+</motion.p>
+```
+
+## Color Scheme
+
+The component uses A Startup Biz brand colors:
+
+- **Primary Orange**: `#ff6a1a` - CTAs, accents, hover states
+- **Black**: `#000000` - Main text, headlines
+- **White**: `#ffffff` - Background, button text
+- **Silver**: `#c0c0c0` - Accents, secondary elements
+- **Gray tones**: For subtle backgrounds and gradients
+
+## Animation Details
+
+### Container Animation
+- Staggered children with 0.2s delay
+- 0.1s initial delay
+
+### Item Animation
+- 30px upward slide on entry
+- 0.6s duration with custom easing
+- Cubic bezier: `[0.22, 1, 0.36, 1]`
+
+### CTA Button Animation
+- Scale from 0.9 to 1.0
+- 0.5s duration
+- 0.4s delay
+
+### Background Blobs
+- 7s infinite animation
+- Offset delays (0s, 2s, 4s)
+- Gentle floating effect
+
+## Responsive Breakpoints
+
+- **Mobile**: < 640px - Single column, centered text
+- **Tablet**: 640px - 1024px - Larger text, side-by-side CTAs
+- **Desktop**: > 1024px - Two columns, left-aligned text, scroll indicator
+
+## Dependencies
+
+Required packages (already in package.json):
+- `framer-motion` (^11.18.0) - Animations
+- `lucide-react` (^0.454.0) - Icons
+- `tailwindcss` (^4.1.9) - Styling
+- `next` (16.1.0) - Framework
+
+## CSS Classes
+
+Custom utilities added to `globals.css`:
+
+```css
+/* Blob animation */
+.animate-blob { animation: blob 7s infinite; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* Font utilities */
+.font-montserrat { font-family: var(--font-montserrat), sans-serif; }
+.font-lato { font-family: var(--font-lato), sans-serif; }
+```
 
 ## Accessibility
+
 - Semantic HTML structure
-- Proper heading hierarchy (h1 → h2 → p)
-- Sufficient color contrast ratios
-- Focus states on interactive elements
-- Responsive text sizing
+- ARIA-compliant iframe attributes
+- Reduced motion support (via Tailwind)
+- Keyboard navigable buttons
+- Screen reader friendly
+
+## Performance Optimizations
+
+- Lazy video loading (only loads when play button clicked)
+- Optimized Framer Motion variants
+- CSS-based animations where possible
+- No layout shift with aspect-ratio
+- Font display: swap for faster initial render
 
 ## Browser Support
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Requires JavaScript for animations
-- Gracefully degrades without JS (content visible)
 
-## File Size
-- Component code: ~10KB
-- No external images required
-- Uses inline SVG for icons
+- Chrome/Edge: Full support
+- Firefox: Full support
+- Safari: Full support (with webkit prefixes)
+- Mobile browsers: Full responsive support
 
-## Next Steps
-1. Connect CTA buttons to actual routes
-2. Add analytics tracking to buttons
-3. Consider A/B testing variations
-4. Add video modal for "See How It Works" CTA
-5. Implement form collection for "Get Started" CTA
+## Example Integration
+
+See `hero-section-example.tsx` for a complete integration example with:
+- Video URL configuration
+- Click handler implementations
+- Analytics tracking setup
+- Navigation integration
+
+## Troubleshooting
+
+### Video not loading
+- Check video URL format (YouTube/Vimeo embed URL, not watch URL)
+- Ensure autoplay parameter is included
+- Check CORS and iframe permissions
+
+### Animations not working
+- Verify Framer Motion is installed: `npm list framer-motion`
+- Check for CSS conflicts
+- Ensure `use client` directive is present
+
+### Fonts not loading
+- Verify fonts are imported in `layout.tsx`
+- Check font variable names match in `globals.css`
+- Clear Next.js cache: `rm -rf .next`
+
+### Blob animation not showing
+- Check CSS is compiled: rebuild with `npm run dev`
+- Verify animation classes in `globals.css`
+- Check browser dev tools for CSS errors
+
+## File Locations
+
+- Component: `/components/hero-section.tsx`
+- Example: `/components/hero-section-example.tsx`
+- Styles: `/app/globals.css`
+- Layout: `/app/layout.tsx`
+
+## Support
+
+For issues or questions, refer to:
+- Next.js documentation: https://nextjs.org/docs
+- Framer Motion docs: https://www.framer.com/motion/
+- Tailwind CSS docs: https://tailwindcss.com/docs
