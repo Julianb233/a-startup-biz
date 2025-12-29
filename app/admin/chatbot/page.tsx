@@ -488,7 +488,7 @@ export default function ChatbotKnowledgePage() {
                 <Switch
                   id="is_active"
                   checked={editingDoc.is_active ?? true}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={(checked: boolean) =>
                     setEditingDoc({ ...editingDoc, is_active: checked })
                   }
                 />
