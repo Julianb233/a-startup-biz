@@ -120,6 +120,46 @@ export const rateLimiters = {
         prefix: 'ratelimit:referral',
       })
     : null,
+
+  // Voice call session creation: 10 sessions per hour
+  voiceSession: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:voice:session',
+      })
+    : null,
+
+  // Voice realtime connections: 30 per hour
+  voiceRealtime: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(30, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:voice:realtime',
+      })
+    : null,
+
+  // Voice recording operations: 20 per hour
+  voiceRecording: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(20, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:voice:recording',
+      })
+    : null,
+
+  // Voice API reads: 100 per 15 minutes
+  voiceRead: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(100, '15m'),
+        analytics: true,
+        prefix: 'ratelimit:voice:read',
+      })
+    : null,
 }
 
 // Clear in-memory store (for testing)
@@ -169,6 +209,10 @@ const configs: Record<RateLimitType, RateLimitConfig> = {
   quote: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
   crm: { maxRequests: 20, windowMs: 60000 }, // 20 per minute
   referral: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
+  voiceSession: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
+  voiceRealtime: { maxRequests: 30, windowMs: 3600000 }, // 30 per hour
+  voiceRecording: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
+  voiceRead: { maxRequests: 100, windowMs: 900000 }, // 100 per 15 minutes
 }
 
 // Get client IP from request

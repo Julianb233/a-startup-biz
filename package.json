@@ -16,6 +16,7 @@
     "db:signature-requests": "tsx scripts/create-signature-requests-table.ts",
     "notify:send": "tsx scripts/send-notification-emails.ts",
     "notify:retry": "tsx scripts/send-notification-emails.ts --retry-failed",
+    "voice:check": "tsx scripts/check-voice-agent-setup.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

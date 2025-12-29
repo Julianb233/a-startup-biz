@@ -213,9 +213,9 @@ function CallControls({
   return (
     <div className="space-y-4">
       {/* Connection Status */}
-      <div className="flex items-center justify-center py-6">
+      <div className="flex items-center justify-center py-4 md:py-6">
         <div className="relative">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg">
             <AnimatePresence mode="wait">
               {connectionState === ConnectionState.Connecting ||
               connectionState === ConnectionState.Reconnecting ? (
@@ -225,7 +225,7 @@ function CallControls({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                 >
-                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  <Loader2 className="w-7 h-7 md:w-8 md:h-8 text-white animate-spin" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -234,15 +234,15 @@ function CallControls({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                 >
-                  <Phone className="w-8 h-8 text-white" />
+                  <Phone className="w-7 h-7 md:w-8 md:h-8 text-white" />
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
           {isConnected && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="absolute -top-1 -right-1 flex h-3 w-3 md:h-4 md:w-4">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
+              <span className="relative inline-flex rounded-full h-full w-full bg-green-500"></span>
             </span>
           )}
         </div>
@@ -281,43 +281,50 @@ function CallControls({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="flex items-center justify-center gap-1"
+            className="flex items-center justify-center gap-1 py-2"
           >
             <div className="flex items-center gap-1 h-8">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className="w-1 bg-gradient-to-t from-[#ff6a1a] to-[#ea580c] rounded-full animate-pulse"
-                  style={{
-                    height: `${Math.random() * 24 + 8}px`,
-                    animationDelay: `${i * 0.1}s`,
-                  }}
-                />
-              ))}
+              {[...Array(7)].map((_, i) => {
+                const heights = [12, 20, 28, 32, 28, 20, 12]
+                return (
+                  <motion.div
+                    key={i}
+                    className="w-1 bg-gradient-to-t from-[#ff6a1a] to-[#ea580c] rounded-full"
+                    animate={{
+                      height: [heights[i], heights[i] * 1.5, heights[i]],
+                    }}
+                    transition={{
+                      duration: 0.5 + i * 0.1,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                )
+              })}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Call Controls */}
-      <div className="flex items-center justify-center gap-4 px-4">
+      <div className="flex items-center justify-center gap-3 md:gap-4 px-2 md:px-4">
         {/* Microphone Toggle */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={toggleMute}
           disabled={connectionState !== ConnectionState.Connected}
-          className={`p-4 rounded-full transition-all ${
+          className={`p-3 md:p-4 rounded-full transition-all touch-manipulation ${
             isMuted
-              ? "bg-red-500 hover:bg-red-600"
+              ? "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/50"
               : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
           } disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-label={isMuted ? "Unmute microphone" : "Mute microphone"}
         >
           {isMuted ? (
-            <MicOff className="w-6 h-6 text-white" />
+            <MicOff className="w-5 h-5 md:w-6 md:h-6 text-white" />
           ) : (
-            <Mic className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+            <Mic className="w-5 h-5 md:w-6 md:h-6 text-gray-700 dark:text-gray-200" />
           )}
         </motion.button>
 
@@ -326,10 +333,10 @@ function CallControls({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onEndCall}
-          className="p-4 bg-red-500 hover:bg-red-600 rounded-full transition-all"
+          className="p-3 md:p-4 bg-red-500 hover:bg-red-600 rounded-full transition-all shadow-lg shadow-red-500/50 touch-manipulation"
           aria-label="End call"
         >
-          <Phone className="w-6 h-6 text-white rotate-[135deg]" />
+          <Phone className="w-5 h-5 md:w-6 md:h-6 text-white rotate-[135deg]" />
         </motion.button>
 
         {/* Speaker Toggle */}
@@ -338,17 +345,17 @@ function CallControls({
           whileTap={{ scale: 0.95 }}
           onClick={toggleSpeaker}
           disabled={connectionState !== ConnectionState.Connected}
-          className={`p-4 rounded-full transition-all ${
+          className={`p-3 md:p-4 rounded-full transition-all touch-manipulation ${
             isSpeakerMuted
-              ? "bg-red-500 hover:bg-red-600"
+              ? "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/50"
               : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
           } disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-label={isSpeakerMuted ? "Unmute speaker" : "Mute speaker"}
         >
           {isSpeakerMuted ? (
-            <VolumeX className="w-6 h-6 text-white" />
+            <VolumeX className="w-5 h-5 md:w-6 md:h-6 text-white" />
           ) : (
-            <Volume2 className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+            <Volume2 className="w-5 h-5 md:w-6 md:h-6 text-gray-700 dark:text-gray-200" />
           )}
         </motion.button>
       </div>

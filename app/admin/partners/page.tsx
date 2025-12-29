@@ -18,6 +18,10 @@ import {
 } from 'lucide-react';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { CSVColumn } from '@/lib/csv-export';
+import { useTableSort } from '@/hooks/useTableSort';
+import { SortableHeader } from '@/components/admin/SortableHeader';
+import { TableSkeleton } from '@/components/admin/TableSkeleton';
+import { StatCardGroupSkeleton } from '@/components/admin/StatCardSkeleton';
 
 interface Partner {
   id: string;
@@ -162,6 +166,9 @@ export default function AdminPartnersPage() {
 
   const totalPages = Math.ceil(total / partnersPerPage);
 
+  // Apply client-side sorting to the fetched partners
+  const { sortedData, requestSort, getSortIcon } = useTableSort(partners);
+
   // CSV export columns configuration
   const partnerCSVColumns: CSVColumn[] = [
     { key: 'company_name', label: 'Company Name' },
@@ -258,46 +265,50 @@ export default function AdminPartnersPage() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Partners</p>
-              <p className="text-2xl font-bold text-gray-900">{total}</p>
+      {isLoading ? (
+        <StatCardGroupSkeleton count={4} />
+      ) : (
+        <div className="grid gap-6 md:grid-cols-4">
+          <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Partners</p>
+                <p className="text-2xl font-bold text-gray-900">{total}</p>
+              </div>
+              <Building2 className="h-8 w-8 text-purple-400" />
             </div>
-            <Building2 className="h-8 w-8 text-purple-400" />
+          </div>
+          <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Partners</p>
+                <p className="text-2xl font-bold text-green-600">{stats.active}</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-400" />
+            </div>
+          </div>
+          <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending Approval</p>
+                <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+              </div>
+              <Clock className="h-8 w-8 text-yellow-400" />
+            </div>
+          </div>
+          <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Earnings</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  ${stats.totalEarnings.toFixed(2)}
+                </p>
+              </div>
+              <DollarSign className="h-8 w-8 text-blue-400" />
+            </div>
           </div>
         </div>
-        <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Active Partners</p>
-              <p className="text-2xl font-bold text-green-600">{stats.active}</p>
-            </div>
-            <CheckCircle className="h-8 w-8 text-green-400" />
-          </div>
-        </div>
-        <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Pending Approval</p>
-              <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
-            </div>
-            <Clock className="h-8 w-8 text-yellow-400" />
-          </div>
-        </div>
-        <div className="rounded-lg bg-white border border-gray-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Earnings</p>
-              <p className="text-2xl font-bold text-blue-600">
-                ${stats.totalEarnings.toFixed(2)}
-              </p>
-            </div>
-            <DollarSign className="h-8 w-8 text-blue-400" />
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -339,50 +350,61 @@ export default function AdminPartnersPage() {
       </div>
 
       {/* Partners Table */}
-      <div className="overflow-hidden rounded-lg bg-white shadow-sm border border-gray-200">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Partner
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Leads
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Conversion
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Earnings
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Stripe
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {isLoading ? (
+      {isLoading ? (
+        <TableSkeleton rows={5} columns={7} />
+      ) : (
+        <div className="overflow-hidden rounded-lg bg-white shadow-sm border border-gray-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-orange-600 mx-auto" />
-                    <p className="mt-2 text-sm text-gray-500">Loading partners...</p>
-                  </td>
+                  <SortableHeader
+                    label="Partner"
+                    sortKey="company_name"
+                    currentSort={getSortIcon('company_name')}
+                    onSort={requestSort}
+                  />
+                  <SortableHeader
+                    label="Status"
+                    sortKey="status"
+                    currentSort={getSortIcon('status')}
+                    onSort={requestSort}
+                  />
+                  <SortableHeader
+                    label="Leads"
+                    sortKey="total_referrals"
+                    currentSort={getSortIcon('total_referrals')}
+                    onSort={requestSort}
+                  />
+                  <SortableHeader
+                    label="Conversion"
+                    sortKey="conversion_rate"
+                    currentSort={getSortIcon('conversion_rate')}
+                    onSort={requestSort}
+                  />
+                  <SortableHeader
+                    label="Earnings"
+                    sortKey="total_earnings"
+                    currentSort={getSortIcon('total_earnings')}
+                    onSort={requestSort}
+                  />
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Stripe
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Actions
+                  </th>
                 </tr>
-              ) : partners.length === 0 ? (
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {partners.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-sm text-gray-500">
                     {error ? 'Unable to load partners' : 'No partners found'}
                   </td>
                 </tr>
               ) : (
-                partners.map((partner) => (
+                sortedData.map((partner) => (
                   <tr key={partner.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
@@ -479,45 +501,46 @@ export default function AdminPartnersPage() {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
-            <div className="flex items-center text-sm text-gray-700">
-              Showing{' '}
-              <span className="font-medium mx-1">
-                {(currentPage - 1) * partnersPerPage + 1}
-              </span>{' '}
-              to{' '}
-              <span className="font-medium mx-1">
-                {Math.min(currentPage * partnersPerPage, total)}
-              </span>{' '}
-              of <span className="font-medium mx-1">{total}</span> results
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1 || isLoading}
-                className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages || isLoading}
-                className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
-            </div>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
+              <div className="flex items-center text-sm text-gray-700">
+                Showing{' '}
+                <span className="font-medium mx-1">
+                  {(currentPage - 1) * partnersPerPage + 1}
+                </span>{' '}
+                to{' '}
+                <span className="font-medium mx-1">
+                  {Math.min(currentPage * partnersPerPage, total)}
+                </span>{' '}
+                of <span className="font-medium mx-1">{total}</span> results
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1 || isLoading}
+                  className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages || isLoading}
+                  className="rounded-lg border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

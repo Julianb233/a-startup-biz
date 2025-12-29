@@ -35,11 +35,34 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
   // Only show for signed-in users on client side
   if (!mounted || !isSignedIn) return null
 
+  // Prevent body scroll when call panel is open
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined") {
+      document.body.style.overflow = "hidden"
+    } else if (typeof window !== "undefined") {
+      document.body.style.overflow = ""
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        document.body.style.overflow = ""
+      }
+    }
+  }, [isOpen])
+
   const handleStartCall = useCallback(async () => {
     setIsConnecting(true)
     setError(null)
 
     try {
+      // Check for microphone permission first
+      if (typeof navigator !== "undefined" && navigator.mediaDevices) {
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true })
+        } catch (permError) {
+          throw new Error("Microphone access denied. Please allow microphone access to make calls.")
+        }
+      }
+
       // Request LiveKit token from the API
       const response = await fetch(voiceApiUrl, {
         method: "POST",
@@ -49,18 +72,22 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
         body: JSON.stringify({
           participantName: user?.fullName || user?.firstName || `User ${user?.id}`,
           roomType: "support",
+          spawnAiAgent: true,
         }),
       })
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || `Failed to get call token: ${response.statusText}`)
+        if (response.status === 503) {
+          throw new Error("Voice service is temporarily unavailable. Please try again later.")
+        }
+        throw new Error(errorData.error || "Unable to start call. Please try again.")
       }
 
       const data = await response.json()
 
       if (!data.token || !data.livekitHost) {
-        throw new Error("Invalid response from voice service")
+        throw new Error("Invalid response from voice service. Please contact support.")
       }
 
       setCredentials({
@@ -90,6 +117,20 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
     }, 1500)
   }, [])
 
+  // Handle escape key to close panel (when not in call)
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isOpen && !isInCall) {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen && typeof window !== "undefined") {
+      window.addEventListener("keydown", handleEscapeKey)
+      return () => window.removeEventListener("keydown", handleEscapeKey)
+    }
+  }, [isOpen, isInCall])
+
   const handleError = useCallback((error: Error) => {
     console.error("LiveKit error:", error)
     setError(error.message)
@@ -99,21 +140,35 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
 
   return (
     <>
+      {/* Backdrop for mobile */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => !isInCall && setIsOpen(false)}
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Floating Action Button */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1, type: "spring", stiffness: 200 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50"
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div
               key="panel"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 w-80 border border-gray-100 dark:border-gray-700"
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 w-[calc(100vw-2rem)] max-w-sm border border-gray-100 dark:border-gray-700"
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
@@ -210,10 +265,10 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(true)}
-              className="w-14 h-14 bg-gradient-to-br from-[#ff6a1a] to-[#ea580c] hover:from-[#ea580c] hover:to-[#dc2626] rounded-full shadow-lg flex items-center justify-center transition-all group"
+              className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#ff6a1a] to-[#ea580c] hover:from-[#ea580c] hover:to-[#dc2626] rounded-full shadow-lg flex items-center justify-center transition-all group touch-manipulation"
               aria-label="Open voice call"
             >
-              <Headphones className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              <Headphones className="w-5 h-5 md:w-6 md:h-6 text-white group-hover:scale-110 transition-transform" />
 
               {/* Pulse animation */}
               <span className="absolute flex h-full w-full">

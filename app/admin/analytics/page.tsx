@@ -16,6 +16,8 @@ import { PartnerPerformanceChart } from '@/components/admin/analytics/PartnerPer
 import { LeadFunnelChart } from '@/components/admin/analytics/LeadFunnelChart'
 import { UserAcquisitionChart } from '@/components/admin/analytics/UserAcquisitionChart'
 import { DateRangeFilter, DateRange } from '@/components/admin/analytics/DateRangeFilter'
+import { TopPartnersTable } from '@/components/admin/analytics/TopPartnersTable'
+import { ServicePerformanceTable } from '@/components/admin/analytics/ServicePerformanceTable'
 
 interface AnalyticsData {
   revenueData: Array<{ date: string; revenue: number; orders: number }>
@@ -23,6 +25,7 @@ interface AnalyticsData {
   partnerPerformance: Array<{ name: string; leads: number; converted: number; commission: number }>
   leadFunnel: { total: number; contacted: number; qualified: number; converted: number; lost: number }
   userAcquisition: Array<{ date: string; users: number; cumulative: number }>
+  servicePerformance: Array<{ service: string; orders: number; revenue: number; avgValue: number }>
   keyMetrics: {
     totalRevenue: number
     totalOrders: number
@@ -102,7 +105,7 @@ export default function AnalyticsPage() {
     return null
   }
 
-  const { keyMetrics, revenueData, ordersStatus, partnerPerformance, leadFunnel, userAcquisition } =
+  const { keyMetrics, revenueData, ordersStatus, partnerPerformance, leadFunnel, userAcquisition, servicePerformance } =
     data
 
   return (
@@ -253,6 +256,25 @@ export default function AnalyticsPage() {
             No user acquisition data available
           </div>
         )}
+      </div>
+
+      {/* Data Tables Section */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Service Performance Table - Sortable */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Service Performance (Sortable)
+          </h2>
+          <ServicePerformanceTable data={servicePerformance || []} />
+        </div>
+
+        {/* Top Partners Table - Sortable */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Top Partner Performance (Sortable)
+          </h2>
+          <TopPartnersTable data={partnerPerformance} />
+        </div>
       </div>
 
       {/* Summary Stats */}

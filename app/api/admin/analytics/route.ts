@@ -7,6 +7,7 @@ import {
   getLeadFunnelData,
   getUserAcquisitionData,
   getKeyMetrics,
+  getServicePerformance,
 } from '@/lib/db-queries'
 
 export async function GET(request: NextRequest) {
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all analytics data in parallel
-    const [revenueData, ordersStatus, partnerPerformance, leadFunnel, userAcquisition, keyMetrics] =
+    const [revenueData, ordersStatus, partnerPerformance, leadFunnel, userAcquisition, keyMetrics, servicePerformance] =
       await Promise.all([
         getRevenueByDate(days),
         getOrdersByStatus(days),
@@ -48,6 +49,7 @@ export async function GET(request: NextRequest) {
         getLeadFunnelData(days),
         getUserAcquisitionData(days),
         getKeyMetrics(days),
+        getServicePerformance(),
       ])
 
     return NextResponse.json({
@@ -57,6 +59,7 @@ export async function GET(request: NextRequest) {
       leadFunnel,
       userAcquisition,
       keyMetrics,
+      servicePerformance,
     })
   } catch (error) {
     console.error('Analytics API error:', error)

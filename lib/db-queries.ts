@@ -2652,6 +2652,61 @@ export async function updateVoiceCallStatus(
   return result[0]
 }
 
+/**
+ * Get voice calls for a specific user with pagination and filtering
+ */
+export async function getVoiceCallsByUser(
+  userId: string,
+  options?: {
+    status?: 'pending' | 'ringing' | 'connected' | 'completed' | 'missed' | 'failed'
+    limit?: number
+    offset?: number
+  }
+): Promise<{ data: VoiceCall[]; total: number }> {
+  const limit = options?.limit || 10
+  const offset = options?.offset || 0
+
+  let data: VoiceCall[]
+  let countResult: { count: string }[]
+
+  if (options?.status) {
+    data = await sql`
+      SELECT *
+      FROM voice_calls
+      WHERE (caller_id = ${userId} OR callee_id = ${userId})
+        AND status = ${options.status}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as VoiceCall[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count
+      FROM voice_calls
+      WHERE (caller_id = ${userId} OR callee_id = ${userId})
+        AND status = ${options.status}
+    ` as unknown as { count: string }[]
+  } else {
+    data = await sql`
+      SELECT *
+      FROM voice_calls
+      WHERE caller_id = ${userId} OR callee_id = ${userId}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as VoiceCall[]
+
+    countResult = await sql`
+      SELECT COUNT(*) as count
+      FROM voice_calls
+      WHERE caller_id = ${userId} OR callee_id = ${userId}
+    ` as unknown as { count: string }[]
+  }
+
+  return {
+    data,
+    total: parseInt(countResult[0]?.count || '0')
+  }
+}
+
 export async function getVoiceCallHistory(options: {
   userId?: string
   callType?: string

@@ -20,6 +20,10 @@ interface AgentSession {
   token: string;
   createdAt: Date;
   status: 'pending' | 'active' | 'disconnected';
+  metadata?: {
+    systemPrompt: string;
+    voice: string;
+  };
 }
 
 // Store active agent sessions (in production, use Redis/database)
@@ -82,6 +86,10 @@ export async function spawnAgent(config: AgentConfig): Promise<AgentSession | nu
       token,
       createdAt: new Date(),
       status: 'pending',
+      metadata: {
+        systemPrompt: config.systemPrompt || getDefaultSystemPrompt(),
+        voice: config.voice || 'alloy',
+      },
     };
 
     activeSessions.set(config.roomName, session);
