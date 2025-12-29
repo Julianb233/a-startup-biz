@@ -28,7 +28,15 @@ export async function POST(request: NextRequest) {
       return rateLimitResponse
     }
 
-    const { userId } = await auth()
+    // Get userId if authenticated, but don't fail for guest checkout
+    let userId: string | null = null
+    try {
+      const authResult = await auth()
+      userId = authResult.userId
+    } catch {
+      // Guest checkout - continue without userId
+    }
+
     const body: CheckoutRequest = await request.json()
 
     const { items, customerEmail, customerName, metadata = {} } = body
