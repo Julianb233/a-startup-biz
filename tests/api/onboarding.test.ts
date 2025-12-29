@@ -66,7 +66,7 @@ describe('Onboarding API Endpoint', () => {
 
       expect(validPayload.companyName).toBeDefined();
       expect(validPayload.companyName.length).toBeGreaterThanOrEqual(2);
-      expect(validPayload.contactEmail).toMatch(/^[^s@]+@[^s@]+.[^s@]+$/);
+      expect(validPayload.contactEmail).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     });
 
     it('should validate required fields', () => {
@@ -110,11 +110,12 @@ describe('Onboarding API Endpoint', () => {
         budgetRange: '5000-10000',
         companySize: 'startup',
         businessGoals: ['growth', 'market-expansion'],
+        primaryChallenge: 'scaling operations',
         contactName: 'John Founder',
       };
 
       optionalFields.forEach(field => {
-        expect(payload[field]).toBeDefined();
+        expect(payload[field as keyof typeof payload]).toBeDefined();
       });
     });
 
@@ -125,8 +126,8 @@ describe('Onboarding API Endpoint', () => {
         '@nodomain.com',
       ];
 
-      const emailRegex = /^[^s@]+@[^s@]+.[^s@]+$/;
-      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       invalidEmails.forEach(email => {
         expect(emailRegex.test(email)).toBe(false);
       });
