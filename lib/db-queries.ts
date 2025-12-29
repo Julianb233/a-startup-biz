@@ -1549,3 +1549,377 @@ export async function canConvertToPartner(onboardingId: string): Promise<{
 
   return { canConvert: true }
 }
+
+// ============================================
+// STRIPE CONNECT QUERIES
+// ============================================
+
+import type {
+  PartnerStripeConnect,
+  PartnerTransfer,
+  PartnerPayout,
+  StripeConnectEvent,
+  TransferStatus,
+  PayoutStatus,
+  StripeAccountStatus,
+} from './types/stripe-connect'
+
+/**
+ * Get partner with Stripe Connect fields
+ */
+export async function getPartnerStripeConnect(partnerId: string): Promise<(Partner & PartnerStripeConnect) | null> {
+  const result = await sql`
+    SELECT * FROM partners WHERE id = ${partnerId} LIMIT 1
+  ` as unknown as (Partner & PartnerStripeConnect)[]
+  return result[0] || null
+}
+
+/**
+ * Update partner Stripe account ID and status
+ */
+export async function updatePartnerStripeAccount(
+  partnerId: string,
+  data: {
+    stripeAccountId: string
+    status?: StripeAccountStatus
+  }
+): Promise<void> {
+  await sql`
+    UPDATE partners
+    SET
+      stripe_account_id = ${data.stripeAccountId},
+      stripe_account_status = ${data.status || 'pending'},
+      stripe_connected_at = NOW(),
+      updated_at = NOW()
+    WHERE id = ${partnerId}
+  `
+}
+
+/**
+ * Update partner Stripe status from webhook
+ */
+export async function updatePartnerStripeStatus(
+  stripeAccountId: string,
+  data: {
+    status: StripeAccountStatus
+    payoutsEnabled: boolean
+    chargesEnabled: boolean
+    detailsSubmitted: boolean
+    onboardingComplete: boolean
+  }
+): Promise<void> {
+  await sql`
+    UPDATE partners
+    SET
+      stripe_account_status = ${data.status},
+      stripe_payouts_enabled = ${data.payoutsEnabled},
+      stripe_charges_enabled = ${data.chargesEnabled},
+      stripe_details_submitted = ${data.detailsSubmitted},
+      stripe_onboarding_complete = ${data.onboardingComplete},
+      updated_at = NOW()
+    WHERE stripe_account_id = ${stripeAccountId}
+  `
+}
+
+/**
+ * Get partner by Stripe account ID
+ */
+export async function getPartnerByStripeAccountId(stripeAccountId: string): Promise<Partner | null> {
+  const result = await sql`
+    SELECT * FROM partners WHERE stripe_account_id = ${stripeAccountId} LIMIT 1
+  ` as unknown as Partner[]
+  return result[0] || null
+}
+
+/**
+ * Get partner balance
+ */
+export async function getPartnerBalance(partnerId: string): Promise<{
+  availableBalance: number
+  pendingBalance: number
+  minimumPayoutThreshold: number
+}> {
+  const result = await sql`
+    SELECT available_balance, pending_balance, minimum_payout_threshold
+    FROM partners WHERE id = ${partnerId}
+  ` as unknown as any[]
+
+  if (!result[0]) {
+    return { availableBalance: 0, pendingBalance: 0, minimumPayoutThreshold: 50 }
+  }
+
+  return {
+    availableBalance: parseFloat(result[0].available_balance) || 0,
+    pendingBalance: parseFloat(result[0].pending_balance) || 0,
+    minimumPayoutThreshold: parseFloat(result[0].minimum_payout_threshold) || 50,
+  }
+}
+
+// ============================================
+// PARTNER TRANSFERS
+// ============================================
+
+/**
+ * Create a transfer record
+ */
+export async function createPartnerTransfer(data: {
+  partnerId: string
+  partnerLeadId?: string
+  stripeTransferId?: string
+  amount: number
+  description?: string
+  transferGroup?: string
+  sourceType?: string
+  status?: TransferStatus
+}): Promise<PartnerTransfer> {
+  const result = await sql`
+    INSERT INTO partner_transfers (
+      partner_id,
+      partner_lead_id,
+      stripe_transfer_id,
+      amount,
+      description,
+      transfer_group,
+      source_type,
+      status,
+      processed_at
+    ) VALUES (
+      ${data.partnerId},
+      ${data.partnerLeadId || null},
+      ${data.stripeTransferId || null},
+      ${data.amount},
+      ${data.description || null},
+      ${data.transferGroup || null},
+      ${data.sourceType || 'commission'},
+      ${data.status || 'pending'},
+      ${data.status === 'paid' ? sql`NOW()` : null}
+    )
+    RETURNING *
+  ` as unknown as PartnerTransfer[]
+  return result[0]
+}
+
+/**
+ * Update transfer status
+ */
+export async function updatePartnerTransferStatus(
+  stripeTransferId: string,
+  status: TransferStatus,
+  errorMessage?: string
+): Promise<void> {
+  if (status === 'paid') {
+    await sql`
+      UPDATE partner_transfers
+      SET status = ${status}, processed_at = NOW(), updated_at = NOW()
+      WHERE stripe_transfer_id = ${stripeTransferId}
+    `
+  } else if (status === 'failed' || status === 'reversed') {
+    await sql`
+      UPDATE partner_transfers
+      SET status = ${status}, failed_at = NOW(), error_message = ${errorMessage || null}, updated_at = NOW()
+      WHERE stripe_transfer_id = ${stripeTransferId}
+    `
+  } else {
+    await sql`
+      UPDATE partner_transfers
+      SET status = ${status}, updated_at = NOW()
+      WHERE stripe_transfer_id = ${stripeTransferId}
+    `
+  }
+}
+
+/**
+ * Get partner transfers with pagination
+ */
+export async function getPartnerTransfers(
+  partnerId: string,
+  limit = 20,
+  offset = 0
+): Promise<{ transfers: PartnerTransfer[]; total: number }> {
+  const [transfers, countResult] = await Promise.all([
+    sql`
+      SELECT * FROM partner_transfers
+      WHERE partner_id = ${partnerId}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as PartnerTransfer[],
+    sql`
+      SELECT COUNT(*) as count FROM partner_transfers
+      WHERE partner_id = ${partnerId}
+    ` as unknown as any[]
+  ])
+
+  return {
+    transfers,
+    total: parseInt(countResult[0]?.count || '0')
+  }
+}
+
+// ============================================
+// PARTNER PAYOUTS
+// ============================================
+
+/**
+ * Create a payout record
+ */
+export async function createPartnerPayout(data: {
+  partnerId: string
+  stripePayoutId?: string
+  amount: number
+  status?: PayoutStatus
+  method?: string
+  arrivalDate?: Date
+  requestedBy?: string
+}): Promise<PartnerPayout> {
+  const result = await sql`
+    INSERT INTO partner_payouts (
+      partner_id,
+      stripe_payout_id,
+      amount,
+      status,
+      method,
+      arrival_date,
+      requested_by,
+      initiated_at
+    ) VALUES (
+      ${data.partnerId},
+      ${data.stripePayoutId || null},
+      ${data.amount},
+      ${data.status || 'pending'},
+      ${data.method || 'standard'},
+      ${data.arrivalDate || null},
+      ${data.requestedBy || 'manual'},
+      NOW()
+    )
+    RETURNING *
+  ` as unknown as PartnerPayout[]
+  return result[0]
+}
+
+/**
+ * Update payout status
+ */
+export async function updatePartnerPayoutStatus(
+  stripePayoutId: string,
+  status: PayoutStatus,
+  data?: {
+    failureCode?: string
+    failureMessage?: string
+    destinationType?: string
+    destinationLast4?: string
+    arrivalDate?: Date
+  }
+): Promise<void> {
+  if (status === 'paid') {
+    await sql`
+      UPDATE partner_payouts
+      SET
+        status = ${status},
+        paid_at = NOW(),
+        destination_type = COALESCE(${data?.destinationType || null}, destination_type),
+        destination_last4 = COALESCE(${data?.destinationLast4 || null}, destination_last4),
+        updated_at = NOW()
+      WHERE stripe_payout_id = ${stripePayoutId}
+    `
+  } else if (status === 'failed') {
+    await sql`
+      UPDATE partner_payouts
+      SET
+        status = ${status},
+        failed_at = NOW(),
+        failure_code = ${data?.failureCode || null},
+        failure_message = ${data?.failureMessage || null},
+        updated_at = NOW()
+      WHERE stripe_payout_id = ${stripePayoutId}
+    `
+  } else {
+    await sql`
+      UPDATE partner_payouts
+      SET
+        status = ${status},
+        arrival_date = COALESCE(${data?.arrivalDate || null}, arrival_date),
+        updated_at = NOW()
+      WHERE stripe_payout_id = ${stripePayoutId}
+    `
+  }
+}
+
+/**
+ * Get partner payouts with pagination
+ */
+export async function getPartnerPayouts(
+  partnerId: string,
+  limit = 20,
+  offset = 0
+): Promise<{ payouts: PartnerPayout[]; total: number }> {
+  const [payouts, countResult] = await Promise.all([
+    sql`
+      SELECT * FROM partner_payouts
+      WHERE partner_id = ${partnerId}
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    ` as unknown as PartnerPayout[],
+    sql`
+      SELECT COUNT(*) as count FROM partner_payouts
+      WHERE partner_id = ${partnerId}
+    ` as unknown as any[]
+  ])
+
+  return {
+    payouts,
+    total: parseInt(countResult[0]?.count || '0')
+  }
+}
+
+// ============================================
+// STRIPE CONNECT EVENTS (Webhook Idempotency)
+// ============================================
+
+/**
+ * Check if a webhook event has been processed
+ */
+export async function isConnectEventProcessed(eventId: string): Promise<boolean> {
+  const result = await sql`
+    SELECT id FROM stripe_connect_events WHERE event_id = ${eventId} LIMIT 1
+  ` as unknown as any[]
+  return result.length > 0
+}
+
+/**
+ * Log a Stripe Connect event
+ */
+export async function logConnectEvent(data: {
+  eventId: string
+  eventType: string
+  stripeAccountId?: string
+  partnerId?: string
+  eventData?: Record<string, unknown>
+  processed?: boolean
+  errorMessage?: string
+}): Promise<void> {
+  await sql`
+    INSERT INTO stripe_connect_events (
+      event_id,
+      event_type,
+      stripe_account_id,
+      partner_id,
+      event_data,
+      processed,
+      processed_at,
+      error_message
+    ) VALUES (
+      ${data.eventId},
+      ${data.eventType},
+      ${data.stripeAccountId || null},
+      ${data.partnerId || null},
+      ${JSON.stringify(data.eventData || {})},
+      ${data.processed ?? true},
+      ${data.processed ? sql`NOW()` : null},
+      ${data.errorMessage || null}
+    )
+    ON CONFLICT (event_id) DO UPDATE SET
+      processed = EXCLUDED.processed,
+      processed_at = CASE WHEN EXCLUDED.processed THEN NOW() ELSE stripe_connect_events.processed_at END,
+      error_message = EXCLUDED.error_message
+  `
+}
