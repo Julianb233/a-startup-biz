@@ -236,3 +236,38 @@ export interface HubSpotConfig {
   retryDelay?: number;
   timeout?: number;
 }
+
+// Sync Types
+export type ConflictResolutionStrategy = 'local-wins' | 'hubspot-wins' | 'last-write-wins' | 'manual';
+
+export interface SyncOptions {
+  conflictResolution?: ConflictResolutionStrategy;
+  dryRun?: boolean;
+  batchSize?: number;
+  includeDeleted?: boolean;
+}
+
+export interface SyncLog {
+  entityType: 'contacts' | 'deals' | 'companies';
+  direction: 'push' | 'pull' | 'both';
+  status: 'success' | 'error' | 'skipped';
+  recordsProcessed: number;
+  recordsSucceeded: number;
+  recordsFailed: number;
+  timestamp: string;
+  durationMs?: number;
+  errors?: Array<{ entityId: string; error: string }>;
+}
+
+export interface SyncReport {
+  entityType: 'contacts' | 'deals' | 'companies';
+  direction: 'push' | 'pull' | 'both';
+  startTime: string;
+  endTime: string;
+  totalProcessed: number;
+  successful: number;
+  failed: number;
+  skipped: number;
+  errors: Array<{ entityId: string; error: string }>;
+  durationMs?: number;
+}
