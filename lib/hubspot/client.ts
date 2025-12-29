@@ -123,10 +123,25 @@ export class HubSpotClient {
   }
 
   /**
-   * GET request
+   * GET request with optional query parameters
    */
-  async get<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, {
+  async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    let url = endpoint;
+    if (params) {
+      const searchParams = new URLSearchParams();
+      for (const [key, value] of Object.entries(params)) {
+        if (Array.isArray(value)) {
+          value.forEach(v => searchParams.append(key, String(v)));
+        } else if (value !== undefined) {
+          searchParams.append(key, String(value));
+        }
+      }
+      const queryString = searchParams.toString();
+      if (queryString) {
+        url = `${endpoint}?${queryString}`;
+      }
+    }
+    return this.request<T>(url, {
       method: 'GET',
     });
   }
@@ -147,6 +162,16 @@ export class HubSpotClient {
   async patch<T>(endpoint: string, data: any): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * PUT request
+   */
+  async put<T>(endpoint: string, data: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
       body: JSON.stringify(data),
     });
   }

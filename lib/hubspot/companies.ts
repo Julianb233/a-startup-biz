@@ -54,22 +54,14 @@ export async function createCompany(
   properties: Partial<HubSpotCompany['properties']>
 ): Promise<HubSpotCompany> {
   try {
-<<<<<<< HEAD
     // Remove undefined values
     const cleanedProperties = Object.fromEntries(
       Object.entries(properties).filter(([_, value]) => value !== undefined)
     );
 
-||||||| parent of 86be6b9 (Fix company association API call)
-    const cleanedProperties = Object.fromEntries(
-      Object.entries(properties).filter(([_, value]) => value !== undefined)
-    );
-
-=======
->>>>>>> 86be6b9 (Fix company association API call)
     const response = await client.post<HubSpotResponse<HubSpotCompany['properties']>>(
       '/crm/v3/objects/companies',
-      { properties }
+      { properties: cleanedProperties }
     );
 
     return response;
@@ -87,22 +79,14 @@ export async function updateCompany(
   properties: Partial<HubSpotCompany['properties']>
 ): Promise<HubSpotCompany> {
   try {
-<<<<<<< HEAD
     // Remove undefined values
     const cleanedProperties = Object.fromEntries(
       Object.entries(properties).filter(([_, value]) => value !== undefined)
     );
 
-||||||| parent of 86be6b9 (Fix company association API call)
-    const cleanedProperties = Object.fromEntries(
-      Object.entries(properties).filter(([_, value]) => value !== undefined)
-    );
-
-=======
->>>>>>> 86be6b9 (Fix company association API call)
     const response = await client.patch<HubSpotResponse<HubSpotCompany['properties']>>(
       `/crm/v3/objects/companies/${companyId}`,
-      { properties }
+      { properties: cleanedProperties }
     );
 
     return response;
@@ -117,20 +101,19 @@ export async function updateCompany(
  */
 export async function getCompany(companyId: string): Promise<HubSpotCompany> {
   try {
+    const properties = [
+      'name',
+      'domain',
+      'industry',
+      'phone',
+      'city',
+      'state',
+      'country',
+      'numberofemployees',
+    ].join(',');
+
     const response = await client.get<HubSpotResponse<HubSpotCompany['properties']>>(
-      `/crm/v3/objects/companies/${companyId}`,
-      {
-        properties: [
-          'name',
-          'domain',
-          'industry',
-          'phone',
-          'city',
-          'state',
-          'country',
-          'numberofemployees',
-        ],
-      }
+      `/crm/v3/objects/companies/${companyId}?properties=${properties}`
     );
 
     return response;
@@ -143,53 +126,6 @@ export async function getCompany(companyId: string): Promise<HubSpotCompany> {
 /**
  * Associate company with contact
  */
-<<<<<<< HEAD
-export async function deleteCompany(companyId: string): Promise<void> {
-  const client = getHubSpotClient();
-
-  try {
-    await client.delete(`/crm/v3/objects/companies/${companyId}`);
-    console.log('Company deleted from HubSpot:', companyId);
-  } catch (error) {
-    console.error('Error deleting company:', error);
-    throw error;
-  }
-}
-
-||||||| parent of 86be6b9 (Fix company association API call)
-export async function deleteCompany(companyId: string): Promise<void> {
-  const client = getHubSpotClient();
-
-  try {
-    await client.delete(`/crm/v3/objects/companies/${companyId}`);
-    console.log('Company deleted from HubSpot:', companyId);
-  } catch (error) {
-    console.error('Error deleting company:', error);
-    throw error;
-  }
-}
-
-/**
- * Associate contact with company
- */
-export async function associateContactWithCompany(
-  companyId: string,
-  contactId: string
-): Promise<void> {
-  const client = getHubSpotClient();
-
-  try {
-    await client.put(
-      `/crm/v3/objects/companies/${companyId}/associations/contacts/${contactId}/company_to_contact`,
-      {}
-    );
-    console.log('Associated contact with company:', { companyId, contactId });
-  } catch (error) {
-    console.error('Error associating contact with company:', error);
-    throw error;
-  }
-}
-=======
 export async function associateCompanyWithContact(
   companyId: string,
   contactId: string
@@ -199,6 +135,7 @@ export async function associateCompanyWithContact(
       `/crm/v3/objects/companies/${companyId}/associations/contacts/${contactId}/company_to_contact`,
       {}
     );
+    console.log('Associated company with contact:', { companyId, contactId });
   } catch (error) {
     console.error('Error associating company with contact:', error);
     throw error;
@@ -211,9 +148,9 @@ export async function associateCompanyWithContact(
 export async function deleteCompany(companyId: string): Promise<void> {
   try {
     await client.delete(`/crm/v3/objects/companies/${companyId}`);
+    console.log('Company deleted from HubSpot:', companyId);
   } catch (error) {
     console.error('Error deleting company:', error);
     throw error;
   }
 }
->>>>>>> 86be6b9 (Fix company association API call)

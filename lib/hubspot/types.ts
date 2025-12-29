@@ -45,6 +45,9 @@ export interface HubSpotContact {
     best_time_to_call?: string;
     timezone?: string;
     communication_preference?: string;
+    // System properties
+    lastmodifieddate?: string;
+    createdate?: string;
   };
   createdAt?: string;
   updatedAt?: string;
@@ -67,6 +70,9 @@ export interface HubSpotDeal {
     timeline?: string;
     services_requested?: string;
     priority?: string;
+    // System properties
+    hs_lastmodifieddate?: string;
+    hs_createdate?: string;
   };
   associations?: {
     contacts?: string[];
