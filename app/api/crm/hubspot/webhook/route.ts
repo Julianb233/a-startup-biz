@@ -137,22 +137,30 @@ export async function POST(request: NextRequest) {
     const bodyText = await request.text();
     const signature = request.headers.get('X-HubSpot-Signature');
 
-    // Verify signature if secret is configured
-    if (webhookSecret) {
-      const isValid = verifyWebhookSignature(bodyText, signature, webhookSecret);
+    // SECURITY: Signature verification is REQUIRED
+    // Webhooks without valid signatures could be forged by attackers
+    if (!webhookSecret) {
+      console.error('HUBSPOT_WEBHOOK_SECRET not configured - rejecting webhook');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Webhook not configured',
+        },
+        { status: 503 } // Service Unavailable - config issue
+      );
+    }
 
-      if (!isValid) {
-        console.error('Invalid webhook signature');
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Invalid signature',
-          },
-          { status: 401 }
-        );
-      }
-    } else {
-      console.warn('HUBSPOT_WEBHOOK_SECRET not configured - skipping signature verification');
+    const isValid = verifyWebhookSignature(bodyText, signature, webhookSecret);
+
+    if (!isValid) {
+      console.error('Invalid webhook signature - possible forgery attempt');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid signature',
+        },
+        { status: 401 }
+      );
     }
 
     // Parse webhook payload

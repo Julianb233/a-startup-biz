@@ -54,7 +54,7 @@ export const SERVICE_DEFINITIONS: ServiceDefinition[] = [
   },
   {
     id: 'legal',
-    slug: 'legal',
+    slug: 'legal-services',
     category: ServiceCategory.LEGAL,
     title: 'Business Legal Services',
     shortDescription: 'Entity formation, contracts, and legal compliance',
@@ -78,7 +78,7 @@ export const SERVICE_DEFINITIONS: ServiceDefinition[] = [
   },
   {
     id: 'accounting',
-    slug: 'accounting',
+    slug: 'accounting-services',
     category: ServiceCategory.ACCOUNTING,
     title: 'Accounting & CFO Services',
     shortDescription: 'Strategic financial management and tax planning',
@@ -126,7 +126,7 @@ export const SERVICE_DEFINITIONS: ServiceDefinition[] = [
   },
   {
     id: 'ai-automation',
-    slug: 'ai-automation',
+    slug: 'ai-solutions',
     category: ServiceCategory.AI_AUTOMATION,
     title: 'AI & Business Automation',
     shortDescription: 'Intelligent automation and AI-powered workflows',
@@ -150,7 +150,7 @@ export const SERVICE_DEFINITIONS: ServiceDefinition[] = [
   },
   {
     id: 'crm',
-    slug: 'crm',
+    slug: 'crm-implementation',
     category: ServiceCategory.CRM,
     title: 'CRM & Sales Systems',
     shortDescription: 'Customer relationship management and sales automation',

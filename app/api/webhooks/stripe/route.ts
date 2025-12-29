@@ -4,6 +4,7 @@ import Stripe from 'stripe'
 import { stripe, formatAmountFromStripe } from '@/lib/stripe'
 import { createOrder, getUserByEmail, createUser } from '@/lib/db-queries'
 import { sendEmail, orderConfirmationEmail, adminNewOrderEmail, ADMIN_EMAIL } from '@/lib/email'
+import { isEventProcessed, markEventProcessed } from '@/lib/webhook-idempotency'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
@@ -31,6 +32,16 @@ export async function POST(request: Request) {
       { status: 400 }
     )
   }
+
+  // SECURITY: Check for duplicate events (idempotency)
+  const alreadyProcessed = await isEventProcessed(event.id, 'stripe')
+  if (alreadyProcessed) {
+    console.log(`Stripe event ${event.id} already processed, acknowledging`)
+    return NextResponse.json({ received: true, duplicate: true })
+  }
+
+  // Mark event as processed before handling to prevent race conditions
+  await markEventProcessed(event.id, 'stripe')
 
   try {
     switch (event.type) {

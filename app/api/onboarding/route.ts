@@ -128,15 +128,21 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (dbError) {
-      // If database save fails, log but still return success with mock ID
-      // This ensures the user experience isn't broken if DB is unavailable
-      console.error('Database save failed, using fallback:', dbError);
-      submission = {
-        id: `ONB-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-        business_name: submissionData.businessName,
-        contact_email: submissionData.contactEmail,
-        status: 'submitted' as const,
-      };
+      // SECURITY FIX: Don't silently fail - database save is critical
+      // Users must know if their submission wasn't saved properly
+      console.error('Database save failed:', dbError);
+
+      // Return error to user - they need to know their data wasn't saved
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'We encountered an issue saving your information. Please try again in a few moments.',
+          error: 'Database temporarily unavailable',
+          // Include a reference for support without exposing internals
+          reference: `ERR-${Date.now().toString(36).toUpperCase()}`,
+        },
+        { status: 503 } // Service Unavailable
+      );
     }
 
     // Send confirmation email to client

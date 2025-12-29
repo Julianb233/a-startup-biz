@@ -72,7 +72,7 @@ const navItems = [
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   // Ensure user is authenticated
-  await requireAuth('/sign-in');
+  await requireAuth('/login');
 
   // Check if user has admin role
   const isAdmin = await checkRole('admin');

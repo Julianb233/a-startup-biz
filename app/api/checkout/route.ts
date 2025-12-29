@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { stripe, formatAmountForStripe } from '@/lib/stripe'
 import { SITE_CONFIG } from '@/lib/site-config'
 import { withRateLimit } from '@/lib/rate-limit'
+import { getProduct, verifyProductPrice } from '@/lib/products'
 
 interface CartItem {
   slug: string
@@ -39,11 +40,48 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate total
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    // SECURITY: Verify all prices against server-side catalog
+    // Never trust client-provided prices
+    const priceErrors: string[] = []
+    const verifiedItems = items.map((item) => {
+      const verification = verifyProductPrice(item.slug, item.price)
 
-    // Create line items for Stripe
-    const lineItems = items.map((item) => ({
+      if (!verification.valid) {
+        priceErrors.push(verification.error || `Invalid price for ${item.slug}`)
+        // Use server-side price if available, otherwise reject
+        if (verification.actualPrice !== undefined) {
+          return {
+            ...item,
+            price: verification.actualPrice,
+            name: verification.product?.name || item.name,
+            description: verification.product?.description || item.description,
+          }
+        }
+      }
+
+      return item
+    })
+
+    // Reject checkout if any products are not in catalog
+    const invalidProducts = priceErrors.filter(e => e.includes('not found'))
+    if (invalidProducts.length > 0) {
+      console.error('Checkout rejected - invalid products:', invalidProducts)
+      return NextResponse.json(
+        { error: 'One or more products are not available', details: invalidProducts },
+        { status: 400 }
+      )
+    }
+
+    // Log any price tampering attempts
+    if (priceErrors.length > 0) {
+      console.warn('Price tampering detected - using server prices:', priceErrors)
+    }
+
+    // Calculate total using VERIFIED prices
+    const total = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+
+    // Create line items for Stripe using VERIFIED prices
+    const lineItems = verifiedItems.map((item) => ({
       price_data: {
         currency: 'usd',
         product_data: {
@@ -70,13 +108,13 @@ export async function POST(request: NextRequest) {
         ...metadata,
         userId: userId || 'anonymous',
         customerName: customerName || '',
-        itemsSummary: items.map(i => `${i.name} x${i.quantity}`).join(', '),
+        itemsSummary: verifiedItems.map(i => `${i.name} x${i.quantity}`).join(', '),
         total: total.toFixed(2),
       },
       payment_intent_data: {
         metadata: {
           userId: userId || 'anonymous',
-          items: JSON.stringify(items.map(i => ({ slug: i.slug, name: i.name, price: i.price, quantity: i.quantity }))),
+          items: JSON.stringify(verifiedItems.map(i => ({ slug: i.slug, name: i.name, price: i.price, quantity: i.quantity }))),
         },
       },
       billing_address_collection: 'required',
