@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth-options"
+import { requireAdmin, withAuth } from "@/lib/api-auth"
 import { getPartnerStripeConnect, getPartnerBalance, createPartnerPayout } from "@/lib/db-queries"
 import Stripe from "stripe"
 
@@ -10,24 +9,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const session = await getServerSession(authOptions)
+  return withAuth(async () => {
+    await requireAdmin()
 
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    if (session.user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden - Admin only" }, { status: 403 })
-    }
-
+    const { id } = await params
     const body = await request.json()
     const { amount } = body
 
     // Get partner with Stripe Connect details
-    const partner = await getPartnerStripeConnect(params.id)
+    const partner = await getPartnerStripeConnect(id)
 
     if (!partner) {
       return NextResponse.json({ error: "Partner not found" }, { status: 404 })
@@ -48,7 +40,7 @@ export async function POST(
     }
 
     // Get current balance
-    const balance = await getPartnerBalance(params.id)
+    const balance = await getPartnerBalance(id)
 
     if (amount > balance.availableBalance) {
       return NextResponse.json(
@@ -100,19 +92,5 @@ export async function POST(
         arrivalDate: dbPayout.arrival_date
       }
     })
-  } catch (error) {
-    console.error("Error creating payout:", error)
-
-    if (error instanceof Stripe.errors.StripeError) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      )
-    }
-
-    return NextResponse.json(
-      { error: "Failed to create payout" },
-      { status: 500 }
-    )
-  }
+  })
 }

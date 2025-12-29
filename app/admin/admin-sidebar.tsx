@@ -16,6 +16,7 @@ import {
   UserCheck,
   BarChart3,
   ClipboardList,
+  Building2,
 } from 'lucide-react';
 
 const navItems = [
@@ -24,6 +25,7 @@ const navItems = [
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Consultations', href: '/admin/consultations', icon: Calendar },
   { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'Partners', href: '/admin/partners', icon: Building2 },
   { name: 'Fulfillment', href: '/admin/fulfillment', icon: Package },
   { name: 'Referrals', href: '/admin/referrals', icon: UserCheck },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
