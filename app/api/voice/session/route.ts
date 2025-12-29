@@ -241,7 +241,7 @@ export async function GET(request: NextRequest) {
     }
 
     // List user's sessions
-    const calls = await getVoiceCallHistory({
+    const result = await getVoiceCallHistory({
       userId,
       status: status as 'pending' | 'ringing' | 'connected' | 'completed' | 'missed' | 'failed' | undefined,
       limit,
@@ -250,11 +250,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      count: calls.data.length,
-      total: calls.total,
+      count: result.calls.length,
+      total: result.total,
       limit,
       offset,
-      sessions: calls.data.map((call) => ({
+      sessions: result.calls.map((call) => ({
         callId: call.id,
         roomName: call.room_name,
         callType: call.call_type,

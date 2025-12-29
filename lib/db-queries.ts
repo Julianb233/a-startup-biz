@@ -2613,12 +2613,24 @@ export async function updateVoiceCallStatus(
   roomName: string,
   status: string,
   additionalData?: {
+    startedAt?: boolean
     connectedAt?: boolean
     endedAt?: boolean
     durationSeconds?: number
     recordingUrl?: string
   }
 ): Promise<VoiceCall | null> {
+  // Handle ringing status with startedAt
+  if (additionalData?.startedAt) {
+    const result = await sql`
+      UPDATE voice_calls
+      SET status = ${status}, started_at = NOW()
+      WHERE room_name = ${roomName}
+      RETURNING *
+    ` as unknown as VoiceCall[]
+    return result[0]
+  }
+
   if (status === 'connected' && additionalData?.connectedAt) {
     const result = await sql`
       UPDATE voice_calls
