@@ -1,4 +1,4 @@
--- Voice Agent Configuration Tables
+-- Voice Agent Configuration Tables for Supabase
 -- Created: 2025-12-29
 -- Purpose: Store configurable settings for AI voice agents
 
@@ -11,14 +11,14 @@ CREATE TABLE IF NOT EXISTS voice_agent_config (
     -- Agent Identity
     system_prompt TEXT NOT NULL DEFAULT 'You are a helpful AI assistant.',
     greeting_message TEXT DEFAULT 'Hello! How can I help you today?',
-    voice VARCHAR(20) DEFAULT 'alloy', -- alloy, echo, fable, onyx, nova, shimmer
+    voice VARCHAR(20) DEFAULT 'alloy',
 
     -- Behavior Settings
-    max_response_length INTEGER DEFAULT 150, -- words
-    response_style VARCHAR(20) DEFAULT 'professional', -- professional, friendly, casual
+    max_response_length INTEGER DEFAULT 150,
+    response_style VARCHAR(20) DEFAULT 'professional',
     language VARCHAR(10) DEFAULT 'en',
 
-    -- Business Hours (JSON: {"monday": {"start": "09:00", "end": "17:00"}, ...})
+    -- Business Hours (JSON)
     business_hours JSONB DEFAULT '{
         "monday": {"enabled": true, "start": "09:00", "end": "17:00"},
         "tuesday": {"enabled": true, "start": "09:00", "end": "17:00"},
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS voice_agent_config (
     timezone VARCHAR(50) DEFAULT 'America/New_York',
 
     -- After Hours Behavior
-    after_hours_behavior VARCHAR(20) DEFAULT 'voicemail', -- voicemail, limited, offline
+    after_hours_behavior VARCHAR(20) DEFAULT 'voicemail',
     after_hours_message TEXT DEFAULT 'Our office is currently closed. Please leave a message and we will get back to you during business hours.',
 
     -- Fallback Settings
@@ -55,31 +55,19 @@ CREATE TABLE IF NOT EXISTS escalation_rules (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT true,
-    priority INTEGER DEFAULT 0, -- Higher = checked first
+    priority INTEGER DEFAULT 0,
 
     -- Trigger Conditions
-    trigger_type VARCHAR(30) NOT NULL, -- keyword, sentiment, time_limit, intent, custom
-
-    -- Keyword triggers (comma-separated)
-    trigger_keywords TEXT[], -- ['manager', 'supervisor', 'complaint', 'cancel']
-
-    -- Sentiment threshold (0-100, lower = more negative)
-    sentiment_threshold INTEGER, -- e.g., 30 means escalate if sentiment < 30
-
-    -- Time limit in seconds before offering escalation
+    trigger_type VARCHAR(30) NOT NULL,
+    trigger_keywords TEXT[],
+    sentiment_threshold INTEGER,
     time_limit_seconds INTEGER,
-
-    -- Intent detection (what user is trying to do)
-    trigger_intents TEXT[], -- ['cancel_account', 'file_complaint', 'refund_request']
-
-    -- Custom condition (for advanced rules)
+    trigger_intents TEXT[],
     custom_condition JSONB,
 
     -- Action to take
-    action VARCHAR(30) NOT NULL DEFAULT 'offer_transfer', -- offer_transfer, auto_transfer, schedule_callback, send_email
-
-    -- Action configuration
-    transfer_to VARCHAR(255), -- Phone number or email
+    action VARCHAR(30) NOT NULL DEFAULT 'offer_transfer',
+    transfer_to VARCHAR(255),
     action_message TEXT DEFAULT 'I understand you would like to speak with a human. Let me connect you.',
 
     -- Metadata
@@ -95,8 +83,7 @@ CREATE TABLE IF NOT EXISTS knowledge_base (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     config_id UUID REFERENCES voice_agent_config(id) ON DELETE CASCADE,
 
-    -- Entry type
-    entry_type VARCHAR(20) NOT NULL DEFAULT 'faq', -- faq, document, product, custom
+    entry_type VARCHAR(20) NOT NULL DEFAULT 'faq',
 
     -- FAQ fields
     question TEXT,
@@ -116,10 +103,7 @@ CREATE TABLE IF NOT EXISTS knowledge_base (
     -- Categorization
     category VARCHAR(100),
     tags TEXT[],
-
-    -- Search optimization
     search_keywords TEXT[],
-    -- embedding VECTOR(1536), -- For semantic search (requires pgvector extension)
 
     -- Status
     is_active BOOLEAN DEFAULT true,
@@ -133,51 +117,55 @@ CREATE TABLE IF NOT EXISTS knowledge_base (
     CONSTRAINT valid_entry_type CHECK (entry_type IN ('faq', 'document', 'product', 'custom'))
 );
 
--- Call Transcripts (enhanced with sentiment)
-ALTER TABLE voice_calls
-ADD COLUMN IF NOT EXISTS sentiment_scores JSONB DEFAULT '[]',
-ADD COLUMN IF NOT EXISTS topics_detected TEXT[],
-ADD COLUMN IF NOT EXISTS escalation_triggered BOOLEAN DEFAULT false,
-ADD COLUMN IF NOT EXISTS escalation_reason TEXT,
-ADD COLUMN IF NOT EXISTS agent_config_id UUID REFERENCES voice_agent_config(id);
+-- Voice Calls table (for call history)
+CREATE TABLE IF NOT EXISTS voice_calls (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    room_name VARCHAR(255) NOT NULL,
+    caller_id VARCHAR(255),
+    agent_id VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'active',
+    started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    ended_at TIMESTAMP WITH TIME ZONE,
+    duration_seconds INTEGER,
+    transcript TEXT,
+    recording_url TEXT,
+    sentiment_scores JSONB DEFAULT '[]',
+    topics_detected TEXT[],
+    escalation_triggered BOOLEAN DEFAULT false,
+    escalation_reason TEXT,
+    agent_config_id UUID REFERENCES voice_agent_config(id),
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
 -- Voice Agent Analytics (aggregated metrics)
 CREATE TABLE IF NOT EXISTS voice_agent_analytics (
     id SERIAL PRIMARY KEY,
     config_id UUID REFERENCES voice_agent_config(id) ON DELETE CASCADE,
 
-    -- Time period
     period_start TIMESTAMP WITH TIME ZONE NOT NULL,
     period_end TIMESTAMP WITH TIME ZONE NOT NULL,
-    period_type VARCHAR(20) NOT NULL DEFAULT 'daily', -- hourly, daily, weekly, monthly
+    period_type VARCHAR(20) NOT NULL DEFAULT 'daily',
 
-    -- Call metrics
     total_calls INTEGER DEFAULT 0,
     completed_calls INTEGER DEFAULT 0,
     missed_calls INTEGER DEFAULT 0,
     escalated_calls INTEGER DEFAULT 0,
 
-    -- Duration metrics
     total_duration_seconds INTEGER DEFAULT 0,
     avg_duration_seconds INTEGER DEFAULT 0,
 
-    -- Sentiment metrics
-    avg_sentiment_score INTEGER, -- 0-100
+    avg_sentiment_score INTEGER,
     positive_calls INTEGER DEFAULT 0,
     neutral_calls INTEGER DEFAULT 0,
     negative_calls INTEGER DEFAULT 0,
 
-    -- Resolution metrics
     resolved_by_agent INTEGER DEFAULT 0,
     transferred_to_human INTEGER DEFAULT 0,
 
-    -- Top topics (JSON array)
     top_topics JSONB DEFAULT '[]',
-
-    -- Peak hours (JSON: {"09": 15, "10": 22, ...})
     calls_by_hour JSONB DEFAULT '{}',
 
-    -- Metadata
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
     UNIQUE(config_id, period_start, period_type)
@@ -191,6 +179,31 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_base_type ON knowledge_base(entry_type,
 CREATE INDEX IF NOT EXISTS idx_knowledge_base_category ON knowledge_base(category);
 CREATE INDEX IF NOT EXISTS idx_voice_analytics_config ON voice_agent_analytics(config_id);
 CREATE INDEX IF NOT EXISTS idx_voice_analytics_period ON voice_agent_analytics(period_start, period_type);
+CREATE INDEX IF NOT EXISTS idx_voice_calls_room ON voice_calls(room_name);
+CREATE INDEX IF NOT EXISTS idx_voice_calls_status ON voice_calls(status);
+
+-- Enable Row Level Security
+ALTER TABLE voice_agent_config ENABLE ROW LEVEL SECURITY;
+ALTER TABLE escalation_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE knowledge_base ENABLE ROW LEVEL SECURITY;
+ALTER TABLE voice_calls ENABLE ROW LEVEL SECURITY;
+ALTER TABLE voice_agent_analytics ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies (allow service role full access)
+CREATE POLICY "Service role has full access to voice_agent_config" ON voice_agent_config
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Service role has full access to escalation_rules" ON escalation_rules
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Service role has full access to knowledge_base" ON knowledge_base
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Service role has full access to voice_calls" ON voice_calls
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Service role has full access to voice_agent_analytics" ON voice_agent_analytics
+    FOR ALL USING (true) WITH CHECK (true);
 
 -- Insert default configuration
 INSERT INTO voice_agent_config (
@@ -323,9 +336,3 @@ SELECT
     'Services'
 FROM voice_agent_config WHERE name = 'A Startup Biz Support Agent'
 ON CONFLICT DO NOTHING;
-
--- Comments
-COMMENT ON TABLE voice_agent_config IS 'Configuration settings for AI voice agents';
-COMMENT ON TABLE escalation_rules IS 'Rules defining when to escalate calls to human agents';
-COMMENT ON TABLE knowledge_base IS 'FAQs, documents, and product info for agent reference';
-COMMENT ON TABLE voice_agent_analytics IS 'Aggregated analytics for voice agent performance';
