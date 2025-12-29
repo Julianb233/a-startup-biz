@@ -48,14 +48,23 @@ export async function withAuth<T>(
 /**
  * Requires admin role - throws if not admin
  *
+ * @returns Object containing userId if admin
  * @throws Error if user is not an admin
  */
-export async function requireAdmin(): Promise<void> {
+export async function requireAdmin(): Promise<{ userId: string }> {
+  const { userId } = await auth()
+
+  if (!userId) {
+    throw new Error('Unauthorized - Authentication required')
+  }
+
   const isAdmin = await checkRole('admin')
 
   if (!isAdmin) {
     throw new Error('Forbidden - Admin access required')
   }
+
+  return { userId }
 }
 
 /**

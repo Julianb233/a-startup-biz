@@ -12,15 +12,13 @@ import { requireAdmin, withAuth } from '@/lib/api-auth';
 export async function GET() {
   return withAuth(async () => {
     // Require admin role
-    const { userId, user } = await requireAdmin();
+    const { userId } = await requireAdmin();
 
     // This endpoint is only accessible to admins
     return NextResponse.json({
       message: 'Admin access granted',
       admin: {
-        id: user.id,
-        email: user.emailAddresses[0]?.emailAddress,
-        role: user.publicMetadata?.role || user.privateMetadata?.role,
+        id: userId,
       },
       // Example admin data
       stats: {
@@ -47,7 +45,7 @@ export async function GET() {
  */
 export async function POST(request: Request) {
   return withAuth(async () => {
-    const { userId, user } = await requireAdmin();
+    const { userId } = await requireAdmin();
 
     const body = await request.json();
     const { action, data } = body;

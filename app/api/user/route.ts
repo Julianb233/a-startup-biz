@@ -13,7 +13,7 @@ import { requireAuth, withAuth } from '@/lib/api-auth';
 export async function GET() {
   return withAuth(async () => {
     // Require authentication
-    const { userId } = await requireAuth();
+    const userId = await requireAuth();
 
     // Get full user data from Clerk
     const user = await currentUser();
@@ -52,7 +52,7 @@ export async function GET() {
  */
 export async function PATCH(request: Request) {
   return withAuth(async () => {
-    const { userId } = await requireAuth();
+    const userId = await requireAuth();
     const user = await currentUser();
 
     if (!user) {
