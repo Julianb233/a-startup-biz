@@ -122,8 +122,13 @@ export const rateLimiters = {
     : null,
 }
 
+// Clear in-memory store (for testing)
+export function clearRateLimitStore(): void {
+  inMemoryStore.clear()
+}
+
 // In-memory rate limiting for development
-function inMemoryRateLimit(
+export function inMemoryRateLimit(
   identifier: string,
   maxRequests: number,
   windowMs: number

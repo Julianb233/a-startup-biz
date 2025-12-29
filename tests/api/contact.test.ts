@@ -52,7 +52,7 @@ describe('Contact API Endpoint', () => {
       // This is a structural test - in reality you'd import and test the actual POST handler
       expect(validPayload).toBeDefined();
       expect(validPayload.name.length).toBeGreaterThanOrEqual(2);
-      expect(validPayload.email).toMatch(/^[^s@]+@[^s@]+.[^s@]+$/);
+      expect(validPayload.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
       expect(validPayload.message.length).toBeGreaterThanOrEqual(10);
     });
 
@@ -76,8 +76,8 @@ describe('Contact API Endpoint', () => {
         'spaces in@email.com',
       ];
 
-      const emailRegex = /^[^s@]+@[^s@]+.[^s@]+$/;
-      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
       invalidEmails.forEach(email => {
         expect(emailRegex.test(email)).toBe(false);
       });
@@ -108,7 +108,7 @@ describe('Contact API Endpoint', () => {
 
       // Validation would catch these issues
       expect(invalidPayload.name.length).toBeLessThan(2);
-      expect(invalidPayload.email).not.toMatch(/^[^s@]+@[^s@]+.[^s@]+$/);
+      expect(invalidPayload.email).not.toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
       expect(invalidPayload.message.length).toBeLessThan(10);
     });
 
@@ -233,7 +233,9 @@ describe('Contact API Endpoint', () => {
     });
 
     it('should include retry-after header', () => {
-      const retryAfter = Math.ceil((1000000 - Date.now()) / 1000);
+      // Simulate a reset time in the future (10 minutes from now)
+      const futureReset = Date.now() + (10 * 60 * 1000);
+      const retryAfter = Math.ceil((futureReset - Date.now()) / 1000);
       expect(typeof retryAfter).toBe('number');
       expect(retryAfter).toBeGreaterThan(0);
     });

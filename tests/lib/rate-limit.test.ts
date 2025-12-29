@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { rateLimit, inMemoryRateLimit, addRateLimitHeaders, getClientIp } from '@/lib/rate-limit';
+import { rateLimit, inMemoryRateLimit, addRateLimitHeaders, getClientIp, clearRateLimitStore } from '@/lib/rate-limit';
 import { NextResponse } from 'next/server';
 
 describe('Rate Limiting', () => {
   beforeEach(() => {
     // Clear in-memory store before each test
+    clearRateLimitStore();
     vi.clearAllMocks();
   });
 
