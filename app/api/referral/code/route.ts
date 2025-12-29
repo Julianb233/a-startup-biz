@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import {
   getOrCreateReferralCode,
   getUserReferrals,
@@ -75,8 +75,29 @@ export async function GET(request: NextRequest) {
     }
 
     // Get or create referral code
-    // Note: We need user email - get from Clerk or your user system
-    const email = searchParams.get('email') || `user_${userId}@example.com` // TODO: Get real email
+    // Get user email from Clerk
+    let email = searchParams.get('email')
+
+    if (!email) {
+      try {
+        const client = await clerkClient()
+        const user = await client.users.getUser(userId)
+        email = user.emailAddresses[0]?.emailAddress || null
+      } catch (clerkError) {
+        console.warn('Could not fetch user email from Clerk:', clerkError)
+      }
+    }
+
+    if (!email) {
+      return NextResponse.json(
+        {
+          success: false,
+          referralCode: null,
+          message: 'User email not found. Please provide email parameter.',
+        } satisfies GetReferralCodeResponse,
+        { status: 400 }
+      )
+    }
 
     const referralCode = await getOrCreateReferralCode(userId, email)
 

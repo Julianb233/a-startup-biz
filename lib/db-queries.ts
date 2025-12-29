@@ -615,6 +615,27 @@ export async function getUpcomingConsultations(days = 7): Promise<Consultation[]
   ` as unknown as Consultation[]
 }
 
+export async function updateConsultation(
+  consultationId: string,
+  updates: {
+    status?: string
+    notes?: string
+    scheduled_at?: Date
+  }
+): Promise<Consultation | null> {
+  const result = await sql`
+    UPDATE consultations
+    SET
+      status = COALESCE(${updates.status || null}, status),
+      notes = COALESCE(${updates.notes || null}, notes),
+      scheduled_at = COALESCE(${updates.scheduled_at || null}, scheduled_at),
+      updated_at = NOW()
+    WHERE id = ${consultationId}
+    RETURNING *
+  ` as unknown as Consultation[]
+  return result[0] || null
+}
+
 // ============================================
 // ORDER MANAGEMENT
 // ============================================

@@ -10,6 +10,7 @@ import { HubSpotWebhookPayload } from '@/lib/hubspot/types';
 import { getDeal } from '@/lib/hubspot/deals';
 import { getContact } from '@/lib/hubspot/contacts';
 import { sql } from '@/lib/db';
+import { upsertContactFromHubSpot, upsertDealFromHubSpot } from '@/lib/hubspot/db-operations';
 import crypto from 'crypto';
 
 /**
@@ -63,10 +64,19 @@ async function processDealUpdate(objectId: number): Promise<void> {
       stage: deal.properties.dealstage,
     });
 
-    // Update local database if needed
-    // This is where you'd sync deal status back to your onboarding_submissions table
-    // For example, update status based on deal stage
+    // Upsert the deal in local database
+    const result = await upsertDealFromHubSpot({
+      hubspotId: deal.id,
+      dealName: deal.properties.dealname || 'Unnamed Deal',
+      dealStage: deal.properties.dealstage,
+      pipeline: deal.properties.pipeline,
+      amount: deal.properties.amount ? parseFloat(deal.properties.amount) : undefined,
+      closeDate: deal.properties.closedate,
+    });
 
+    console.log(`Deal ${deal.id} ${result.created ? 'created' : 'updated'} in local database`);
+
+    // Also update any related onboarding submissions based on deal stage
     const statusMap: Record<string, string> = {
       'appointmentscheduled': 'reviewed',
       'qualifiedtobuy': 'in_progress',
@@ -74,20 +84,24 @@ async function processDealUpdate(objectId: number): Promise<void> {
       'closedlost': 'submitted',
     };
 
-    const localStatus = statusMap[deal.properties.dealstage || ''] || 'submitted';
+    const localStatus = statusMap[deal.properties.dealstage || ''];
 
-    // Find onboarding submission by searching for associated contact
-    // This is a simplified example - you'd need to track the mapping
-    console.log('Deal stage changed to:', deal.properties.dealstage);
-    console.log('Would update local status to:', localStatus);
-
-    // TODO: Implement actual database update logic based on your schema
-    // Example:
-    // await sql`
-    //   UPDATE onboarding_submissions
-    //   SET status = ${localStatus}, updated_at = NOW()
-    //   WHERE hubspot_deal_id = ${deal.id}
-    // `;
+    if (localStatus) {
+      // Update orders table with the deal stage mapping
+      await sql`
+        UPDATE orders
+        SET status = CASE
+          WHEN ${deal.properties.dealstage} = 'closedwon' THEN 'completed'
+          WHEN ${deal.properties.dealstage} = 'closedlost' THEN 'refunded'
+          ELSE status
+        END,
+        hubspot_deal_stage = ${deal.properties.dealstage},
+        hubspot_synced_at = NOW(),
+        updated_at = NOW()
+        WHERE hubspot_deal_id = ${deal.id}
+      `;
+      console.log('Updated order status based on deal stage:', deal.properties.dealstage);
+    }
 
   } catch (error) {
     console.error('Error processing deal update:', error);
@@ -106,6 +120,7 @@ async function processContactUpdate(objectId: number): Promise<void> {
       'firstname',
       'lastname',
       'phone',
+      'company',
       'lifecyclestage',
       'hs_lead_status',
     ]);
@@ -116,8 +131,33 @@ async function processContactUpdate(objectId: number): Promise<void> {
       lifecyclestage: contact.properties.lifecyclestage,
     });
 
-    // Update local database if needed
-    // TODO: Implement sync logic
+    // Upsert the contact in local database
+    if (contact.properties.email) {
+      const result = await upsertContactFromHubSpot({
+        hubspotId: contact.id,
+        email: contact.properties.email,
+        firstName: contact.properties.firstname,
+        lastName: contact.properties.lastname,
+        phone: contact.properties.phone,
+        company: contact.properties.company,
+        lifecycleStage: contact.properties.lifecyclestage,
+        leadStatus: contact.properties.hs_lead_status,
+      });
+
+      console.log(`Contact ${contact.id} ${result.created ? 'created' : 'updated'} in local database`);
+
+      // Also update users table if this contact maps to a user
+      await sql`
+        UPDATE users
+        SET hubspot_contact_id = ${contact.id},
+            hubspot_synced_at = NOW(),
+            updated_at = NOW()
+        WHERE email = ${contact.properties.email}
+        AND hubspot_contact_id IS NULL
+      `;
+    } else {
+      console.log('Contact has no email, skipping sync');
+    }
 
   } catch (error) {
     console.error('Error processing contact update:', error);

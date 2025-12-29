@@ -1,16 +1,16 @@
 {
   "version": "2.0",
   "project": "a-startup-biz",
-  "lastUpdated": "2025-12-29T01:30:00Z",
-  "expiresAt": "2026-01-01T01:30:00Z",
-  "swarmId": "swarm_1766884016902_pkfmbjk84",
+  "lastUpdated": "2025-12-29T06:00:00Z",
+  "expiresAt": "2026-01-01T06:00:00Z",
+  "swarmId": "swarm_bubba_dashboard_1735448400",
   "swarmStatus": "completed",
   "currentWork": {
-    "description": "Test Suite Fixes - Email regex patterns and rate limit test corrections",
+    "description": "Dashboard Database Integration - Replaced mock data with real DB queries",
     "status": "completed",
-    "phase": "Quality Assurance",
-    "startedAt": "2025-12-29T01:15:00Z",
-    "completedAt": "2025-12-29T01:30:00Z"
+    "phase": "Backend Integration",
+    "startedAt": "2025-12-29T05:30:00Z",
+    "completedAt": "2025-12-29T06:00:00Z"
   },
   "deployments": {
     "production": "https://a-startup-biz.vercel.app",
@@ -22,27 +22,24 @@
   },
   "agents": {
     "Bubba-Orchestrator": {
-      "task": "Test suite fixes and quality improvements",
+      "task": "Dashboard Database Integration & Stripe Connect Deployment",
       "status": "completed",
       "files": [
-        "tests/api/contact.test.ts",
-        "tests/api/onboarding.test.ts"
+        "app/admin/orders/page.tsx",
+        "app/api/admin/consultations/route.ts",
+        "app/api/admin/consultations/[id]/route.ts",
+        "lib/db-queries.ts"
       ]
     },
-    "Fiona-Frontend": {
-      "task": "Lake Martin themed light/dark mode toggle",
-      "status": "completed",
-      "files": ["components/theme-toggle.tsx", "components/header.tsx", "app/layout.tsx", "app/globals.css"]
-    },
     "Tyler-TypeScript": {
-      "task": "Dashboard backend integration",
+      "task": "Admin orders page real-time DB integration",
       "status": "completed",
-      "files": ["app/admin/page.tsx", "lib/db-queries.ts"]
+      "files": ["app/admin/orders/page.tsx"]
     },
     "Dana-Database": {
-      "task": "Database migrations",
+      "task": "Stripe Connect schema + consultation queries",
       "status": "completed",
-      "files": ["scripts/migrations/001_full_schema.sql"]
+      "files": ["lib/db-queries.ts", "scripts/migrations/006_stripe_connect.sql"]
     }
   },
   "previousSwarm": {
@@ -74,10 +71,15 @@
     "Quote generation system",
     "CRM integration (HubSpot)",
     "Email system",
-    "Calendar booking"
+    "Calendar booking",
+    "Stripe Connect partner payouts (code ready)",
+    "Admin orders real-time DB integration",
+    "Admin consultations API endpoint",
+    "updateConsultation DB query"
   ],
   "inProgress": [],
   "pendingTasks": [
+    "Run Stripe Connect DB migration (006_stripe_connect.sql)",
     "Configure VERCEL_TOKEN secret in GitHub for staging deployment",
     "Rate limiting TODO: Implement in referral system",
     "Fraud detection TODO: Implement in referral system",

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Search,
   Filter,
@@ -11,36 +11,121 @@ import {
   XCircle,
   Clock,
   Loader,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import {
-  mockOrders,
   formatCurrency,
   formatDate,
   getStatusColor,
-  type Order,
 } from '@/lib/admin-data';
+
+// Database order type
+interface DBOrder {
+  id: string;
+  user_id: string | null;
+  user_name: string | null;
+  user_email: string | null;
+  items: { name: string; quantity: number; price: number }[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  status: 'pending' | 'paid' | 'processing' | 'completed' | 'refunded';
+  payment_intent_id: string | null;
+  payment_method: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Transform DB order to display format
+function transformOrder(order: DBOrder) {
+  return {
+    id: order.id,
+    orderNumber: `ORD-${order.id.slice(0, 8).toUpperCase()}`,
+    customer: {
+      id: order.user_id || 'guest',
+      name: order.user_name || 'Guest User',
+      email: order.user_email || 'N/A',
+    },
+    service: order.items?.[0]?.name || 'Service Package',
+    amount: order.total,
+    status: order.status === 'paid' ? 'processing' : order.status === 'refunded' ? 'cancelled' : order.status,
+    date: new Date(order.created_at),
+    paymentMethod: order.payment_method || 'Card',
+  };
+}
+
+type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled' | 'all';
 
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<Order['status'] | 'all'>(
-    'all'
-  );
+  const [statusFilter, setStatusFilter] = useState<OrderStatus>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [orders, setOrders] = useState<DBOrder[]>([]);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    all: 0,
+    pending: 0,
+    processing: 0,
+    completed: 0,
+    cancelled: 0,
+  });
   const ordersPerPage = 10;
 
-  // Filter and search orders
-  const filteredOrders = useMemo(() => {
-    let filtered = mockOrders;
+  // Fetch orders from API
+  const fetchOrders = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        limit: ordersPerPage.toString(),
+        offset: ((currentPage - 1) * ordersPerPage).toString(),
+      });
+      if (statusFilter !== 'all') {
+        params.set('status', statusFilter);
+      }
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((order) => order.status === statusFilter);
+      const response = await fetch(`/api/admin/orders?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data.orders || []);
+        setTotal(data.total || 0);
+      } else {
+        console.error('Failed to fetch orders:', response.statusText);
+      }
+
+      // Fetch stats for all statuses
+      const statsResponse = await fetch('/api/admin/orders?limit=1000');
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        const allOrders = statsData.orders || [];
+        setStats({
+          all: allOrders.length,
+          pending: allOrders.filter((o: DBOrder) => o.status === 'pending').length,
+          processing: allOrders.filter((o: DBOrder) => o.status === 'processing' || o.status === 'paid').length,
+          completed: allOrders.filter((o: DBOrder) => o.status === 'completed').length,
+          cancelled: allOrders.filter((o: DBOrder) => o.status === 'refunded').length,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setIsLoading(false);
     }
+  }, [currentPage, statusFilter]);
 
-    // Search filter
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  // Transform and filter orders for display
+  const displayOrders = useMemo(() => {
+    let transformed = orders.map(transformOrder);
+
+    // Search filter (client-side for now)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
+      transformed = transformed.filter(
         (order) =>
           order.orderNumber.toLowerCase().includes(query) ||
           order.customer.name.toLowerCase().includes(query) ||
@@ -49,27 +134,15 @@ export default function OrdersPage() {
       );
     }
 
-    return filtered;
-  }, [statusFilter, searchQuery]);
+    return transformed;
+  }, [orders, searchQuery]);
 
   // Pagination
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-  const startIndex = (currentPage - 1) * ordersPerPage;
-  const endIndex = startIndex + ordersPerPage;
-  const currentOrders = filteredOrders.slice(startIndex, endIndex);
-
-  // Stats by status
-  const stats = {
-    all: mockOrders.length,
-    pending: mockOrders.filter((o) => o.status === 'pending').length,
-    processing: mockOrders.filter((o) => o.status === 'processing').length,
-    completed: mockOrders.filter((o) => o.status === 'completed').length,
-    cancelled: mockOrders.filter((o) => o.status === 'cancelled').length,
-  };
+  const totalPages = Math.ceil(total / ordersPerPage);
 
   const statusTabs: Array<{
     label: string;
-    value: Order['status'] | 'all';
+    value: OrderStatus;
     count: number;
     icon: typeof Clock;
   }> = [
@@ -110,10 +183,20 @@ export default function OrdersPage() {
             Manage and track all customer orders
           </p>
         </div>
-        <button className="flex items-center space-x-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors">
-          <Download className="h-4 w-4" />
-          <span>Export</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => fetchOrders()}
+            className="flex items-center space-x-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <button className="flex items-center space-x-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700 transition-colors">
+            <Download className="h-4 w-4" />
+            <span>Export</span>
+          </button>
+        </div>
       </div>
 
       {/* Status Tabs */}
@@ -197,18 +280,29 @@ export default function OrdersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {currentOrders.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12">
+                    <div className="flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+                      <span className="ml-2 text-gray-500">Loading orders...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : displayOrders.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No orders found matching your criteria
+                    {orders.length === 0
+                      ? 'No orders yet. Orders will appear here when customers make purchases.'
+                      : 'No orders found matching your criteria'}
                   </td>
                 </tr>
               ) : (
-                currentOrders.map((order) => {
-                  const statusColors = getStatusColor(order.status);
+                displayOrders.map((order) => {
+                  const statusColors = getStatusColor(order.status as any);
                   return (
                     <tr
                       key={order.id}
@@ -273,12 +367,12 @@ export default function OrdersPage() {
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <div className="flex items-center text-sm text-gray-700">
               Showing{' '}
-              <span className="font-medium mx-1">{startIndex + 1}</span> to{' '}
+              <span className="font-medium mx-1">{(currentPage - 1) * ordersPerPage + 1}</span> to{' '}
               <span className="font-medium mx-1">
-                {Math.min(endIndex, filteredOrders.length)}
+                {Math.min(currentPage * ordersPerPage, total)}
               </span>{' '}
               of{' '}
-              <span className="font-medium mx-1">{filteredOrders.length}</span>{' '}
+              <span className="font-medium mx-1">{total}</span>{' '}
               results
             </div>
             <div className="flex items-center space-x-2">
