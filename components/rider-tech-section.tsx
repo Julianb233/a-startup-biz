@@ -35,7 +35,7 @@ const solutions: Solution[] = [
   },
   {
     id: "support-bot",
-    title: "24-Hour Support Bot",
+    title: "Live Support Bot",
     description:
       "Never miss a customer inquiry again. Instant responses, smart escalation, and happy customers around the clock—without hiring a single support rep.",
     benefits: ["95% instant resolution rate", "Zero wait times", "Multi-language support"],

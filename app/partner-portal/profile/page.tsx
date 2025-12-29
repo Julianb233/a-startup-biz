@@ -37,7 +37,7 @@ export default function ProfilePage() {
     phone: "(555) 123-4567",
     company: "Partner Company LLC",
     address: "123 Business Street",
-    city: "Lake Martin",
+    city: "Birmingham",
     state: "AL",
     zip: "35010",
     bio: "Experienced business consultant helping entrepreneurs succeed since 2015.",

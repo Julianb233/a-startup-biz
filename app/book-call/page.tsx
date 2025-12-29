@@ -116,7 +116,7 @@ export default function BookCallPage() {
             <div className="space-y-3 text-left">
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">1</div>
-                <p className="text-gray-700">We&apos;ll review your application within 24 hours</p>
+                <p className="text-gray-700">We&apos;ll review your application promptly</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold">2</div>

@@ -105,7 +105,7 @@ export function TrustBadges() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span className="text-white font-medium text-sm">
-              <span className="text-[#D4A84B] font-bold">24-Hour Response Guarantee</span> — We reply to every inquiry within 24 hours
+              <span className="text-[#D4A84B] font-bold">Live Support Available</span> — We're here to help when you need us
             </span>
           </div>
         </motion.div>

@@ -147,7 +147,7 @@ export default function ContactForm() {
               Message Sent!
             </h1>
             <p className="text-gray-600 mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Thank you for reaching out! I'll get back to you within 24 hours.
+              Thank you for reaching out! I'll get back to you as soon as possible.
             </p>
             <a
               href="/"
@@ -189,7 +189,7 @@ export default function ContactForm() {
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
               Book your consultation and let's turn your business idea into reality.
-              I'll respond within 24 hours to schedule a time that works for you.
+              I'll respond promptly to schedule a time that works for you.
             </p>
           </motion.div>
         </div>
@@ -219,7 +219,7 @@ export default function ContactForm() {
                     className="text-gray-600"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
-                    Fill out the form below and I'll get back to you within 24 hours.
+                    Fill out the form below and I'll get back to you shortly.
                   </p>
                 </div>
 
@@ -431,7 +431,7 @@ export default function ContactForm() {
                     <Clock className="w-5 h-5 mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-semibold mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Response Time</p>
-                      <p className="text-white/90">I'll respond within 24 hours</p>
+                      <p className="text-white/90">Live support available</p>
                     </div>
                   </div>
                 </div>
