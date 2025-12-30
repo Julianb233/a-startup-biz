@@ -218,8 +218,16 @@ export function useUser() {
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
   }
 
-  // On client, use the real hook via a wrapper component pattern
-  // For now, we'll use a direct import since we're mounted
+  // If Clerk is not configured, return safe mock values
+  if (!isClerkConfigured()) {
+    return {
+      isLoaded: true,
+      isSignedIn: false,
+      user: null,
+    } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
+  }
+
+  // On client with Clerk configured, use the real hook
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { useUser: clerkUseUser } = require("@clerk/nextjs")
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -250,7 +258,23 @@ export function useAuth() {
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
   }
 
-  // On client, use the real hook
+  // If Clerk is not configured, return safe mock values
+  if (!isClerkConfigured()) {
+    return {
+      isLoaded: true,
+      isSignedIn: false,
+      userId: null,
+      sessionId: null,
+      orgId: null,
+      orgRole: null,
+      orgSlug: null,
+      has: () => false,
+      signOut: async () => {},
+      getToken: async () => null,
+    } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
+  }
+
+  // On client with Clerk configured, use the real hook
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { useAuth: clerkUseAuth } = require("@clerk/nextjs")
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -276,7 +300,18 @@ export function useClerk() {
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
   }
 
-  // On client, use the real hook
+  // If Clerk is not configured, return safe mock values
+  if (!isClerkConfigured()) {
+    return {
+      loaded: true,
+      signOut: async () => {},
+      openSignIn: () => {},
+      openSignUp: () => {},
+      openUserProfile: () => {},
+    } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
+  }
+
+  // On client with Clerk configured, use the real hook
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { useClerk: clerkUseClerk } = require("@clerk/nextjs")
   // eslint-disable-next-line react-hooks/rules-of-hooks
