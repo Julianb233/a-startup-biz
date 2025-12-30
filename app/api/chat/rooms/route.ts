@@ -1,20 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-// Lazy-initialize database connection
-function getDb() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL is not configured');
-  }
-  return neon(process.env.DATABASE_URL);
-}
-
 // Create chat_rooms table if it doesn't exist
 async function ensureChatRoomsTable() {
-  const sql = getDb();
   await sql`
     CREATE TABLE IF NOT EXISTS chat_rooms (
       id VARCHAR(255) PRIMARY KEY,
@@ -47,8 +38,7 @@ export async function GET(request: NextRequest) {
 
     await ensureChatRoomsTable();
 
-    const sql = getDb();
-    const searchParams = request.nextUrl.searchParams;
+        const searchParams = request.nextUrl.searchParams;
     const type = searchParams.get('type');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -100,8 +90,7 @@ export async function POST(request: NextRequest) {
 
     await ensureChatRoomsTable();
 
-    const sql = getDb();
-    const body = await request.json();
+        const body = await request.json();
     const { id, name, type, participants, metadata = {} } = body;
 
     // Validate required fields
@@ -170,8 +159,7 @@ export async function PATCH(request: NextRequest) {
 
     await ensureChatRoomsTable();
 
-    const sql = getDb();
-    const body = await request.json();
+        const body = await request.json();
     const { id, name, participants, metadata } = body;
 
     if (!id) {
@@ -284,8 +272,7 @@ export async function DELETE(request: NextRequest) {
 
     await ensureChatRoomsTable();
 
-    const sql = getDb();
-    const searchParams = request.nextUrl.searchParams;
+        const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
     if (!id) {
