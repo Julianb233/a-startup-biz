@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@/components/clerk-safe';
 import {
   ChatMessage as ChatMessageType,
   TypingIndicator,
