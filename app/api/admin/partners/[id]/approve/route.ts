@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { requireAdmin } from '@/lib/api-auth'
 import { approvePartner, canApprovePartner } from '@/lib/partner-onboarding'
+import { logAdminAction, getIpFromHeaders } from '@/lib/audit'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -58,6 +59,20 @@ export async function POST(request: Request, { params }: RouteParams) {
         { status: 400 }
       )
     }
+
+    // Log the approval action
+    await logAdminAction({
+      userId,
+      action: 'admin.partner.approve',
+      resourceType: 'partner',
+      resourceId: partnerId,
+      metadata: {
+        companyName: result.partner?.companyName,
+        micrositeSlug: result.microsite?.slug,
+        options,
+      },
+      ipAddress: getIpFromHeaders(new Headers(request.headers)),
+    })
 
     // Trigger n8n automation workflow (fire and forget)
     if (process.env.N8N_HOST) {

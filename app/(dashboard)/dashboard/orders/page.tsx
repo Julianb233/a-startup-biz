@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import {
   ShoppingBag,
@@ -12,48 +12,41 @@ import {
   Download,
   ArrowRight,
   Search,
-  Filter
+  Filter,
+  Loader2,
+  RefreshCw
 } from "lucide-react"
 import Link from "next/link"
 
-// Mock order data - will be replaced with real database queries
-const orders = [
-  {
-    id: "ORD-2024-001",
-    date: "2024-12-15",
-    items: [
-      { name: "Business Formation Package", price: 499 },
-      { name: "EIN Filing Service", price: 99 }
-    ],
-    total: 598,
-    status: "completed",
-    paymentMethod: "Credit Card"
-  },
-  {
-    id: "ORD-2024-002",
-    date: "2024-12-20",
-    items: [
-      { name: "Website Development - Starter", price: 2500 }
-    ],
-    total: 2500,
-    status: "processing",
-    paymentMethod: "Credit Card"
-  },
-  {
-    id: "ORD-2024-003",
-    date: "2024-12-25",
-    items: [
-      { name: "Clarity Call - 1 Hour", price: 1000 }
-    ],
-    total: 1000,
-    status: "pending",
-    paymentMethod: "Pending"
-  }
-]
+interface OrderItem {
+  name: string
+  price: number
+  quantity?: number
+}
+
+interface Order {
+  id: string
+  items: OrderItem[]
+  subtotal: number
+  discount: number
+  total: number
+  status: string
+  paymentIntentId?: string
+  stripeSessionId?: string
+  couponCode?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
 
 const statusConfig = {
   completed: {
     label: "Completed",
+    color: "bg-green-100 text-green-800",
+    icon: CheckCircle
+  },
+  paid: {
+    label: "Paid",
     color: "bg-green-100 text-green-800",
     icon: CheckCircle
   },
@@ -67,6 +60,11 @@ const statusConfig = {
     color: "bg-yellow-100 text-yellow-800",
     icon: Clock
   },
+  refunded: {
+    label: "Refunded",
+    color: "bg-gray-100 text-gray-800",
+    icon: AlertCircle
+  },
   cancelled: {
     label: "Cancelled",
     color: "bg-red-100 text-red-800",
@@ -75,19 +73,84 @@ const statusConfig = {
 }
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
 
+  const fetchOrders = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const params = new URLSearchParams()
+      if (filterStatus !== "all") {
+        params.set("status", filterStatus)
+      }
+
+      const response = await fetch(`/api/orders?${params.toString()}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch orders")
+      }
+      const data = await response.json()
+      setOrders(data.orders || [])
+    } catch (err) {
+      console.error("Error fetching orders:", err)
+      setError("Unable to load orders. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchOrders()
+  }, [filterStatus])
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesFilter = filterStatus === "all" || order.status === filterStatus
-    return matchesSearch && matchesFilter
+      order.items.some(item =>
+        (item.name || "").toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    return matchesSearch
   })
 
   const totalSpent = orders
-    .filter(o => o.status === "completed")
+    .filter(o => o.status === "completed" || o.status === "paid")
     .reduce((sum, o) => sum + o.total, 0)
+
+  const completedCount = orders.filter(
+    o => o.status === "completed" || o.status === "paid"
+  ).length
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[#ff6a1a] mx-auto mb-4" />
+          <p className="text-gray-600">Loading your orders...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-gray-900 font-medium mb-2">Error Loading Orders</p>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={fetchOrders}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#ff6a1a] text-white rounded-lg hover:bg-[#ea580c] transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -128,7 +191,7 @@ export default function OrdersPage() {
             <div>
               <p className="text-sm text-gray-600">Completed</p>
               <p className="font-montserrat text-2xl font-bold text-gray-900">
-                {orders.filter(o => o.status === "completed").length}
+                {completedCount}
               </p>
             </div>
           </div>
@@ -175,10 +238,18 @@ export default function OrdersPage() {
           >
             <option value="all">All Status</option>
             <option value="completed">Completed</option>
+            <option value="paid">Paid</option>
             <option value="processing">In Progress</option>
             <option value="pending">Pending</option>
           </select>
         </div>
+        <button
+          onClick={fetchOrders}
+          className="inline-flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Refresh
+        </button>
       </div>
 
       {/* Orders List */}
@@ -204,7 +275,8 @@ export default function OrdersPage() {
           </div>
         ) : (
           filteredOrders.map((order, index) => {
-            const status = statusConfig[order.status as keyof typeof statusConfig]
+            const statusKey = order.status as keyof typeof statusConfig
+            const status = statusConfig[statusKey] || statusConfig.pending
             const StatusIcon = status.icon
 
             return (
@@ -223,10 +295,10 @@ export default function OrdersPage() {
                       </div>
                       <div>
                         <h3 className="font-montserrat font-semibold text-gray-900">
-                          {order.id}
+                          Order #{order.id.slice(0, 8)}...
                         </h3>
                         <p className="text-sm text-gray-600">
-                          {new Date(order.date).toLocaleDateString('en-US', {
+                          {new Date(order.createdAt).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -248,16 +320,30 @@ export default function OrdersPage() {
 
                   {/* Order Items */}
                   <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                    {order.items.map((item, itemIndex) => (
-                      <div
-                        key={itemIndex}
-                        className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0"
-                      >
-                        <span className="text-gray-700">{item.name}</span>
-                        <span className="font-medium text-gray-900">${item.price}</span>
-                      </div>
-                    ))}
+                    {order.items && order.items.length > 0 ? (
+                      order.items.map((item, itemIndex) => (
+                        <div
+                          key={itemIndex}
+                          className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0"
+                        >
+                          <span className="text-gray-700">{item.name || "Service"}</span>
+                          <span className="font-medium text-gray-900">
+                            ${(item.price || 0).toLocaleString()}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm">No item details available</p>
+                    )}
                   </div>
+
+                  {/* Discount if applicable */}
+                  {order.discount > 0 && (
+                    <div className="flex justify-between items-center mb-4 text-green-600">
+                      <span>Discount Applied</span>
+                      <span>-${order.discount.toLocaleString()}</span>
+                    </div>
+                  )}
 
                   {/* Actions */}
                   <div className="flex flex-wrap gap-3">
@@ -265,7 +351,7 @@ export default function OrdersPage() {
                       <Eye className="h-4 w-4" />
                       View Details
                     </button>
-                    {order.status === "completed" && (
+                    {(order.status === "completed" || order.status === "paid") && (
                       <button className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         <Download className="h-4 w-4" />
                         Download Invoice

@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const isAdmin = await checkRole('admin');
 
   if (!isAdmin) {
-    redirect('/dashboard');
+    redirect('/unauthorized');
   }
 
   const { sessionClaims } = await auth();

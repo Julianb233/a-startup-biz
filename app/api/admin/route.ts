@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin, withAuth, getCurrentUserId } from '@/lib/api-auth';
 import { getAdminStats } from '@/lib/db-queries';
+import { logAdminAction, getIpFromHeaders } from '@/lib/audit';
 
 /**
  * GET /api/admin
@@ -10,11 +11,19 @@ import { getAdminStats } from '@/lib/db-queries';
  *
  * @returns Admin data or 401/403 if not authorized
  */
-export async function GET() {
+export async function GET(request: Request) {
   return withAuth(async () => {
     // Require admin role
     await requireAdmin();
     const userId = await getCurrentUserId();
+
+    // Log admin dashboard access
+    await logAdminAction({
+      userId: userId || 'unknown',
+      action: 'admin.dashboard.view',
+      resourceType: 'dashboard',
+      ipAddress: getIpFromHeaders(new Headers(request.headers)),
+    });
 
     // Fetch real stats from database
     const dbStats = await getAdminStats();
@@ -74,6 +83,12 @@ export async function POST(request: Request) {
     // Example admin actions
     switch (action) {
       case 'update_settings':
+        await logAdminAction({
+          userId: userId || 'unknown',
+          action: 'admin.settings.update',
+          resourceType: 'settings',
+          metadata: { settings: data },
+        });
         return NextResponse.json({
           success: true,
           message: 'Settings updated',
@@ -81,6 +96,13 @@ export async function POST(request: Request) {
         });
 
       case 'manage_user':
+        await logAdminAction({
+          userId: userId || 'unknown',
+          action: 'admin.user.update',
+          resourceType: 'user',
+          resourceId: data?.userId,
+          metadata: { action: 'manage_user', data },
+        });
         return NextResponse.json({
           success: true,
           message: 'User management action performed',
