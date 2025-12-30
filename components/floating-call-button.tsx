@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { Phone, X, Headphones, AlertCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useUser } from "@/components/clerk-safe"
 import { VoiceCallInterface } from "./voice-call-interface"
 import "@livekit/components-styles"
 
@@ -18,19 +17,16 @@ interface LiveKitCredentials {
   livekitHost: string
 }
 
-export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: FloatingCallButtonProps) {
-  const [mounted, setMounted] = useState(false)
+// Inner component that uses Clerk hooks - only rendered after mount
+function FloatingCallButtonInner({ voiceApiUrl }: { voiceApiUrl: string }) {
+  // Dynamic import useUser to avoid SSR issues
+  const { useUser } = require("@/components/clerk-safe")
   const { isSignedIn, user } = useUser()
   const [isOpen, setIsOpen] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
   const [isInCall, setIsInCall] = useState(false)
   const [credentials, setCredentials] = useState<LiveKitCredentials | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  // Ensure client-side only rendering to avoid SSR issues with Clerk
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Prevent body scroll when call panel is open
   useEffect(() => {
@@ -135,8 +131,8 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
     setCredentials(null)
   }, [])
 
-  // Only show for signed-in users on client side
-  if (!mounted || !isSignedIn) return null
+  // Only show for signed-in users
+  if (!isSignedIn) return null
 
   return (
     <>
@@ -280,4 +276,18 @@ export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: Floatin
       </motion.div>
     </>
   )
+}
+
+// SSR-safe wrapper - only renders inner component after client mount
+export function FloatingCallButton({ voiceApiUrl = "/api/voice/token" }: FloatingCallButtonProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Don't render anything on server - prevents useUser from being called during SSR
+  if (!mounted) return null
+
+  return <FloatingCallButtonInner voiceApiUrl={voiceApiUrl} />
 }
