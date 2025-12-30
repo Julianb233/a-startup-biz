@@ -201,86 +201,15 @@ export function SignUp(props: Record<string, unknown>) {
   return <DynamicClerkSignUp {...props} />
 }
 
-// Define a minimal user type for type safety
-type SafeUser = {
-  id: string
-  fullName: string | null
-  firstName: string | null
-  lastName: string | null
-  primaryEmailAddress: { emailAddress: string } | null
-  imageUrl: string
-  publicMetadata: Record<string, unknown>
-  privateMetadata: Record<string, unknown>
-  unsafeMetadata: Record<string, unknown>
-} | null
+// Re-export the real Clerk hooks
+// This replaces the mock implementation that was blocking authentication
+export { useUser } from "@clerk/nextjs"
 
-type UseUserReturn = {
-  isLoaded: boolean
-  isSignedIn: boolean
-  user: SafeUser
-}
+// Re-export the real useAuth hook from Clerk
+export { useAuth } from "@clerk/nextjs"
 
-// Safe useUser hook - must be used in components that are client-only
-export function useUser(): UseUserReturn {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Always return a safe mock - components using this should use
-  // the actual Clerk useUser directly if they need real auth data
-  return {
-    isLoaded: mounted,
-    isSignedIn: false,
-    user: null,
-  }
-}
-
-// Safe useAuth hook
-export function useAuth() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted || !isClerkConfigured()) {
-    return {
-      isLoaded: !mounted ? false : true,
-      isSignedIn: false,
-      userId: null,
-      sessionId: null,
-      orgId: null,
-      signOut: async () => {},
-      getToken: async () => null,
-    }
-  }
-
-  return {
-    isLoaded: true,
-    isSignedIn: false,
-    userId: null,
-    sessionId: null,
-    orgId: null,
-    signOut: async () => {},
-    getToken: async () => null,
-  }
-}
-
-// Safe useClerk hook
-export function useClerk() {
-  return {
-    signOut: async (options?: { redirectUrl?: string }) => {
-      if (typeof window !== 'undefined') {
-        window.location.href = options?.redirectUrl || '/'
-      }
-    },
-    openSignIn: () => {},
-    openSignUp: () => {},
-    openUserProfile: () => {},
-  }
-}
+// Re-export the real useClerk hook from Clerk
+export { useClerk } from "@clerk/nextjs"
 
 // Safe RedirectToSignIn
 export function RedirectToSignIn() {
