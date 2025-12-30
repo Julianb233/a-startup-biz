@@ -1,5 +1,9 @@
 "use client"
 
+// Force dynamic rendering - layout uses Clerk hooks that need runtime
+export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
+
 import { useState } from "react"
 import { useUser, useClerk, SignedIn, RedirectToSignIn } from "@/components/clerk-safe"
 import { useRouter } from "next/navigation"
