@@ -1,24 +1,47 @@
 {
   "version": "2.0",
   "project": "a-startup-biz",
-  "lastUpdated": "2025-12-29T20:50:00Z",
+  "lastUpdated": "2025-12-29T22:30:00Z",
   "expiresAt": "2026-01-01T06:00:00Z",
   "swarmId": "swarm_bubba_dashboard_1735448400",
   "swarmStatus": "completed",
-  "currentWork": {
-    "description": "CI/CD Build Fixes - Database initialization & UI components",
-    "status": "completed",
-    "phase": "Build Stabilization",
-    "startedAt": "2025-12-29T20:00:00Z",
-    "completedAt": "2025-12-29T20:50:00Z",
-    "agents": ["Claude-Opus"],
-    "fixes": [
-      "React hooks ordering in floating-call-button.tsx",
-      "Added missing dialog.tsx and switch.tsx UI components",
-      "TypeScript type annotation for Switch onCheckedChange",
-      "Lazy database initialization for chat/messages route",
-      "Lazy database initialization for chat/rooms route"
+  "goLive": {
+    "targetDate": "2025-12-31",
+    "daysRemaining": 2,
+    "phase": "Pre-Launch Integration",
+    "checklist": "docs/GO-LIVE-CHECKLIST.md",
+    "integrations": {
+      "ready": [
+        {"name": "Resend Email", "status": "configured", "env": "RESEND_API_KEY"},
+        {"name": "Stripe Payments", "status": "configured", "env": "STRIPE_SECRET_KEY"},
+        {"name": "Stripe Connect", "status": "configured", "env": "STRIPE_SECRET_KEY"},
+        {"name": "Clerk Auth", "status": "configured", "env": "CLERK_SECRET_KEY"},
+        {"name": "Neon Database", "status": "configured", "env": "DATABASE_URL"},
+        {"name": "Supabase Chat", "status": "configured", "env": "NEXT_PUBLIC_SUPABASE_URL"}
+      ],
+      "pending": [
+        {"name": "LiveKit Voice", "status": "code-ready", "action": "USER: Create account at cloud.livekit.io", "envNeeded": ["LIVEKIT_HOST", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"]},
+        {"name": "OpenAI Voice Agent", "status": "code-ready", "action": "USER: Add OpenAI API key", "envNeeded": ["OPENAI_API_KEY"]},
+        {"name": "HubSpot CRM", "status": "code-ready", "action": "USER: Create Private App in HubSpot", "envNeeded": ["HUBSPOT_API_KEY"]},
+        {"name": "Dropbox Sign", "status": "code-ready", "action": "Optional: Add Dropbox Sign API key", "envNeeded": ["DROPBOX_SIGN_API_KEY"]}
+      ]
+    },
+    "launchSequence": [
+      "1. User provides missing API keys (LiveKit, HubSpot, OpenAI)",
+      "2. Bubba adds keys to Vercel",
+      "3. Run pre-flight build check",
+      "4. Run test suite",
+      "5. Deploy to production",
+      "6. Smoke test critical paths",
+      "7. Monitor for errors"
     ]
+  },
+  "currentWork": {
+    "description": "Go-Live Integration Setup",
+    "status": "in-progress",
+    "phase": "Pre-Launch",
+    "startedAt": "2025-12-29T22:00:00Z",
+    "agents": ["Claude-Opus", "Bubba-Orchestrator"]
   },
   "deployments": {
     "production": "https://a-startup-biz.vercel.app",
@@ -32,31 +55,11 @@
   },
   "agents": {
     "Bubba-Orchestrator": {
-      "task": "Dashboard Database Integration & Stripe Connect Deployment",
-      "status": "completed",
-      "files": [
-        "app/admin/orders/page.tsx",
-        "app/api/admin/consultations/route.ts",
-        "app/api/admin/consultations/[id]/route.ts",
-        "lib/db-queries.ts"
-      ]
-    },
-    "Tyler-TypeScript": {
-      "task": "Admin orders page real-time DB integration",
-      "status": "completed",
-      "files": ["app/admin/orders/page.tsx"]
-    },
-    "Dana-Database": {
-      "task": "Stripe Connect schema + consultation queries",
-      "status": "completed",
-      "files": ["lib/db-queries.ts", "scripts/migrations/006_stripe_connect.sql"]
+      "task": "Go-Live Integration & Launch Coordination",
+      "status": "active",
+      "instructions": "Monitor go-live checklist. When user provides API keys, add to Vercel and verify. Coordinate launch sequence.",
+      "files": ["docs/GO-LIVE-CHECKLIST.md"]
     }
-  },
-  "previousSwarm": {
-    "swarmId": "swarm_1766824165579_cuunhab87",
-    "status": "completed",
-    "work": "Production hardening",
-    "agents": ["Tessa-Tester", "Sage-Security", "Rex-Reviewer", "Morgan-Marketing"]
   },
   "completedFeatures": [
     "NextAuth.js authentication",
@@ -79,88 +82,48 @@
     "Partner portal integration",
     "Referral system",
     "Quote generation system",
-    "CRM integration (HubSpot)",
-    "Email system",
+    "CRM integration (HubSpot) - code ready",
+    "Email system with Resend",
     "Calendar booking",
-    "Stripe Connect partner payouts (code ready)",
-    "Partner Portal DB schema (partners, partner_leads, partner_profiles)",
-    "Stripe Connect DB migration (partner_transfers, partner_payouts, stripe_connect_events)",
+    "Stripe Connect partner payouts",
+    "Partner Portal DB schema",
+    "Stripe Connect DB migration",
     "Admin orders real-time DB integration",
     "Admin consultations API endpoint",
-    "updateConsultation DB query",
-    "HubSpot onboarding sync - Automatic contact and deal creation",
-    "HubSpot bidirectional webhook integration",
-    "HubSpot sync API endpoints (manual sync + status check)",
-    "HubSpot retry logic with exponential backoff",
+    "HubSpot onboarding sync - code ready",
+    "HubSpot bidirectional webhook integration - code ready",
     "GitHub Actions CI/CD with Vercel deployment",
-    "VERCEL_TOKEN + ORG_ID + PROJECT_ID configured",
-    "Stripe Connect webhook handler (account updates, payouts, person created)",
-    "Admin partner management API (list, view, approve, reject, status update)",
-    "Partner notification system (DB schema + triggers + API endpoints)",
-    "Email notification templates (partner-approved, lead-converted, payout-sent)",
+    "Stripe Connect webhook handler",
+    "Admin partner management API",
+    "Partner notification system",
+    "Email notification templates (7 templates)",
     "Admin analytics with real database queries",
-    "Partner payout API endpoint with Stripe integration",
-    "lib/api-auth.ts - Clerk-based admin route protection",
-    "SQL injection fix in referral-fraud route (parameterized queries)",
-    "Checkout success page real Stripe session verification",
-    "Admin stats route with real database queries",
-    "Clerk safe wrapper with currentUser export",
-    "Partner routes using safe Clerk imports",
-    "LiveKit voice call integration (lib/livekit.ts)",
-    "Floating call button component (components/floating-call-button.tsx)",
-    "Voice call interface with WebRTC (components/voice-call-interface.tsx)",
-    "Voice token API endpoint (/api/voice/token)",
-    "Voice webhook handler (/api/voice/webhook)",
-    "AI voice agent service (lib/voice-agent.ts)",
-    "AI agent spawn API endpoint (/api/voice/agent)",
-    "Automatic AI agent spawn on call start",
-    "Voice call history database queries",
-    "Call history API endpoint (/api/voice/history)",
-    "Call recording with LiveKit Egress (lib/voice-recording.ts)",
-    "Webhook saves call records to database",
-    "Admin call history page (/admin/calls)",
-    "LiveKit setup documentation (docs/LIVEKIT_SETUP.md)",
-    "Voice calls database migration (010_voice_calls.sql) applied",
-    "Environment variable placeholders added to .env.local",
-    "Notification preferences table (009_notification_preferences.sql)",
-    "Notification preferences API (/api/notifications/preferences)",
-    "Real-time notification polling hook (hooks/useNotifications.ts)",
-    "NotificationBell integrated into partner portal header",
-    "Email notification service (lib/notification-email-service.ts)",
-    "Email sending API endpoint (/api/notifications/send-email)",
-    "Missing UI components (avatar, tooltip, dropdown-menu, scroll-area, alert)",
-    "Admin analytics dashboard with interactive charts",
-    "RevenueChart, OrdersStatusChart, PartnerPerformanceChart components",
-    "LeadFunnelChart, UserAcquisitionChart, DateRangeFilter components",
-    "Analytics date range filtering (7d/30d/90d/all)",
-    "Analytics DB queries with date range support",
-    "VoiceCallInterface component with LiveKit integration",
-    "Voice call controls (mute mic/speaker, end call, duration timer)",
+    "Partner payout API endpoint",
+    "Clerk-based admin route protection",
+    "SQL injection fixes",
+    "LiveKit voice call integration - code ready",
+    "AI voice agent service - code ready",
+    "Voice call UI components",
+    "Call recording with LiveKit Egress",
+    "Admin call history page",
+    "Notification preferences API",
+    "Real-time notification polling",
+    "Admin analytics dashboard with charts",
+    "VoiceCallInterface with LiveKit",
     "Real-time chat system with Supabase",
-    "ChatRoom, ChatWidget, ChatMessage, ChatInput, ChatHeader components",
-    "Chat API routes (/api/chat/messages, /api/chat/rooms)",
-    "Dropbox Sign document signing integration (lib/document-signing.ts)",
-    "Document signing API endpoints (/api/documents/sign, webhook, status)",
-    "DocumentSignature embedded signing component",
-    "Signature request database storage",
-    "Admin chatbot knowledge base management page",
-    "Chatbot knowledge API endpoints",
-    "Lazy database initialization for chat routes (build-safe)",
-    "Dialog and Switch shadcn/radix UI components"
+    "Dropbox Sign document signing - code ready",
+    "Admin chatbot knowledge base management",
+    "Lazy database initialization (build-safe)"
   ],
-  "inProgress": [],
-  "pendingTasks": [],
-  "latestSwarmCompletion": {
-    "completedAt": "2025-12-29T16:00:00Z",
-    "agents": [
-      {"id": "afc0d1b", "task": "Analytics Dashboard", "status": "completed"},
-      {"id": "a8acad1", "task": "Voice Call UI", "status": "completed"},
-      {"id": "ab4b8f9", "task": "Real-time Chat", "status": "completed"},
-      {"id": "a1ffe3c", "task": "Dropbox Sign Integration", "status": "completed"}
-    ]
-  },
+  "inProgress": ["Go-live integration verification"],
+  "pendingTasks": [
+    "LiveKit API credentials (user action)",
+    "HubSpot Private App creation (user action)",
+    "OpenAI API key for voice (user action)",
+    "Resend domain verification (optional)"
+  ],
   "autonomousMode": true,
-  "resumeInstructions": "LiveKit installation COMPLETE. Code, database, and docs are ready. User action required: 1) Create LiveKit Cloud account at cloud.livekit.io, 2) Add LIVEKIT_HOST, LIVEKIT_API_KEY, LIVEKIT_API_SECRET to Vercel, 3) Add OPENAI_API_KEY for AI agent voice. Also pending: RESEND_API_KEY for email, HubSpot API key.",
+  "resumeInstructions": "GO-LIVE MODE: 2-day countdown to launch. See docs/GO-LIVE-CHECKLIST.md for full integration status. Ready integrations: Resend, Stripe, Clerk, Neon, Supabase. Pending user action: LiveKit (voice), HubSpot (CRM), OpenAI (AI agent). When user provides keys, add to Vercel immediately.",
   "testingResults": {
     "testedAt": "2025-12-29T01:25:00Z",
     "results": {
@@ -170,16 +133,7 @@
       "navigationWorks": true,
       "themeToggleWorks": true,
       "sitemapGenerates": true,
-      "adminProtected": true,
-      "contactPageExists": true,
-      "servicePagesExist": true
-    },
-    "fixesApplied": [
-      "Fixed email regex patterns in contact.test.ts (changed /^[^s@]+@[^s@]+.[^s@]+$/ to /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/)",
-      "Fixed email regex patterns in onboarding.test.ts",
-      "Fixed retry-after header test calculation (was using past timestamp)",
-      "Added missing primaryChallenge field in optional fields test"
-    ],
-    "notes": "All core tests passing. Redis connection errors in tests are expected (falls back to in-memory rate limiting). Partner API tests intentionally skipped (require Next.js test utils)."
+      "adminProtected": true
+    }
   }
 }
