@@ -1,5 +1,5 @@
 import { AccessToken, RoomServiceClient } from 'livekit-server-sdk';
-import { neon } from '@neondatabase/serverless';
+import { sql } from '@/lib/db';
 
 /**
  * Voice AI Agent Service
@@ -7,9 +7,6 @@ import { neon } from '@neondatabase/serverless';
  * Manages AI voice agents that join LiveKit rooms to provide
  * automated support conversations.
  */
-
-// Database connection
-const getDb = () => neon(process.env.DATABASE_URL!);
 
 interface AgentConfig {
   roomName: string;
@@ -226,7 +223,6 @@ export async function fetchAgentConfig(): Promise<VoiceAgentDbConfig | null> {
   }
 
   try {
-    const sql = getDb();
     const results = await sql`
       SELECT * FROM voice_agent_config
       WHERE is_active = true
@@ -256,7 +252,6 @@ export async function fetchKnowledgeBase(configId?: string): Promise<KnowledgeBa
   }
 
   try {
-    const sql = getDb();
     let results;
 
     if (configId) {
@@ -296,7 +291,6 @@ export async function fetchEscalationRules(configId?: string): Promise<Escalatio
   }
 
   try {
-    const sql = getDb();
     let results;
 
     if (configId) {
