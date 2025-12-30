@@ -1,5 +1,8 @@
 "use client"
 
+// Force dynamic rendering to prevent Clerk prerender errors
+export const dynamic = 'force-dynamic'
+
 import { motion } from "framer-motion"
 import {
   Calendar,
