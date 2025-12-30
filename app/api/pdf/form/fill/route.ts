@@ -142,8 +142,8 @@ export async function POST(request: NextRequest) {
         manualInputRequired: result.manualInputRequired
       });
     } else {
-      // Return binary PDF
-      return new NextResponse(result.filledPdf, {
+      // Return binary PDF - convert Uint8Array to Buffer for NextResponse compatibility
+      return new NextResponse(Buffer.from(result.filledPdf), {
         status: 200,
         headers: {
           'Content-Type': 'application/pdf',
