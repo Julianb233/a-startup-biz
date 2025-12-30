@@ -1,36 +1,68 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher([
-  "/dashboard(.*)",
-  "/admin(.*)",
-  "/partner-portal(.*)",
-])
+// Protected route patterns
+const protectedRoutes = [
+  '/dashboard',
+  '/admin',
+  '/partner-portal',
+]
 
-// Check if Clerk is properly configured
-const isClerkConfigured = () => {
-  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  return key && !key.includes('placeholder') && key.startsWith('pk_')
+// Check if Supabase is properly configured
+const isSupabaseConfigured = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  return Boolean(url && key)
 }
 
-// Fallback middleware when Clerk is not configured
-function fallbackMiddleware(req: NextRequest) {
-  // Block protected routes when auth is not configured
-  if (isProtectedRoute(req)) {
-    return NextResponse.redirect(new URL('/login', req.url))
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next()
+
+  // Check if route is protected
+  const isProtected = protectedRoutes.some(route =>
+    req.nextUrl.pathname.startsWith(route)
+  )
+
+  // If Supabase is not configured, redirect protected routes to login
+  if (!isSupabaseConfigured()) {
+    if (isProtected) {
+      return NextResponse.redirect(new URL('/login', req.url))
+    }
+    return res
   }
-  return NextResponse.next()
-}
 
-// Use Clerk middleware only if properly configured
-export default isClerkConfigured()
-  ? clerkMiddleware(async (auth, req) => {
-      if (isProtectedRoute(req)) {
-        await auth.protect()
-      }
-    })
-  : fallbackMiddleware
+  // Create Supabase client with cookie handling
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          res.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options: CookieOptions) {
+          res.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
+  // Refresh session if expired
+  const { data: { session } } = await supabase.auth.getSession()
+
+  // Redirect to login if trying to access protected route without session
+  if (isProtected && !session) {
+    const redirectUrl = new URL('/login', req.url)
+    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  return res
+}
 
 export const config = {
   matcher: [
