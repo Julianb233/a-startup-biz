@@ -106,9 +106,9 @@ function CategoryCard({ category, index }: { category: IndustryCategory; index: 
         >
           {/* Hero Image Area */}
           <div className={`relative h-48 ${colors.bg} overflow-hidden`}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className={`w-24 h-24 rounded-full ${colors.bg} flex items-center justify-center border-2 ${colors.border}`}>
-                <Icon className={`w-12 h-12 ${colors.text}`} />
+            <div className="absolute top-6 left-6">
+              <div className={`w-16 h-16 rounded-xl ${colors.bg} flex items-center justify-center border-2 ${colors.border} shadow-sm`}>
+                <Icon className={`w-8 h-8 ${colors.text}`} />
               </div>
             </div>
             {/* Gradient overlay */}
