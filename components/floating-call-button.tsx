@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Phone, X, Headphones, AlertCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { VoiceCallInterface } from "./voice-call-interface"
+import { useUser } from "./clerk-safe"
 import "@livekit/components-styles"
 
 interface FloatingCallButtonProps {
@@ -19,8 +20,6 @@ interface LiveKitCredentials {
 
 // Inner component that uses Clerk hooks - only rendered after mount
 function FloatingCallButtonInner({ voiceApiUrl }: { voiceApiUrl: string }) {
-  // Dynamic import useUser to avoid SSR issues
-  const { useUser } = require("@/components/clerk-safe")
   const { isSignedIn, user } = useUser()
   const [isOpen, setIsOpen] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
