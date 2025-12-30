@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { useUser } from "@clerk/nextjs"
+import { useUser } from "@/components/clerk-safe"
 import NextStepsGuide from "@/components/next-steps-guide"
 import {
   Briefcase,
