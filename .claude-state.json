@@ -52,6 +52,27 @@
     "vercelConfigured": true,
     "lastSuccessfulBuild": "2025-12-29T20:50:00Z"
   },
+  "dnsMigration": {
+    "status": "awaiting-nameserver-change",
+    "completedAt": "2025-12-30T00:20:00Z",
+    "cloudflare": {
+      "zoneId": "9afcd9db130e0922bda0fcee80a54a60",
+      "status": "pending",
+      "nameservers": ["laila.ns.cloudflare.com", "max.ns.cloudflare.com"],
+      "dnsRecords": [
+        {"type": "A", "name": "astartupbiz.com", "content": "76.76.21.21", "proxied": true},
+        {"type": "CNAME", "name": "www.astartupbiz.com", "content": "cname.vercel-dns.com", "proxied": true}
+      ]
+    },
+    "godaddy": {
+      "currentNameservers": ["ns31.domaincontrol.com", "ns32.domaincontrol.com"],
+      "requiredAction": "Change nameservers to Cloudflare"
+    },
+    "vercel": {
+      "domainAdded": true,
+      "addedAt": "2025-12-29T02:48:29Z"
+    }
+  },
   "agents": {
     "Bubba-Orchestrator": {
       "task": "Go-Live Integration & Launch Coordination",
