@@ -8,10 +8,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { FloatingCallButton } from '../floating-call-button'
-import { useUser } from '@clerk/nextjs'
+import { useUser } from '../clerk-safe'
 
-// Mock Clerk authentication
-vi.mock('@clerk/nextjs', () => ({
+// Mock auth hook used by FloatingCallButton (clerk-safe wrapper)
+vi.mock('../clerk-safe', () => ({
   useUser: vi.fn(),
 }))
 
@@ -84,7 +84,10 @@ describe('FloatingCallButton', () => {
     } as any)
 
     render(<FloatingCallButton />)
-    expect(screen.getByLabelText('Open voice call')).toBeInTheDocument()
+    // Component renders only after client "mount" effect runs
+    return screen.findByLabelText('Open voice call').then((btn) => {
+      expect(btn).toBeInTheDocument()
+    })
   })
 
   it('should open panel when button is clicked', async () => {
@@ -96,7 +99,7 @@ describe('FloatingCallButton', () => {
 
     render(<FloatingCallButton />)
 
-    const button = screen.getByLabelText('Open voice call')
+    const button = await screen.findByLabelText('Open voice call')
     fireEvent.click(button)
 
     await waitFor(() => {
@@ -130,7 +133,7 @@ describe('FloatingCallButton', () => {
     render(<FloatingCallButton />)
 
     // Open panel
-    fireEvent.click(screen.getByLabelText('Open voice call'))
+    fireEvent.click(await screen.findByLabelText('Open voice call'))
 
     await waitFor(() => {
       expect(screen.getByText('Start Voice Call')).toBeInTheDocument()
@@ -170,7 +173,7 @@ describe('FloatingCallButton', () => {
 
     render(<FloatingCallButton />)
 
-    fireEvent.click(screen.getByLabelText('Open voice call'))
+    fireEvent.click(await screen.findByLabelText('Open voice call'))
 
     await waitFor(() => {
       expect(screen.getByText('Start Voice Call')).toBeInTheDocument()
@@ -197,7 +200,7 @@ describe('FloatingCallButton', () => {
 
     render(<FloatingCallButton />)
 
-    fireEvent.click(screen.getByLabelText('Open voice call'))
+    fireEvent.click(await screen.findByLabelText('Open voice call'))
 
     await waitFor(() => {
       expect(screen.getByText('Start Voice Call')).toBeInTheDocument()
@@ -234,7 +237,7 @@ describe('FloatingCallButton', () => {
     render(<FloatingCallButton />)
 
     // Open and start call
-    fireEvent.click(screen.getByLabelText('Open voice call'))
+    fireEvent.click(await screen.findByLabelText('Open voice call'))
 
     await waitFor(() => {
       expect(screen.getByText('Start Voice Call')).toBeInTheDocument()

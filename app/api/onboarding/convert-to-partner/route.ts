@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/clerk-server-safe';
 import { sql } from '@/lib/db-queries';
 import { sendEmail, partnerAccountCreatedEmail, ADMIN_EMAIL } from '@/lib/email';
+import { getSiteUrl } from '@/lib/site-url';
 
 /**
  * POST /api/onboarding/convert-to-partner
@@ -116,6 +117,7 @@ export async function POST(request: NextRequest) {
 
     // Send admin notification
     try {
+      const siteUrl = getSiteUrl();
       await sendEmail({
         to: ADMIN_EMAIL,
         subject: `New Partner Account Created: ${partner.company_name}`,
@@ -128,7 +130,7 @@ export async function POST(request: NextRequest) {
           <p><strong>Status:</strong> ${autoApprove ? 'Active' : 'Pending Approval'}</p>
           <p><strong>Created From Onboarding ID:</strong> ${onboardingId}</p>
           <br>
-          <p><a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/partners/${partnerId}">View Partner →</a></p>
+          <p><a href="${siteUrl}/admin/partners/${partnerId}">View Partner →</a></p>
         `,
       });
     } catch (adminEmailError) {

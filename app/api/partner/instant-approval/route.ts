@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db-queries'
 import { sendEmail, ADMIN_EMAIL } from '@/lib/email'
+import { getSiteUrl } from '@/lib/site-url'
 
 interface ApprovalRequest {
   businessName: string
@@ -45,6 +46,7 @@ const INSTANT_APPROVAL_MIN_REFERRALS = '5-10' // At least 5-10 expected referral
  */
 export async function POST(request: NextRequest) {
   try {
+    const siteUrl = getSiteUrl()
     const body: ApprovalRequest = await request.json()
     const { businessName, email, phone, businessType, monthlyReferrals, website } = body
 
@@ -172,7 +174,7 @@ export async function POST(request: NextRequest) {
               <li>Start earning 10%+ on every referral!</li>
             </ol>
 
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL}/partner-portal/onboarding/welcome"
+            <a href="${siteUrl}/partner-portal/onboarding/welcome"
                style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 20px;">
               Complete Your Onboarding
             </a>
@@ -195,7 +197,7 @@ export async function POST(request: NextRequest) {
             <p>We've received your partner application and we'd love to learn more about you!</p>
             <p>To complete your application, please schedule a quick 15-minute call with our partner team.</p>
 
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL}/get-approved/schedule?id=${applicationId}"
+            <a href="${siteUrl}/get-approved/schedule?id=${applicationId}"
                style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 20px;">
               Schedule Your Call
             </a>
@@ -224,7 +226,7 @@ export async function POST(request: NextRequest) {
         <p><strong>Approval Score:</strong> ${score}/100</p>
         <p><strong>Status:</strong> ${isInstantApproval ? '✅ INSTANTLY APPROVED' : '📞 CALL REQUIRED'}</p>
         <br>
-        <a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/partners/${applicationId}">View Application →</a>
+        <a href="${siteUrl}/admin/partners/${applicationId}">View Application →</a>
       `
     })
 
