@@ -156,11 +156,11 @@ function CallControls({
       const newMutedState = !isSpeakerMuted
 
       // Mute/unmute all remote audio tracks by controlling their media elements
-      room.remoteParticipants.forEach((participant) => {
-        participant.audioTrackPublications.forEach((publication) => {
+      room.remoteParticipants.forEach((participant: any) => {
+        participant.audioTrackPublications.forEach((publication: any) => {
           if (publication.track) {
             const audioElements = publication.track.attachedElements
-            audioElements.forEach((element) => {
+            audioElements.forEach((element: any) => {
               if (element instanceof HTMLAudioElement) {
                 element.muted = newMutedState
               }
