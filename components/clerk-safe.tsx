@@ -1,8 +1,67 @@
 "use client"
 
-import { ReactNode, useState, useEffect, lazy, Suspense, FormEvent } from "react"
+import { ReactNode, useState, useEffect, lazy, Suspense, FormEvent, useCallback } from "react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
+import type { User as SupabaseUser, Session, AuthChangeEvent } from "@supabase/supabase-js"
+
+// Import Supabase auth utilities
+import { getSupabaseClient } from "@/lib/supabase/client"
+
+/**
+ * Hook to get Supabase session state
+ * Used as fallback when Clerk is not configured
+ */
+function useSupabaseSession() {
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const supabase = getSupabaseClient()
+
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        setSession(currentSession)
+        setUser(currentSession?.user ?? null)
+      } catch (error) {
+        console.error("[clerk-safe] Error getting Supabase session:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    getInitialSession()
+
+    // Subscribe to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event: AuthChangeEvent, newSession: Session | null) => {
+        setSession(newSession)
+        setUser(newSession?.user ?? null)
+        setIsLoading(false)
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const signOut = useCallback(async () => {
+    const supabase = getSupabaseClient()
+    await supabase.auth.signOut()
+    setUser(null)
+    setSession(null)
+    // Redirect to home after sign out
+    if (typeof window !== "undefined") {
+      window.location.href = "/"
+    }
+  }, [])
+
+  return { user, session, isLoading, signOut }
+}
 
 // Check if Clerk is properly configured
 // Must match the logic in auth-provider.tsx exactly
@@ -451,6 +510,7 @@ export function SignUp(props: Record<string, unknown>) {
 // Safe useUser hook that handles SSR/prerendering
 export function useUser() {
   const [mounted, setMounted] = useState(false)
+  const supabaseSession = useSupabaseSession()
 
   useEffect(() => {
     setMounted(true)
@@ -465,12 +525,30 @@ export function useUser() {
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
   }
 
-  // If Clerk is not configured, return safe mock values
+  // If Clerk is not configured, use Supabase session
   if (!isClerkConfigured()) {
+    const { user, isLoading } = supabaseSession
+
+    // Map Supabase user to Clerk-compatible format
+    const clerkCompatibleUser = user ? {
+      id: user.id,
+      primaryEmailAddress: {
+        emailAddress: user.email || "",
+      },
+      emailAddresses: user.email ? [{ emailAddress: user.email }] : [],
+      firstName: user.user_metadata?.first_name || user.user_metadata?.full_name?.split(" ")[0] || null,
+      lastName: user.user_metadata?.last_name || user.user_metadata?.full_name?.split(" ").slice(1).join(" ") || null,
+      fullName: user.user_metadata?.full_name || user.email?.split("@")[0] || null,
+      imageUrl: user.user_metadata?.avatar_url || null,
+      username: user.email?.split("@")[0] || null,
+      createdAt: user.created_at ? new Date(user.created_at) : null,
+      updatedAt: user.updated_at ? new Date(user.updated_at) : null,
+    } : null
+
     return {
-      isLoaded: true,
-      isSignedIn: false,
-      user: null,
+      isLoaded: !isLoading,
+      isSignedIn: !!user,
+      user: clerkCompatibleUser,
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
   }
 
@@ -484,6 +562,7 @@ export function useUser() {
 // Safe useAuth hook that handles SSR/prerendering
 export function useAuth() {
   const [mounted, setMounted] = useState(false)
+  const supabaseSession = useSupabaseSession()
 
   useEffect(() => {
     setMounted(true)
@@ -505,19 +584,21 @@ export function useAuth() {
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
   }
 
-  // If Clerk is not configured, return safe mock values
+  // If Clerk is not configured, use Supabase session
   if (!isClerkConfigured()) {
+    const { user, session, isLoading, signOut } = supabaseSession
+
     return {
-      isLoaded: true,
-      isSignedIn: false,
-      userId: null,
-      sessionId: null,
+      isLoaded: !isLoading,
+      isSignedIn: !!user,
+      userId: user?.id || null,
+      sessionId: session?.access_token?.substring(0, 16) || null,
       orgId: null,
       orgRole: null,
       orgSlug: null,
       has: () => false,
-      signOut: async () => {},
-      getToken: async () => null,
+      signOut: signOut,
+      getToken: async () => session?.access_token || null,
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
   }
 
@@ -531,6 +612,8 @@ export function useAuth() {
 // Safe useClerk hook that handles SSR/prerendering
 export function useClerk() {
   const [mounted, setMounted] = useState(false)
+  const supabaseSession = useSupabaseSession()
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
@@ -547,14 +630,24 @@ export function useClerk() {
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
   }
 
-  // If Clerk is not configured, return safe mock values
+  // If Clerk is not configured, use Supabase for sign out
   if (!isClerkConfigured()) {
+    const { signOut, isLoading } = supabaseSession
+
     return {
-      loaded: true,
-      signOut: async () => {},
-      openSignIn: () => {},
-      openSignUp: () => {},
-      openUserProfile: () => {},
+      loaded: !isLoading,
+      signOut: async () => {
+        await signOut()
+      },
+      openSignIn: () => {
+        router.push("/login")
+      },
+      openSignUp: () => {
+        router.push("/register")
+      },
+      openUserProfile: () => {
+        router.push("/dashboard/profile")
+      },
     } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
   }
 
