@@ -64,27 +64,11 @@ function useSupabaseSession() {
 }
 
 // Check if Clerk is properly configured
-// Must match the logic in auth-provider.tsx exactly
+// TEMPORARILY DISABLED: Using Supabase auth fallback
+// TODO: Re-enable when live Clerk keys (pk_live_) are configured
 const isClerkConfigured = () => {
-  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  const enabled = process.env.NEXT_PUBLIC_CLERK_ENABLED
-
-  // Must have valid key format
-  const hasValidKey = key && !key.includes('placeholder') && key.startsWith('pk_')
-  if (!hasValidKey) return false
-
-  // In production with test keys, disable Clerk unless explicitly enabled
-  const isTestKey = key?.includes('pk_test_')
-  const isProduction = typeof window !== 'undefined' &&
-    !window.location.hostname.includes('localhost') &&
-    !window.location.hostname.includes('127.0.0.1')
-
-  // Disable test keys in production unless explicitly enabled
-  if (isTestKey && isProduction && enabled !== 'true') {
-    return false
-  }
-
-  return true
+  // Force disable Clerk - test keys don't work in production
+  return false
 }
 
 // Dynamically import Clerk components to prevent SSG issues
