@@ -16,7 +16,7 @@ const isSupabaseConfigured = () => {
   return Boolean(url && key)
 }
 
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
 
   // Check if route is protected
@@ -82,4 +82,3 @@ export const config = {
     "/partner-portal/:path*",
   ],
 }
-
