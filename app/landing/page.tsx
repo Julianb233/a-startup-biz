@@ -9,6 +9,7 @@ import { useGSAP } from "@gsap/react";
 import GrowthComparison from "@/components/infographics/GrowthComparison";
 import { BarChartAnimation } from "@/components/infographics/BarChartAnimation";
 import GStepStats from "@/components/g-step-stats";
+import ParallaxStatsGallery from "@/components/parallax-stats-gallery";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -64,10 +65,11 @@ function getGradientColors(progress: number) {
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const questionBandRef = useRef<HTMLElement>(null);
+  const questionTrackRef = useRef<HTMLDivElement>(null);
   const entrepreneurBandRef = useRef<HTMLElement>(null);
   const entrepreneurTrackRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [meAndToriImgError, setMeAndToriImgError] = useState(false);
 
   const gradientColors = useMemo(() => getGradientColors(scrollProgress), [scrollProgress]);
 
@@ -101,6 +103,25 @@ export default function LandingPage() {
           scrollHint,
           { opacity: 0, y: 10 },
           { opacity: 1, y: 0, duration: 0.8, ease: "power2.out", delay: 0.8 }
+        );
+      }
+
+      // Pinned sideways questions: entrepreneur vs wantrepreneur
+      if (questionBandRef.current && questionTrackRef.current) {
+        gsap.fromTo(
+          questionTrackRef.current,
+          { xPercent: -12 },
+          {
+            xPercent: 12,
+            ease: "none",
+            scrollTrigger: {
+              trigger: questionBandRef.current,
+              start: "top top",
+              end: "+=130%",
+              pin: true,
+              scrub: 1,
+            },
+          }
         );
       }
 
@@ -209,7 +230,30 @@ export default function LandingPage() {
         </section>
 
         {/* ============================================
-            SECTION 2: pinned parallax word band
+            SECTION 2: pinned sideways questions
+            ============================================ */}
+        <section ref={questionBandRef} className="relative w-full">
+          <div className="min-h-screen w-full bg-black flex items-center overflow-hidden">
+            <div
+              ref={questionTrackRef}
+              className="w-[220vw] md:w-[200vw] flex items-center justify-center gap-14 md:gap-20 px-10 md:px-16"
+            >
+              <div className="whitespace-nowrap text-[clamp(2.3rem,6.2vw,6.5rem)] font-black tracking-tight text-white">
+                Are you an{" "}
+                <span className="text-orange-500">entrepreneur</span> or{" "}
+                <span className="text-white/70">not</span>?
+              </div>
+              <div className="whitespace-nowrap text-[clamp(2.3rem,6.2vw,6.5rem)] font-black tracking-tight text-white">
+                Are you an{" "}
+                <span className="text-orange-500">entrepreneur</span> or a{" "}
+                <span className="text-white/70">wantrepreneur</span>?
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            SECTION 3: pinned parallax word band
             ============================================ */}
         <section ref={entrepreneurBandRef} className="relative w-full">
           <div className="min-h-screen w-full bg-white flex items-center overflow-hidden">
@@ -228,7 +272,7 @@ export default function LandingPage() {
         </section>
 
         {/* ============================================
-            SECTION 3: Me and Tori (image)
+            SECTION 4: Me and Tori (use homepage Tory photo)
             ============================================ */}
         <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-5xl mx-auto px-4">
@@ -242,31 +286,20 @@ export default function LandingPage() {
             </div>
 
             <div className="relative rounded-3xl overflow-hidden h-[82vh] md:h-[92vh] bg-black/60 border border-white/15 box-glow-orange">
-              {!meAndToriImgError ? (
-                <Image
-                  src="/images/me-and-tori.webp"
-                  alt="Me and Tori"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 92vw, 960px"
-                  onError={() => setMeAndToriImgError(true)}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-center px-6">
-                  <div>
-                    <p className="text-white font-extrabold text-xl">[Me and Tori image]</p>
-                    <p className="mt-2 text-white/80 font-semibold">
-                      Drop the image into <span className="text-orange-400">/public/images/me-and-tori.webp</span>
-                    </p>
-                  </div>
-                </div>
-              )}
+              <Image
+                src="/images/tory-profile.jpg"
+                alt="Tory R. Zweigle"
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 768px) 92vw, 960px"
+                priority
+              />
             </div>
           </div>
         </section>
 
         {/* ============================================
-            SECTION 4+: Core story (updated contrast + weight)
+            SECTION 5+: Core story (updated contrast + weight)
             ============================================ */}
         <section className="flow-section">
           <div className="flow-animate max-w-4xl mx-auto px-4">
@@ -335,6 +368,10 @@ export default function LandingPage() {
           <div className="flow-animate">
             <div className="max-w-6xl mx-auto px-4">
               <div className="rounded-[2rem] bg-white/95 border border-black/10 p-6 md:p-10">
+                {/* GSAP parallax versions of the stat visuals (same assets as homepage) */}
+                <div className="mb-10">
+                  <ParallaxStatsGallery />
+                </div>
                 <GStepStats />
               </div>
             </div>
