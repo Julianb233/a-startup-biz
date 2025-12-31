@@ -8,3 +8,4 @@ node_modules
 # Test scripts and assets (development only)
 scripts/test-*.ts
 test-assets/
+.env.production
