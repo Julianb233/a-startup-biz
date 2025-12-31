@@ -24,12 +24,15 @@ export async function proxy(req: NextRequest) {
     req.nextUrl.pathname.startsWith(route)
   )
 
+  // Only run auth/session checks on protected routes.
+  // This prevents Supabase/network issues from impacting the entire public site.
+  if (!isProtected) {
+    return res
+  }
+
   // If Supabase is not configured, redirect protected routes to login
   if (!isSupabaseConfigured()) {
-    if (isProtected) {
-      return NextResponse.redirect(new URL('/login', req.url))
-    }
-    return res
+    return NextResponse.redirect(new URL('/login', req.url))
   }
 
   // Create Supabase client with cookie handling
@@ -51,11 +54,18 @@ export async function proxy(req: NextRequest) {
     }
   )
 
-  // Refresh session if expired
-  const { data: { session } } = await supabase.auth.getSession()
+  let session: unknown = null
+  try {
+    // Refresh session if expired
+    const { data } = await supabase.auth.getSession()
+    session = data?.session ?? null
+  } catch {
+    // Fail closed for protected routes: if Supabase is unavailable, require login.
+    return NextResponse.redirect(new URL('/login', req.url))
+  }
 
   // Redirect to login if trying to access protected route without session
-  if (isProtected && !session) {
+  if (!session) {
     const redirectUrl = new URL('/login', req.url)
     redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
@@ -66,10 +76,10 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
+    // Only protect authenticated areas (avoids running Supabase session checks site-wide)
+    "/dashboard/:path*",
+    "/admin/:path*",
+    "/partner-portal/:path*",
   ],
 }
 
