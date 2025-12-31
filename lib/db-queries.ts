@@ -1,7 +1,9 @@
 import { sql } from "./db"
+import type { CallParticipant, CallStatus, CallType, VoiceCall } from "@/types/voice"
 
 // Re-export sql for use in API routes
 export { sql }
+export type { CallParticipant, VoiceCall }
 
 // ============================================
 // TYPE DEFINITIONS
@@ -1548,4 +1550,763 @@ export async function canConvertToPartner(onboardingId: string): Promise<{
   }
 
   return { canConvert: true }
+}
+
+// ============================================
+// VOICE CALLS (used by /api/voice/* routes)
+// ============================================
+
+type CreateVoiceCallInput = {
+  roomName: string
+  callerId: string
+  calleeId?: string
+  callType: CallType
+  metadata?: Record<string, any>
+}
+
+export async function createVoiceCall(input: CreateVoiceCallInput): Promise<VoiceCall> {
+  const result = await sql`
+    INSERT INTO voice_calls (
+      room_name,
+      caller_id,
+      callee_id,
+      call_type,
+      status,
+      started_at,
+      metadata
+    ) VALUES (
+      ${input.roomName},
+      ${input.callerId},
+      ${input.calleeId || null},
+      ${input.callType},
+      'pending',
+      NOW(),
+      ${JSON.stringify(input.metadata || {})}::jsonb
+    )
+    RETURNING *
+  ` as unknown as VoiceCall[]
+
+  return result[0]
+}
+
+export async function getVoiceCallByRoom(roomName: string): Promise<VoiceCall | null> {
+  const result = await sql`
+    SELECT *
+    FROM voice_calls
+    WHERE room_name = ${roomName}
+    ORDER BY created_at DESC
+    LIMIT 1
+  ` as unknown as VoiceCall[]
+
+  return result[0] || null
+}
+
+type UpdateVoiceCallOptions = {
+  startedAt?: boolean
+  connectedAt?: boolean
+  endedAt?: boolean
+  durationSeconds?: number
+  recordingUrl?: string
+  transcript?: string
+  metadata?: Record<string, any>
+}
+
+export async function updateVoiceCallStatus(
+  roomName: string,
+  status: CallStatus,
+  options: UpdateVoiceCallOptions = {}
+): Promise<VoiceCall | null> {
+  const result = await sql`
+    UPDATE voice_calls
+    SET
+      status = ${status},
+      started_at = CASE WHEN ${options.startedAt || false} THEN COALESCE(started_at, NOW()) ELSE started_at END,
+      connected_at = CASE WHEN ${options.connectedAt || false} THEN COALESCE(connected_at, NOW()) ELSE connected_at END,
+      ended_at = CASE WHEN ${options.endedAt || false} THEN COALESCE(ended_at, NOW()) ELSE ended_at END,
+      duration_seconds = COALESCE(${options.durationSeconds ?? null}, duration_seconds),
+      recording_url = COALESCE(${options.recordingUrl ?? null}, recording_url),
+      transcript = COALESCE(${options.transcript ?? null}, transcript),
+      metadata = CASE
+        WHEN ${options.metadata ? true : false}
+          THEN (COALESCE(metadata, '{}'::jsonb) || ${JSON.stringify(options.metadata || {})}::jsonb)
+        ELSE metadata
+      END
+    WHERE room_name = ${roomName}
+    RETURNING *
+  ` as unknown as VoiceCall[]
+
+  return result[0] || null
+}
+
+export async function setCallRecordingUrl(roomName: string, recordingUrl: string): Promise<boolean> {
+  const result = await sql`
+    UPDATE voice_calls
+    SET recording_url = ${recordingUrl}
+    WHERE room_name = ${roomName}
+    RETURNING id
+  ` as unknown as any[]
+
+  return result.length > 0
+}
+
+export async function addCallParticipant(input: {
+  callId: string
+  userId: string
+  participantName?: string
+}): Promise<CallParticipant> {
+  const result = await sql`
+    INSERT INTO call_participants (call_id, user_id, participant_name, joined_at)
+    VALUES (${input.callId}, ${input.userId}, ${input.participantName || null}, NOW())
+    ON CONFLICT (call_id, user_id)
+    DO UPDATE SET
+      participant_name = COALESCE(EXCLUDED.participant_name, call_participants.participant_name),
+      joined_at = COALESCE(call_participants.joined_at, NOW()),
+      left_at = NULL
+    RETURNING *
+  ` as unknown as CallParticipant[]
+
+  return result[0]
+}
+
+export async function updateCallParticipantLeft(callId: string, userId: string): Promise<boolean> {
+  const result = await sql`
+    UPDATE call_participants
+    SET
+      left_at = NOW(),
+      duration_seconds = CASE
+        WHEN joined_at IS NOT NULL THEN EXTRACT(EPOCH FROM (NOW() - joined_at))::int
+        ELSE duration_seconds
+      END
+    WHERE call_id = ${callId} AND user_id = ${userId}
+    RETURNING id
+  ` as unknown as any[]
+
+  return result.length > 0
+}
+
+export async function getCallParticipants(callId: string): Promise<CallParticipant[]> {
+  const result = await sql`
+    SELECT *
+    FROM call_participants
+    WHERE call_id = ${callId}
+    ORDER BY joined_at ASC
+  ` as unknown as CallParticipant[]
+
+  return result
+}
+
+export async function getVoiceCallHistory(input: {
+  userId?: string
+  callType?: string
+  status?: string
+  limit?: number
+  offset?: number
+}): Promise<{ calls: VoiceCall[]; total: number }> {
+  const limit = input.limit ?? 20
+  const offset = input.offset ?? 0
+
+  const whereUser = input.userId
+    ? sql`(caller_id = ${input.userId} OR callee_id = ${input.userId})`
+    : sql`TRUE`
+
+  const whereType = input.callType ? sql`call_type = ${input.callType}` : sql`TRUE`
+  const whereStatus = input.status ? sql`status = ${input.status}` : sql`TRUE`
+
+  const calls = await sql`
+    SELECT *
+    FROM voice_calls
+    WHERE ${whereUser} AND ${whereType} AND ${whereStatus}
+    ORDER BY created_at DESC
+    LIMIT ${limit} OFFSET ${offset}
+  ` as unknown as VoiceCall[]
+
+  const totalResult = await sql`
+    SELECT COUNT(*)::int AS count
+    FROM voice_calls
+    WHERE ${whereUser} AND ${whereType} AND ${whereStatus}
+  ` as unknown as Array<{ count: number }>
+
+  return { calls, total: totalResult[0]?.count || 0 }
+}
+
+export async function getVoiceCallStats(days: number): Promise<{
+  totalCalls: number
+  completedCalls: number
+  missedCalls: number
+  failedCalls: number
+  averageDuration: number
+}> {
+  const result = await sql`
+    SELECT
+      COUNT(*)::int as total_calls,
+      COUNT(CASE WHEN status = 'completed' THEN 1 END)::int as completed_calls,
+      COUNT(CASE WHEN status = 'missed' THEN 1 END)::int as missed_calls,
+      COUNT(CASE WHEN status = 'failed' THEN 1 END)::int as failed_calls,
+      COALESCE(AVG(duration_seconds), 0)::int as avg_duration
+    FROM voice_calls
+    WHERE created_at >= NOW() - (${days} || ' days')::interval
+  ` as unknown as Array<{
+    total_calls: number
+    completed_calls: number
+    missed_calls: number
+    failed_calls: number
+    avg_duration: number
+  }>
+
+  const row = result[0] || {
+    total_calls: 0,
+    completed_calls: 0,
+    missed_calls: 0,
+    failed_calls: 0,
+    avg_duration: 0,
+  }
+
+  return {
+    totalCalls: row.total_calls,
+    completedCalls: row.completed_calls,
+    missedCalls: row.missed_calls,
+    failedCalls: row.failed_calls,
+    averageDuration: row.avg_duration,
+  }
+}
+
+// ============================================
+// STRIPE CONNECT + PARTNER PAYOUTS (used by /api/webhooks/* and /api/partner/*)
+// ============================================
+
+export async function getPartnerByStripeAccountId(stripeAccountId: string) {
+  const result = await sql`
+    SELECT *
+    FROM partners
+    WHERE stripe_account_id = ${stripeAccountId}
+    LIMIT 1
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+export async function updatePartnerStripeStatus(
+  stripeAccountId: string,
+  input: {
+    status: string
+    payoutsEnabled?: boolean
+    chargesEnabled?: boolean
+    detailsSubmitted?: boolean
+    onboardingComplete?: boolean
+  }
+) {
+  const result = await sql`
+    UPDATE partners
+    SET
+      stripe_account_status = ${input.status},
+      stripe_payouts_enabled = COALESCE(${input.payoutsEnabled ?? null}, stripe_payouts_enabled),
+      stripe_charges_enabled = COALESCE(${input.chargesEnabled ?? null}, stripe_charges_enabled),
+      stripe_details_submitted = COALESCE(${input.detailsSubmitted ?? null}, stripe_details_submitted),
+      stripe_onboarding_complete = COALESCE(${input.onboardingComplete ?? null}, stripe_onboarding_complete),
+      stripe_connected_at = COALESCE(stripe_connected_at, NOW()),
+      updated_at = NOW()
+    WHERE stripe_account_id = ${stripeAccountId}
+    RETURNING *
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+export async function getPartnerStripeConnect(partnerId: string) {
+  const result = await sql`
+    SELECT *
+    FROM partners
+    WHERE id = ${partnerId}
+    LIMIT 1
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+export async function getPartnerBalance(partnerId: string): Promise<{
+  availableBalance: number
+  pendingBalance: number
+  minimumPayoutThreshold: number
+}> {
+  const result = await sql`
+    SELECT
+      COALESCE(available_balance, 0) as available_balance,
+      COALESCE(pending_balance, 0) as pending_balance,
+      COALESCE(minimum_payout_threshold, 50.00) as minimum_payout_threshold
+    FROM partners
+    WHERE id = ${partnerId}
+    LIMIT 1
+  ` as unknown as any[]
+
+  const row = result[0]
+  return {
+    availableBalance: Number(row?.available_balance || 0),
+    pendingBalance: Number(row?.pending_balance || 0),
+    minimumPayoutThreshold: Number(row?.minimum_payout_threshold || 50),
+  }
+}
+
+export async function getPartnerPayouts(partnerId: string, limit = 20, offset = 0) {
+  const payouts = await sql`
+    SELECT *
+    FROM partner_payouts
+    WHERE partner_id = ${partnerId}
+    ORDER BY created_at DESC
+    LIMIT ${limit} OFFSET ${offset}
+  ` as unknown as any[]
+
+  const totalResult = await sql`
+    SELECT COUNT(*)::int as count
+    FROM partner_payouts
+    WHERE partner_id = ${partnerId}
+  ` as unknown as Array<{ count: number }>
+
+  return { payouts, total: totalResult[0]?.count || 0 }
+}
+
+export async function createPartnerPayout(input: {
+  partnerId: string
+  stripePayoutId: string
+  amount: number
+  status: string
+  currency?: string
+  method?: string
+  arrivalDate?: Date
+  requestedBy?: string
+  destinationType?: string
+  destinationLast4?: string
+}) {
+  const result = await sql`
+    INSERT INTO partner_payouts (
+      partner_id,
+      stripe_payout_id,
+      amount,
+      currency,
+      status,
+      method,
+      arrival_date,
+      requested_by,
+      destination_type,
+      destination_last4,
+      initiated_at
+    ) VALUES (
+      ${input.partnerId},
+      ${input.stripePayoutId},
+      ${input.amount},
+      ${input.currency || 'usd'},
+      ${input.status},
+      ${input.method || 'standard'},
+      ${input.arrivalDate || null},
+      ${input.requestedBy || 'manual'},
+      ${input.destinationType || null},
+      ${input.destinationLast4 || null},
+      NOW()
+    )
+    RETURNING *
+  ` as unknown as any[]
+
+  return result[0]
+}
+
+export async function updatePartnerPayoutStatus(
+  stripePayoutId: string,
+  status: string,
+  extra: {
+    arrivalDate?: Date
+    destinationType?: string
+    destinationLast4?: string
+    failureCode?: string
+    failureMessage?: string
+  } = {}
+) {
+  const paidAt = status === 'paid' ? new Date() : undefined
+  const failedAt = status === 'failed' ? new Date() : undefined
+
+  const result = await sql`
+    UPDATE partner_payouts
+    SET
+      status = ${status},
+      arrival_date = COALESCE(${extra.arrivalDate || null}, arrival_date),
+      destination_type = COALESCE(${extra.destinationType || null}, destination_type),
+      destination_last4 = COALESCE(${extra.destinationLast4 || null}, destination_last4),
+      failure_code = COALESCE(${extra.failureCode || null}, failure_code),
+      failure_message = COALESCE(${extra.failureMessage || null}, failure_message),
+      paid_at = COALESCE(${paidAt || null}, paid_at),
+      failed_at = COALESCE(${failedAt || null}, failed_at),
+      updated_at = NOW()
+    WHERE stripe_payout_id = ${stripePayoutId}
+    RETURNING *
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+export async function updatePartnerTransferStatus(stripeTransferId: string, status: string) {
+  const result = await sql`
+    UPDATE partner_transfers
+    SET
+      status = ${status},
+      processed_at = CASE WHEN ${status === 'paid'} THEN COALESCE(processed_at, NOW()) ELSE processed_at END,
+      failed_at = CASE WHEN ${status === 'failed'} THEN COALESCE(failed_at, NOW()) ELSE failed_at END,
+      updated_at = NOW()
+    WHERE stripe_transfer_id = ${stripeTransferId}
+    RETURNING *
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+export async function isConnectEventProcessed(eventId: string): Promise<boolean> {
+  const result = await sql`
+    SELECT event_id
+    FROM stripe_connect_events
+    WHERE event_id = ${eventId}
+    LIMIT 1
+  ` as unknown as any[]
+
+  return !!result[0]
+}
+
+export async function logConnectEvent(input: {
+  eventId: string
+  eventType: string
+  stripeAccountId?: string
+  partnerId?: string
+  eventData?: any
+  processed: boolean
+  errorMessage?: string
+}) {
+  const result = await sql`
+    INSERT INTO stripe_connect_events (
+      partner_id,
+      stripe_account_id,
+      event_id,
+      event_type,
+      event_data,
+      processed,
+      processed_at,
+      error_message
+    ) VALUES (
+      ${input.partnerId || null},
+      ${input.stripeAccountId || null},
+      ${input.eventId},
+      ${input.eventType},
+      ${JSON.stringify(input.eventData || {})}::jsonb,
+      ${input.processed},
+      ${input.processed ? new Date().toISOString() : null}::timestamp,
+      ${input.errorMessage || null}
+    )
+    ON CONFLICT (event_id) DO NOTHING
+    RETURNING *
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+// ============================================
+// ADMIN ANALYTICS (used by /api/admin/analytics)
+// ============================================
+
+export async function getRevenueByDate(days?: number) {
+  const whereClause = days ? sql`WHERE o.created_at >= NOW() - (${days} || ' days')::interval` : sql``
+  const result = await sql`
+    SELECT
+      DATE(o.created_at) as date,
+      COALESCE(SUM(o.total), 0)::float as revenue,
+      COUNT(*)::int as orders
+    FROM orders o
+    ${whereClause}
+    GROUP BY DATE(o.created_at)
+    ORDER BY DATE(o.created_at) ASC
+  ` as unknown as any[]
+
+  return result
+}
+
+export async function getOrdersByStatus(days?: number) {
+  const whereClause = days ? sql`WHERE created_at >= NOW() - (${days} || ' days')::interval` : sql``
+  const result = await sql`
+    SELECT
+      status,
+      COUNT(*)::int as count
+    FROM orders
+    ${whereClause}
+    GROUP BY status
+  ` as unknown as any[]
+  return result
+}
+
+export async function getPartnerPerformanceData(days?: number, limit = 10) {
+  // Minimal implementation: top partners by total_earnings (if present)
+  const result = await sql`
+    SELECT *
+    FROM partners
+    ORDER BY COALESCE(total_earnings, 0) DESC
+    LIMIT ${limit}
+  ` as unknown as any[]
+  return result
+}
+
+export async function getLeadFunnelData(days?: number) {
+  // Minimal implementation: counts by status if partner_leads exists
+  const whereClause = days ? sql`WHERE created_at >= NOW() - (${days} || ' days')::interval` : sql``
+  const result = await sql`
+    SELECT
+      status,
+      COUNT(*)::int as count
+    FROM partner_leads
+    ${whereClause}
+    GROUP BY status
+  ` as unknown as any[]
+  return result
+}
+
+export async function getUserAcquisitionData(days?: number) {
+  const whereClause = days ? sql`WHERE created_at >= NOW() - (${days} || ' days')::interval` : sql``
+  const result = await sql`
+    SELECT
+      DATE(created_at) as date,
+      COUNT(*)::int as users
+    FROM users
+    ${whereClause}
+    GROUP BY DATE(created_at)
+    ORDER BY DATE(created_at) ASC
+  ` as unknown as any[]
+  return result
+}
+
+export async function getKeyMetrics(days?: number) {
+  const whereOrders = days ? sql`WHERE created_at >= NOW() - (${days} || ' days')::interval` : sql``
+  const orders = await sql`
+    SELECT
+      COUNT(*)::int as total_orders,
+      COALESCE(SUM(total), 0)::float as total_revenue
+    FROM orders
+    ${whereOrders}
+  ` as unknown as any[]
+
+  const users = await sql`
+    SELECT COUNT(*)::int as total_users
+    FROM users
+    ${days ? sql`WHERE created_at >= NOW() - (${days} || ' days')::interval` : sql``}
+  ` as unknown as any[]
+
+  const partners = await sql`
+    SELECT COUNT(*)::int as total_partners
+    FROM partners
+  ` as unknown as any[]
+
+  return {
+    totalOrders: orders[0]?.total_orders || 0,
+    totalRevenue: orders[0]?.total_revenue || 0,
+    totalUsers: users[0]?.total_users || 0,
+    totalPartners: partners[0]?.total_partners || 0,
+  }
+}
+
+export async function getServicePerformance(): Promise<Array<{ service: string; orders: number; revenue: number; avgValue: number }>> {
+  // Placeholder: requires a proper service dimension. Return empty until implemented.
+  return []
+}
+
+export async function updatePartnerStripeAccount(
+  partnerId: string,
+  input: { stripeAccountId: string; status?: string }
+) {
+  const result = await sql`
+    UPDATE partners
+    SET
+      stripe_account_id = ${input.stripeAccountId},
+      stripe_account_status = COALESCE(${input.status || null}, stripe_account_status),
+      stripe_connected_at = COALESCE(stripe_connected_at, NOW()),
+      updated_at = NOW()
+    WHERE id = ${partnerId}
+    RETURNING *
+  ` as unknown as any[]
+
+  return result[0] || null
+}
+
+export async function getPartnerTransfers(partnerId: string, limit = 20, offset = 0) {
+  const transfers = await sql`
+    SELECT *
+    FROM partner_transfers
+    WHERE partner_id = ${partnerId}
+    ORDER BY created_at DESC
+    LIMIT ${limit} OFFSET ${offset}
+  ` as unknown as any[]
+
+  const totalResult = await sql`
+    SELECT COUNT(*)::int as count
+    FROM partner_transfers
+    WHERE partner_id = ${partnerId}
+  ` as unknown as Array<{ count: number }>
+
+  return { transfers, total: totalResult[0]?.count || 0 }
+}
+
+// ============================================
+// NOTIFICATIONS (used by /api/notifications/*)
+// ============================================
+
+export async function getUserNotifications(userId: string, limit = 20, unreadOnly = false) {
+  const result = await sql`
+    SELECT *
+    FROM notifications
+    WHERE user_id = ${userId}
+      AND (${unreadOnly} = false OR read = false)
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+  ` as unknown as any[]
+
+  return result
+}
+
+export async function getUnreadNotificationCount(userId: string): Promise<number> {
+  const result = await sql`
+    SELECT COUNT(*)::int as count
+    FROM notifications
+    WHERE user_id = ${userId} AND read = false
+  ` as unknown as Array<{ count: number }>
+  return result[0]?.count || 0
+}
+
+export async function markAllNotificationsRead(userId: string): Promise<number> {
+  const result = await sql`
+    UPDATE notifications
+    SET read = true, read_at = NOW()
+    WHERE user_id = ${userId} AND read = false
+    RETURNING id
+  ` as unknown as any[]
+  return result.length
+}
+
+export async function markNotificationRead(notificationId: string, userId: string): Promise<boolean> {
+  const result = await sql`
+    UPDATE notifications
+    SET read = true, read_at = NOW()
+    WHERE id = ${notificationId} AND user_id = ${userId}
+    RETURNING id
+  ` as unknown as any[]
+  return result.length > 0
+}
+
+// ============================================
+// ADMIN CONSULTATIONS (used by /api/admin/consultations/[id])
+// ============================================
+
+export async function updateConsultation(
+  consultationId: string,
+  updates: Partial<Pick<Consultation, 'status' | 'notes' | 'scheduled_at'>>
+) {
+  const result = await sql`
+    UPDATE consultations
+    SET
+      status = COALESCE(${updates.status || null}, status),
+      notes = COALESCE(${updates.notes || null}, notes),
+      scheduled_at = COALESCE(${(updates.scheduled_at as any) || null}, scheduled_at),
+      updated_at = NOW()
+    WHERE id = ${consultationId}
+    RETURNING *
+  ` as unknown as Consultation[]
+
+  return result[0] || null
+}
+
+// ============================================
+// LEGACY ADMIN ANALYTICS (used by app/admin/analytics/page-old.tsx)
+// ============================================
+
+export async function getAnalyticsStats(): Promise<{
+  totalRevenue: number
+  totalOrders: number
+  totalCustomers: number
+  conversionRate: number
+  avgOrderValue: number
+  customerLTV: number
+  activeRate: number
+  newCustomersThisMonth: number
+}> {
+  // Provide safe defaults; compute what we can from existing tables.
+  const ordersAgg = await sql`
+    SELECT
+      COUNT(*)::int as total_orders,
+      COALESCE(SUM(total), 0)::float as total_revenue,
+      COALESCE(AVG(total), 0)::float as avg_order_value
+    FROM orders
+    WHERE status IN ('paid', 'processing', 'completed')
+  ` as unknown as any[]
+
+  const usersAgg = await sql`
+    SELECT COUNT(*)::int as total_customers
+    FROM users
+    WHERE role = 'user'
+  ` as unknown as any[]
+
+  const thisMonthAgg = await sql`
+    SELECT COUNT(*)::int as new_customers
+    FROM users
+    WHERE role = 'user' AND created_at >= DATE_TRUNC('month', NOW())
+  ` as unknown as any[]
+
+  const totalOrders = ordersAgg[0]?.total_orders || 0
+  const totalRevenue = ordersAgg[0]?.total_revenue || 0
+  const avgOrderValue = ordersAgg[0]?.avg_order_value || 0
+  const totalCustomers = usersAgg[0]?.total_customers || 0
+
+  return {
+    totalRevenue,
+    totalOrders,
+    totalCustomers,
+    conversionRate: 0,
+    avgOrderValue,
+    customerLTV: 0,
+    activeRate: 0,
+    newCustomersThisMonth: thisMonthAgg[0]?.new_customers || 0,
+  }
+}
+
+export async function getMonthlyRevenueTrend(): Promise<Array<{ month: string; revenue: number }>> {
+  // Minimal, safe: return last 12 months revenue totals if possible.
+  const result = await sql`
+    SELECT
+      TO_CHAR(DATE_TRUNC('month', created_at), 'Mon') as month,
+      COALESCE(SUM(total), 0)::float as revenue
+    FROM orders
+    WHERE created_at >= NOW() - INTERVAL '12 months'
+      AND status IN ('paid', 'processing', 'completed')
+    GROUP BY DATE_TRUNC('month', created_at)
+    ORDER BY DATE_TRUNC('month', created_at) ASC
+  ` as unknown as any[]
+
+  return result.map((r) => ({ month: String(r.month), revenue: Number(r.revenue || 0) }))
+}
+
+export async function getDailyOrdersTrend(): Promise<Array<{ date: string; orders: number; revenue: number }>> {
+  const result = await sql`
+    SELECT
+      TO_CHAR(DATE(created_at), 'YYYY-MM-DD') as date,
+      COUNT(*)::int as orders,
+      COALESCE(SUM(total), 0)::float as revenue
+    FROM orders
+    WHERE created_at >= NOW() - INTERVAL '30 days'
+    GROUP BY DATE(created_at)
+    ORDER BY DATE(created_at) ASC
+  ` as unknown as any[]
+
+  return result.map((r) => ({
+    date: String(r.date),
+    orders: Number(r.orders || 0),
+    revenue: Number(r.revenue || 0),
+  }))
+}
+
+export async function getTopPartnerPerformance(limit = 5): Promise<any[]> {
+  const result = await sql`
+    SELECT *
+    FROM partners
+    ORDER BY COALESCE(total_earnings, 0) DESC
+    LIMIT ${limit}
+  ` as unknown as any[]
+  return result
 }

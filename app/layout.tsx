@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Montserrat, Lato } from "next/font/google"
+import localFont from "next/font/local"
 import { Toaster } from "sonner"
 import SmoothScroll from "@/components/smooth-scroll"
 import { AuthProvider } from "@/components/auth-provider"
@@ -14,16 +14,17 @@ import CartDrawer from "@/components/cart-drawer"
 import { FloatingCallButtonWrapper } from "@/components/floating-call-button-wrapper"
 import "./globals.css"
 
-const montserrat = Montserrat({
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
+// Use local fonts so builds don't rely on Google Fonts (and avoid Turbopack font resolution issues).
+// We map these to the existing CSS variables used across the app.
+const montserrat = localFont({
+  src: "../public/fonts/Brier-Bold.woff2",
   variable: "--font-montserrat",
   display: "swap",
+  weight: "700",
 })
 
-const lato = Lato({
-  weight: ["300", "400", "700", "900"],
-  subsets: ["latin"],
+const lato = localFont({
+  src: "../public/fonts/MonaSans-Variable.woff2",
   variable: "--font-lato",
   display: "swap",
 })

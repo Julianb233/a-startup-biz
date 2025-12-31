@@ -101,6 +101,16 @@ export const rateLimiters = {
       })
     : null,
 
+  // Referral: 10 requests per hour
+  referral: redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '1h'),
+        analytics: true,
+        prefix: 'ratelimit:referral',
+      })
+    : null,
+
   // HubSpot sync: 30 requests per minute
   'hubspot-sync': redis
     ? new Ratelimit({
@@ -162,6 +172,7 @@ const configs: Record<RateLimitType, RateLimitConfig> = {
   email: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
   pdf: { maxRequests: 10, windowMs: 600000 }, // 10 per 10 minutes
   quote: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
+  referral: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
   'hubspot-sync': { maxRequests: 30, windowMs: 60000 }, // 30 per minute
   crm: { maxRequests: 20, windowMs: 60000 }, // 20 per minute
 }
