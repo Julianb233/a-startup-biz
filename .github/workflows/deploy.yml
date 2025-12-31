@@ -112,8 +112,7 @@ jobs:
           fi
 
       - name: Notify Slack
-        # Only run if a Slack webhook is configured; otherwise skip cleanly.
-        if: ${{ always() && secrets.SLACK_WEBHOOK != '' }}
+        if: always()
         uses: slackapi/slack-github-action@v1
         continue-on-error: true
         env:
