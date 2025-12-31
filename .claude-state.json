@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "project": "a-startup-biz",
-  "lastUpdated": "2025-12-29T22:30:00Z",
+  "lastUpdated": "2025-12-30T00:45:00Z",
   "expiresAt": "2026-01-01T06:00:00Z",
   "swarmId": "swarm_bubba_dashboard_1735448400",
   "swarmStatus": "completed",
@@ -50,7 +50,8 @@
     "stagingPending": false,
     "stagingNotes": "CI/CD fully configured with GitHub Actions",
     "vercelConfigured": true,
-    "lastSuccessfulBuild": "2025-12-29T20:50:00Z"
+    "lastSuccessfulBuild": "2025-12-30T00:40:00Z",
+    "latestDeployment": "https://a-startup-njot7r379-ai-acrobatics.vercel.app"
   },
   "dnsMigration": {
     "status": "awaiting-nameserver-change",
@@ -145,7 +146,7 @@
   "autonomousMode": true,
   "resumeInstructions": "GO-LIVE MODE: 2-day countdown to launch. See docs/GO-LIVE-CHECKLIST.md for full integration status. Ready integrations: Resend, Stripe, Clerk, Neon, Supabase. Pending user action: LiveKit (voice), HubSpot (CRM), OpenAI (AI agent). When user provides keys, add to Vercel immediately.",
   "testingResults": {
-    "testedAt": "2025-12-29T23:45:00Z",
+    "testedAt": "2025-12-30T00:45:00Z",
     "results": {
       "testFiles": "9 passed, 1 skipped",
       "totalTests": "146 passed, 24 skipped",
@@ -160,8 +161,22 @@
       "categoryIconsFix": "completed - icons now top-left"
     },
     "playwrightResults": {
+      "testedAt": "2025-12-30T00:45:00Z",
       "vercelDeployment": "https://a-startup-biz.vercel.app",
       "allPagesPass": true,
+      "testsRun": 8,
+      "testsPassed": 8,
+      "testsFailed": 0,
+      "tests": [
+        "Homepage loads correctly",
+        "Navigation works",
+        "Services page loads",
+        "Contact page loads",
+        "Mobile responsiveness - Contact page",
+        "Mobile responsiveness - Services page",
+        "Login page loads",
+        "Partner portal page loads"
+      ],
       "screenshotsVerified": true
     }
   }
