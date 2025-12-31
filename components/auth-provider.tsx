@@ -33,14 +33,10 @@ class ClerkErrorBoundary extends Component<
   }
 }
 
-// Check if Clerk is properly configured at BUILD TIME
-// This runs during SSG/SSR so we use env vars, not window checks
-const CLERK_ENABLED = process.env.NEXT_PUBLIC_CLERK_ENABLED === 'true'
-const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ''
-const HAS_VALID_KEY = CLERK_KEY.startsWith('pk_') && !CLERK_KEY.includes('placeholder')
-
-// Final check: must be explicitly enabled AND have valid key
-const IS_CLERK_CONFIGURED = CLERK_ENABLED && HAS_VALID_KEY
+// TEMPORARILY DISABLED: Clerk test keys don't work in production
+// TODO: Re-enable when live Clerk keys (pk_live_) are configured
+// Force disable Clerk - using Supabase auth fallback
+const IS_CLERK_CONFIGURED = false
 
 export function AuthProvider({ children }: AuthProviderProps) {
   // If Clerk is not configured, render children without auth wrapper
