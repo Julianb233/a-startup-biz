@@ -33,32 +33,18 @@ class ClerkErrorBoundary extends Component<
   }
 }
 
-// Check if Clerk is properly configured
-// Requires valid publishable key AND must be explicitly enabled
-const isClerkConfigured = () => {
-  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  const enabled = process.env.NEXT_PUBLIC_CLERK_ENABLED
+// Check if Clerk is properly configured at BUILD TIME
+// This runs during SSG/SSR so we use env vars, not window checks
+const CLERK_ENABLED = process.env.NEXT_PUBLIC_CLERK_ENABLED === 'true'
+const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || ''
+const HAS_VALID_KEY = CLERK_KEY.startsWith('pk_') && !CLERK_KEY.includes('placeholder')
 
-  // Must have valid key format
-  const hasValidKey = key && !key.includes('placeholder') && key.startsWith('pk_')
-
-  // In production with test keys, disable Clerk unless explicitly enabled
-  const isTestKey = key?.includes('pk_test_')
-  const isProduction = typeof window !== 'undefined' &&
-    !window.location.hostname.includes('localhost') &&
-    !window.location.hostname.includes('127.0.0.1')
-
-  // Disable test keys in production unless explicitly enabled
-  if (isTestKey && isProduction && enabled !== 'true') {
-    return false
-  }
-
-  return hasValidKey
-}
+// Final check: must be explicitly enabled AND have valid key
+const IS_CLERK_CONFIGURED = CLERK_ENABLED && HAS_VALID_KEY
 
 export function AuthProvider({ children }: AuthProviderProps) {
   // If Clerk is not configured, render children without auth wrapper
-  if (!isClerkConfigured()) {
+  if (!IS_CLERK_CONFIGURED) {
     return <>{children}</>
   }
 
