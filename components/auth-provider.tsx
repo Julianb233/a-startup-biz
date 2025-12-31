@@ -6,12 +6,11 @@ interface AuthProviderProps {
   children: React.ReactNode
 }
 
-// Check if Clerk is properly configured AND explicitly enabled
-// Requires NEXT_PUBLIC_CLERK_ENABLED=true to prevent crashes when Clerk app isn't configured for domain
+// Check if Clerk is properly configured
+// Only requires a valid publishable key - no separate enable flag needed
 const isClerkConfigured = () => {
-  const enabled = process.env.NEXT_PUBLIC_CLERK_ENABLED === 'true'
   const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  return enabled && key && !key.includes('placeholder') && key.startsWith('pk_')
+  return key && !key.includes('placeholder') && key.startsWith('pk_')
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
