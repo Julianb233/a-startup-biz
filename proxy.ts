@@ -16,7 +16,7 @@ const isSupabaseConfigured = () => {
   return Boolean(url && key)
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const res = NextResponse.next()
 
   // Check if route is protected
@@ -72,3 +72,4 @@ export const config = {
     "/(api|trpc)(.*)",
   ],
 }
+
