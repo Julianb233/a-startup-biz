@@ -4,6 +4,7 @@ import { stripe, formatAmountForStripe } from '@/lib/stripe'
 import { SITE_CONFIG } from '@/lib/site-config'
 import { withRateLimit } from '@/lib/rate-limit'
 import { getProduct, verifyProductPrice } from '@/lib/products'
+import { getRequestOrigin } from '@/lib/site-url'
 
 interface CartItem {
   slug: string
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
     }))
 
     // Determine success and cancel URLs
-    const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const origin = getRequestOrigin(request.headers)
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

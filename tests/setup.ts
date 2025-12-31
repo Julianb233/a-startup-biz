@@ -10,6 +10,8 @@ afterEach(() => {
 // Mock environment variables
 process.env.UPSTASH_REDIS_REST_URL = 'http://localhost:8079';
 process.env.UPSTASH_REDIS_REST_TOKEN = 'test-token';
+process.env.NEXT_PUBLIC_SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://test.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'test-anon-key';
 
 // Mock Next.js headers function
 vi.mock('next/headers', () => ({

@@ -3,6 +3,7 @@ import { sql } from '@/lib/db-queries'
 import { scrapeWebsite } from '@/lib/partner-onboarding/scraper-service'
 import { createMicrosite, updateMicrositeWithScrapedData } from '@/lib/partner-onboarding/microsite-generator'
 import { sendEmail, ADMIN_EMAIL } from '@/lib/email'
+import { getSiteUrl } from '@/lib/site-url'
 
 // Webhook secret for n8n authentication
 const WEBHOOK_SECRET = process.env.N8N_WEBHOOK_SECRET || 'n8n-partner-automation-secret'
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
         }
 
         const partner = partners[0]
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astartupbiz.com'
+        const siteUrl = getSiteUrl()
 
         await sendEmail({
           to: partner.email,
