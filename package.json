@@ -26,6 +26,7 @@
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^3.10.0",
     "@livekit/components-react": "^2.9.17",
+    "@livekit/components-styles": "^1.2.0",
     "@neondatabase/serverless": "^1.0.2",
     "@nuxt/kit": "latest",
     "@radix-ui/react-accordion": "1.2.2",
