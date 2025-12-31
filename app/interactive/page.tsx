@@ -6,6 +6,8 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import GrowthComparison from "@/components/infographics/GrowthComparison";
+import { BarChartAnimation } from "@/components/infographics/BarChartAnimation";
 
 // Register plugins
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -440,6 +442,25 @@ export default function InteractivePage() {
         </section>
 
         {/* ============================================
+            SECTION 6B: Growth Statistics
+            ============================================ */}
+        <section className="flow-section flow-section-compact">
+          <div className="flow-animate">
+            <h2 className="text-large font-bold text-white text-center mb-8">
+              The <span className="text-orange-500 glow-orange-medium">Numbers</span> Don&apos;t Lie
+            </h2>
+            <GrowthComparison
+              beforeYear={2019}
+              afterYear={2024}
+              beforeValue={3.5}
+              afterValue={5.5}
+              growthPercent={57}
+              label="New Business Formations in the U.S. (Millions)"
+            />
+          </div>
+        </section>
+
+        {/* ============================================
             SECTION 7: Real-World Strategy
             ============================================ */}
         <section className="flow-section flow-section-breathe">
@@ -526,6 +547,25 @@ export default function InteractivePage() {
                 Most consultants teach theory. And theory does not pay the bills.
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            SECTION 9B: Revenue Growth Chart
+            ============================================ */}
+        <section className="flow-section">
+          <div className="flow-animate max-w-5xl mx-auto">
+            <BarChartAnimation
+              title="Client Success: Average Revenue Growth"
+              data={[
+                { label: "Q1", value: 12 },
+                { label: "Q2", value: 18 },
+                { label: "Q3", value: 24 },
+                { label: "Q4", value: 32 },
+              ]}
+              duration={1.5}
+              className="bg-gradient-to-br from-gray-900/80 to-black/60 rounded-3xl border border-white/10"
+            />
           </div>
         </section>
 
