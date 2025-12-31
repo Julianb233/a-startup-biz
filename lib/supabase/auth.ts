@@ -6,7 +6,6 @@
  */
 
 import { createBrowserClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 
 // Environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
