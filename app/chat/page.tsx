@@ -6,6 +6,18 @@ import { redirect } from 'next/navigation';
 export const metadata: Metadata = {
   title: 'Chat | A Startup Biz',
   description: 'Real-time chat with our team',
+  openGraph: {
+    title: 'Chat | A Startup Biz',
+    description: 'Real-time chat with our team',
+    type: 'website',
+    images: ['/logo.webp'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Chat | A Startup Biz',
+    description: 'Real-time chat with our team',
+    images: ['/logo.webp'],
+  },
 };
 
 export default async function ChatPage() {

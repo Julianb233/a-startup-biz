@@ -10,16 +10,17 @@ export const metadata: Metadata = {
     url: 'https://dailyeventinsurance.com/for-rentals',
     type: 'website',
     images: [{
-      url: '/images/og-rental-insurance.png',
+      url: '/logo.webp',
       width: 1200,
       height: 630,
-      alt: 'Daily Event Insurance - Equipment Rental Insurance',
+      alt: 'A Startup Biz Logo',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Equipment Rental Insurance | DEI',
     description: 'Reduce damage disputes. Earn commission. Protect your inventory.',
+    images: ['/logo.webp'],
   },
 }
 

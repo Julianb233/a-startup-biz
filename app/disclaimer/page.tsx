@@ -5,6 +5,18 @@ import Footer from "@/components/footer"
 export const metadata: Metadata = {
   title: "Disclaimer | A Startup Biz",
   description: "Important disclaimers and legal notices regarding the services and information provided by A Startup Biz.",
+  openGraph: {
+    title: "Disclaimer | A Startup Biz",
+    description: "Important disclaimers and legal notices regarding the services and information provided by A Startup Biz.",
+    type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Disclaimer | A Startup Biz",
+    description: "Important disclaimers and legal notices regarding the services and information provided by A Startup Biz.",
+    images: ["/logo.webp"],
+  },
 }
 
 export default function DisclaimerPage() {

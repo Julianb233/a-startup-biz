@@ -21,6 +21,13 @@ export const metadata: Metadata = {
     title: "FAQs - A Startup Biz | Got Questions? We've Got Answers",
     description: "Find answers to common questions about our business consulting services, pricing, process, and guarantees.",
     type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FAQs - A Startup Biz | Got Questions? We've Got Answers",
+    description: "Find answers to common questions about our business consulting services, pricing, process, and guarantees.",
+    images: ["/logo.webp"],
   },
 }
 

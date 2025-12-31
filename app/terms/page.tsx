@@ -4,6 +4,18 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Terms of Service | Daily Event Insurance',
   description: 'Terms of Service for Daily Event Insurance. Read our terms and conditions for using our partner platform.',
+  openGraph: {
+    title: 'Terms of Service | Daily Event Insurance',
+    description: 'Terms of Service for Daily Event Insurance. Read our terms and conditions for using our partner platform.',
+    type: 'website',
+    images: ['/logo.webp'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms of Service | Daily Event Insurance',
+    description: 'Terms of Service for Daily Event Insurance. Read our terms and conditions for using our partner platform.',
+    images: ['/logo.webp'],
+  },
 }
 
 export default function TermsPage() {

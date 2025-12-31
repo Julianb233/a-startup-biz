@@ -19,6 +19,13 @@ export const metadata: Metadata = {
     title: "About Tory | A Startup Biz",
     description: "Meet Tory, founder of A Startup Biz. Expert business consulting for entrepreneurs ready to take action.",
     type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Tory | A Startup Biz",
+    description: "Meet Tory, founder of A Startup Biz. Expert business consulting for entrepreneurs ready to take action.",
+    images: ["/logo.webp"],
   },
 }
 

@@ -8,6 +8,18 @@ export const metadata: Metadata = {
   title: "Careers | A Startup Biz",
   description:
     "Join the A Startup Biz team. We're always looking for talented individuals who share our passion for helping entrepreneurs succeed.",
+  openGraph: {
+    title: "Careers | A Startup Biz",
+    description: "Join the A Startup Biz team. We're always looking for talented individuals who share our passion for helping entrepreneurs succeed.",
+    type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Careers | A Startup Biz",
+    description: "Join the A Startup Biz team. We're always looking for talented individuals who share our passion for helping entrepreneurs succeed.",
+    images: ["/logo.webp"],
+  },
 };
 
 export default function CareersPage() {
