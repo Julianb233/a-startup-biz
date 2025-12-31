@@ -21,6 +21,13 @@ export const metadata: Metadata = {
     title: "Business Insights & Wisdom | A Startup Biz",
     description: "Real lessons from starting over 100 businesses. Expert entrepreneurial advice and hard truths about business success.",
     type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Business Insights & Wisdom | A Startup Biz",
+    description: "Real lessons from starting over 100 businesses. Expert entrepreneurial advice and hard truths about business success.",
+    images: ["/logo.webp"],
   },
 }
 

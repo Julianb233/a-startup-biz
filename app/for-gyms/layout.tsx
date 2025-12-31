@@ -10,16 +10,17 @@ export const metadata: Metadata = {
     url: 'https://dailyeventinsurance.com/for-gyms',
     type: 'website',
     images: [{
-      url: '/images/og-gym-insurance.png',
+      url: '/logo.webp',
       width: 1200,
       height: 630,
-      alt: 'Daily Event Insurance - Gym Insurance Solutions',
+      alt: 'A Startup Biz Logo',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Gym Insurance & Member Coverage | DEI',
     description: 'Instant liability coverage for gym members. Earn 25-30% commission per policy.',
+    images: ['/logo.webp'],
   },
 }
 

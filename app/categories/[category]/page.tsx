@@ -38,6 +38,13 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       title: `${category.title} Insurance | HIQOR`,
       description: category.description,
       type: "website",
+      images: ["/logo.webp"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${category.title} Insurance | HIQOR`,
+      description: category.description,
+      images: ["/logo.webp"],
     },
   }
 }

@@ -58,10 +58,10 @@ export const metadata: Metadata = {
     siteName: "A Startup Biz",
     images: [
       {
-        url: "/images/og-image.png",
+        url: "/logo.webp",
         width: 1200,
         height: 630,
-        alt: "A Startup Biz - Business Consulting for Entrepreneurs",
+        alt: "A Startup Biz Logo",
       },
     ],
     locale: "en_US",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "A Startup Biz - Entrepreneur or Wantrepreneur?",
     description: "Transform your business idea into reality. Expert consulting for startups ready to take action.",
-    images: ["/images/og-image.png"],
+    images: ["/logo.webp"],
   },
   icons: {
     icon: [

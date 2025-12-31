@@ -4,6 +4,18 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Insurance Disclosure | Daily Event Insurance',
   description: 'Insurance disclosure and regulatory information for Daily Event Insurance products and services.',
+  openGraph: {
+    title: 'Insurance Disclosure | Daily Event Insurance',
+    description: 'Insurance disclosure and regulatory information for Daily Event Insurance products and services.',
+    type: 'website',
+    images: ['/logo.webp'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Insurance Disclosure | Daily Event Insurance',
+    description: 'Insurance disclosure and regulatory information for Daily Event Insurance products and services.',
+    images: ['/logo.webp'],
+  },
 }
 
 export default function InsuranceDisclosurePage() {

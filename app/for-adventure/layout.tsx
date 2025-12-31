@@ -10,16 +10,17 @@ export const metadata: Metadata = {
     url: 'https://dailyeventinsurance.com/for-adventure',
     type: 'website',
     images: [{
-      url: '/images/og-adventure-insurance.png',
+      url: '/logo.webp',
       width: 1200,
       height: 630,
-      alt: 'Daily Event Insurance - Adventure Sports Insurance',
+      alt: 'A Startup Biz Logo',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Adventure Sports Insurance | DEI',
     description: 'Instant coverage. Earn commission per participant. Protect your guests.',
+    images: ['/logo.webp'],
   },
 }
 

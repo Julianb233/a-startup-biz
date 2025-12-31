@@ -24,6 +24,13 @@ export const metadata: Metadata = {
     title: "Business Services | A Startup Biz",
     description: "Everything you need to launch and grow your startup. From EIN filing to AI solutions.",
     type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Business Services | A Startup Biz",
+    description: "Everything you need to launch and grow your startup. From EIN filing to AI solutions.",
+    images: ["/logo.webp"],
   },
 }
 

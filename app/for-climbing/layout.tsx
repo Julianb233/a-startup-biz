@@ -10,16 +10,17 @@ export const metadata: Metadata = {
     url: 'https://dailyeventinsurance.com/for-climbing',
     type: 'website',
     images: [{
-      url: '/images/og-climbing-insurance.png',
+      url: '/logo.webp',
       width: 1200,
       height: 630,
-      alt: 'Daily Event Insurance - Climbing Facility Insurance',
+      alt: 'A Startup Biz Logo',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Climbing Facility Insurance | DEI',
     description: 'Same-day coverage. Earn commission. 5-minute integration.',
+    images: ['/logo.webp'],
   },
 }
 

@@ -39,6 +39,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${service.title} | A Startup Biz`,
       description: service.description,
       type: "website",
+      images: ["/logo.webp"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${service.title} | A Startup Biz`,
+      description: service.description,
+      images: ["/logo.webp"],
     },
   }
 }

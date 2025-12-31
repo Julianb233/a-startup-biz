@@ -47,13 +47,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       publishedTime: post.publishedAt,
       authors: [post.author],
-      images: post.featuredImage ? [post.featuredImage] : [],
+      images: ["/logo.webp"],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
-      images: post.featuredImage ? [post.featuredImage] : [],
+      images: ["/logo.webp"],
     },
   }
 }

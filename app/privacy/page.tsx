@@ -4,6 +4,18 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Privacy Policy | Daily Event Insurance',
   description: 'Privacy Policy for Daily Event Insurance. Learn how we collect, use, and protect your personal information.',
+  openGraph: {
+    title: 'Privacy Policy | Daily Event Insurance',
+    description: 'Privacy Policy for Daily Event Insurance. Learn how we collect, use, and protect your personal information.',
+    type: 'website',
+    images: ['/logo.webp'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy | Daily Event Insurance',
+    description: 'Privacy Policy for Daily Event Insurance. Learn how we collect, use, and protect your personal information.',
+    images: ['/logo.webp'],
+  },
 }
 
 export default function PrivacyPage() {

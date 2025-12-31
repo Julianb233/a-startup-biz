@@ -25,11 +25,13 @@ export async function generateMetadata({ params }: { params: Promise<{ sector: s
       url: `https://dailyeventinsurance.com/industries/${sector.slug}`,
       siteName: "Daily Event Insurance",
       type: "website",
+      images: ["/logo.webp"],
     },
     twitter: {
       card: "summary_large_image",
       title: sector.metaTitle,
       description: sector.metaDescription,
+      images: ["/logo.webp"],
     }
   }
 }

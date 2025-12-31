@@ -10,16 +10,17 @@ export const metadata: Metadata = {
     url: 'https://dailyeventinsurance.com/onboarding',
     type: 'website',
     images: [{
-      url: '/images/og-onboarding.png',
+      url: '/logo.webp',
       width: 1200,
       height: 630,
-      alt: 'Daily Event Insurance - Partner Onboarding',
+      alt: 'A Startup Biz Logo',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Partner Onboarding | DEI',
     description: '4 steps to launch. Free setup. Start earning today.',
+    images: ['/logo.webp'],
   },
 }
 

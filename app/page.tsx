@@ -29,6 +29,13 @@ export const metadata: Metadata = {
     title: "A Startup Biz - Expert Business Consulting for Entrepreneurs",
     description: "Transform your business idea into reality with expert consulting services. We help startups succeed.",
     type: "website",
+    images: ["/logo.webp"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "A Startup Biz - Expert Business Consulting for Entrepreneurs",
+    description: "Transform your business idea into reality with expert consulting services. We help startups succeed.",
+    images: ["/logo.webp"],
   },
 }
 
