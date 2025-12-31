@@ -131,7 +131,7 @@ export const BarChartAnimation: React.FC<BarChartAnimationProps> = ({
       {/* Title */}
       <h2
         ref={titleRef}
-        className="text-3xl md:text-4xl font-bold text-center mb-12 text-white"
+        className="text-3xl md:text-4xl font-black text-center mb-12 text-black"
       >
         {title}
       </h2>
@@ -140,7 +140,7 @@ export const BarChartAnimation: React.FC<BarChartAnimationProps> = ({
       <div className="max-w-4xl mx-auto">
         {/* Y-axis labels */}
         <div className="flex items-end justify-between mb-4 px-4 md:px-8">
-          <div className="flex flex-col items-end space-y-2 text-sm text-gray-400 pr-4">
+          <div className="flex flex-col items-end space-y-2 text-sm text-black/60 pr-4 font-semibold">
             <span>30%</span>
             <span className="mt-8">20%</span>
             <span className="mt-8">10%</span>
@@ -154,7 +154,7 @@ export const BarChartAnimation: React.FC<BarChartAnimationProps> = ({
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="w-full h-px bg-gray-700 opacity-30"
+                  className="w-full h-px bg-black/10"
                   style={{ marginBottom: i === 3 ? '0' : 'auto' }}
                 />
               ))}
@@ -174,7 +174,7 @@ export const BarChartAnimation: React.FC<BarChartAnimationProps> = ({
                   <div
                     ref={(el) => { labelsRef.current[index] = el; }}
                     className={`text-lg md:text-xl font-bold mb-2 ${
-                      isQ4 ? 'text-orange-400' : 'text-white'
+                      isQ4 ? 'text-orange-600' : 'text-black'
                     }`}
                     style={{ minHeight: '2rem' }}
                   >
@@ -207,7 +207,7 @@ export const BarChartAnimation: React.FC<BarChartAnimationProps> = ({
                   {/* Quarter Label */}
                   <div
                     className={`mt-3 text-sm md:text-base font-semibold ${
-                      isQ4 ? 'text-orange-400' : 'text-gray-300'
+                      isQ4 ? 'text-orange-600' : 'text-black/70'
                     }`}
                   >
                     {item.label}
@@ -219,10 +219,10 @@ export const BarChartAnimation: React.FC<BarChartAnimationProps> = ({
         </div>
 
         {/* X-axis line */}
-        <div className="w-full h-px bg-gray-600 ml-20" />
+        <div className="w-full h-px bg-black/20 ml-20" />
 
         {/* Chart Footer */}
-        <div className="text-center mt-8 text-sm text-gray-400">
+        <div className="text-center mt-8 text-sm text-black/60 font-semibold">
           <p>Revenue Growth Rate by Quarter</p>
         </div>
       </div>

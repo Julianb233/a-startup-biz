@@ -3,7 +3,7 @@
 ## Step 1: Import the Component
 
 ```tsx
-// app/interactive/page.tsx
+// app/landing/page.tsx
 import { BarChartAnimation } from '@/components/infographics/BarChartAnimation';
 ```
 
@@ -21,7 +21,7 @@ const q4AccelerationData = [
 ## Step 3: Add to Your Page
 
 ```tsx
-export default function InteractivePage() {
+export default function LandingPage() {
   const q4AccelerationData = [
     { label: 'Q1', value: 10.1 },
     { label: 'Q2', value: 15.2 },
@@ -30,7 +30,7 @@ export default function InteractivePage() {
   ];
 
   return (
-    <main className="bg-gray-900">
+    <main className="bg-black">
       {/* Your existing sections */}
 
       <section className="py-20">
@@ -55,7 +55,7 @@ export default function InteractivePage() {
 
 import { BarChartAnimation } from '@/components/infographics/BarChartAnimation';
 
-export default function InteractivePage() {
+export default function LandingPage() {
   const q4Data = [
     { label: 'Q1', value: 10.1 },
     { label: 'Q2', value: 15.2 },
@@ -64,11 +64,11 @@ export default function InteractivePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+    <div className="min-h-screen bg-black">
       {/* Hero Section */}
       <section className="h-screen flex items-center justify-center">
         <h1 className="text-6xl font-bold text-white">
-          Interactive Experience
+          Landing Experience
         </h1>
       </section>
 
@@ -129,7 +129,7 @@ export default function InteractivePage() {
 ### Multiple Charts
 
 ```tsx
-function InteractivePage() {
+function LandingPage() {
   const revenueData = [
     { label: 'Q1', value: 10.1 },
     { label: 'Q2', value: 15.2 },

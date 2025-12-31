@@ -135,21 +135,21 @@ export default function GrowthComparison({
     <div ref={containerRef} className="w-full max-w-6xl mx-auto px-4 py-16">
       {/* Desktop: Side-by-side | Mobile: Stacked */}
       <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-        {/* 2019 Side - Gray/Muted */}
-        <div className="flex flex-col items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl shadow-lg border-2 border-gray-300">
+        {/* Before side - Black/White */}
+        <div className="flex flex-col items-center justify-center p-8 lg:p-12 bg-white rounded-2xl shadow-lg border-2 border-black/10">
           <div className="text-center">
-            <div className="text-5xl lg:text-6xl font-bold text-gray-700 mb-4">{beforeYear}</div>
-            <div className="text-6xl lg:text-7xl font-black text-gray-800">
+            <div className="text-5xl lg:text-6xl font-black text-black/80 mb-4">{beforeYear}</div>
+            <div className="text-6xl lg:text-7xl font-black text-black">
               <span ref={beforeCountRef}>0.0M</span>
             </div>
-            <div className="text-lg lg:text-xl text-gray-600 mt-4 font-medium">Businesses</div>
+            <div className="text-lg lg:text-xl text-black/70 mt-4 font-semibold">Businesses</div>
           </div>
         </div>
 
         {/* Connecting Line (Hidden on mobile) */}
         <div
           ref={lineRef}
-          className="hidden lg:block absolute left-1/2 top-1/2 w-16 h-1 bg-gradient-to-r from-gray-400 via-gray-300 to-orange-400 -translate-x-1/2 -translate-y-1/2 origin-center"
+          className="hidden lg:block absolute left-1/2 top-1/2 w-16 h-1 bg-gradient-to-r from-black/30 via-black/10 to-orange-400 -translate-x-1/2 -translate-y-1/2 origin-center"
           style={{ transformOrigin: 'center' }}
         />
 
@@ -169,14 +169,14 @@ export default function GrowthComparison({
           </div>
         </div>
 
-        {/* 2023 Side - Orange/Vibrant */}
-        <div className="flex flex-col items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl shadow-lg border-2 border-orange-300">
+        {/* After side - Orange/Vibrant */}
+        <div className="flex flex-col items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl shadow-lg border-2 border-orange-200">
           <div className="text-center">
-            <div className="text-5xl lg:text-6xl font-bold text-orange-700 mb-4">{afterYear}</div>
-            <div className="text-6xl lg:text-7xl font-black text-orange-900">
+            <div className="text-5xl lg:text-6xl font-black text-orange-700 mb-4">{afterYear}</div>
+            <div className="text-6xl lg:text-7xl font-black text-black">
               <span ref={afterCountRef}>0.0M</span>
             </div>
-            <div className="text-lg lg:text-xl text-orange-700 mt-4 font-medium">Businesses</div>
+            <div className="text-lg lg:text-xl text-black/70 mt-4 font-semibold">Businesses</div>
           </div>
         </div>
       </div>
@@ -184,7 +184,7 @@ export default function GrowthComparison({
       {/* Label */}
       <p
         ref={labelRef}
-        className="text-center text-xl lg:text-2xl font-semibold text-gray-700 mt-8 lg:mt-12"
+        className="text-center text-xl lg:text-2xl font-bold text-black/80 mt-8 lg:mt-12"
       >
         {label}
       </p>

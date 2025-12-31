@@ -221,7 +221,7 @@ See `INTEGRATION_GUIDE.md` for:
 
 **✅ READY FOR PRODUCTION**
 
-All files created, documented, and tested. Component is ready to integrate into the `/interactive` page or any other page in the A Startup Biz project.
+All files created, documented, and tested. Component is ready to integrate into the `/landing` page or any other page in the A Startup Biz project.
 
 ---
 

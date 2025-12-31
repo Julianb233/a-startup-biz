@@ -215,7 +215,7 @@ components/infographics/
 ## Integration Example
 
 ```tsx
-// app/interactive/page.tsx
+// app/landing/page.tsx
 import { BarChartAnimation } from '@/components/infographics/BarChartAnimation';
 
 export default function InteractivePage() {
