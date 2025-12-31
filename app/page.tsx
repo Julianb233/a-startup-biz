@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import Header from "@/components/header"
-import HeroSection from "@/components/hero-section"
 import { HomepageAnimations } from "@/components/homepage-animations"
 import StatisticsShowcase from "@/components/statistics-showcase"
 import ServicesShowcase from "@/components/services-showcase"
 import HowItWorks from "@/components/how-it-works"
 import AboutSection from "@/components/about-section"
+import ThousandDollarSolution from "@/components/thousand-dollar-solution"
 import BlogPreview from "@/components/blog-preview"
 import CTASection from "@/components/cta-section"
 import Footer from "@/components/footer"
@@ -41,20 +41,20 @@ export default function Home() {
       {/* Navigation */}
       <Header />
 
-      {/* Hero Section */}
-      <HeroSection />
-
-      {/* Statistics Showcase - The Numbers Don't Lie */}
-      <StatisticsShowcase />
-
-      {/* Services Showcase */}
-      <ServicesShowcase />
+      {/* Meet Tory */}
+      <AboutSection />
 
       {/* How It Works */}
       <HowItWorks />
 
-      {/* About Section */}
-      <AboutSection />
+      {/* Everything Your Business Needs */}
+      <ServicesShowcase />
+
+      {/* $1000 Solution */}
+      <ThousandDollarSolution />
+
+      {/* Statistics Showcase - The Numbers Don't Lie */}
+      <StatisticsShowcase />
 
       {/* Blog Preview */}
       <BlogPreview />

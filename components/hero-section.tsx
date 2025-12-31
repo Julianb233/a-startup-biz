@@ -51,20 +51,6 @@ export default function HeroSection() {
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28"
       >
         <div className="text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff6a1a]/10 border border-[#ff6a1a]/20 mb-6"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff6a1a] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff6a1a]"></span>
-            </span>
-            <span className="text-sm font-semibold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Now Accepting New Clients
-            </span>
-          </motion.div>
-
           {/* Main headline */}
           <motion.h1
             variants={itemVariants}
