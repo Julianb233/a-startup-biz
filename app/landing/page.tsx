@@ -108,9 +108,10 @@ export default function LandingPage() {
       if (entrepreneurBandRef.current && entrepreneurTrackRef.current) {
         gsap.fromTo(
           entrepreneurTrackRef.current,
-          { xPercent: 10 },
+          // Left -> right as you scroll down
+          { xPercent: -10 },
           {
-            xPercent: -10,
+            xPercent: 10,
             ease: "none",
             scrollTrigger: {
               trigger: entrepreneurBandRef.current,
@@ -185,16 +186,16 @@ export default function LandingPage() {
             ============================================ */}
         <section
           ref={heroRef}
-          className="relative min-h-screen w-full flex items-center justify-center px-4"
+          className="relative min-h-screen w-full flex items-center justify-center"
         >
-          <div className="hero-logo-frame relative w-full max-w-6xl h-[78vh] md:h-[82vh]">
+          <div className="hero-logo-frame relative w-screen h-screen overflow-hidden bg-black">
             <Image
               src="/images/a-startup-biz-logo.webp"
               alt="A Startup Biz"
               fill
               priority
-              className="object-contain"
-              sizes="(max-width: 768px) 92vw, 1200px"
+              className="object-contain hero-logo-mega"
+              sizes="100vw"
             />
           </div>
 
@@ -240,7 +241,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="relative rounded-3xl overflow-hidden aspect-[16/9] bg-black/60 border border-white/15 box-glow-orange">
+            <div className="relative rounded-3xl overflow-hidden h-[82vh] md:h-[92vh] bg-black/60 border border-white/15 box-glow-orange">
               {!meAndToriImgError ? (
                 <Image
                   src="/images/me-and-tori.webp"

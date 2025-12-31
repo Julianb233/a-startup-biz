@@ -497,6 +497,19 @@ body {
     font-family: var(--font-lato), sans-serif;
   }
 
+  /* Landing hero: make logo massively fill frame */
+  .hero-logo-mega {
+    transform: scale(3.5);
+    transform-origin: center;
+    will-change: transform;
+  }
+
+  @media (max-width: 768px) {
+    .hero-logo-mega {
+      transform: scale(2.4);
+    }
+  }
+
   /* ============================================
      IMMERSIVE VERTICAL FLOW PAGE STYLES
      ============================================ */
