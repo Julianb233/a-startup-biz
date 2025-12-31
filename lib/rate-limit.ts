@@ -101,6 +101,16 @@ export const rateLimiters = {
       })
     : null,
 
+  // HubSpot sync: 30 requests per minute
+  'hubspot-sync': redis
+    ? new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(30, '1m'),
+        analytics: true,
+        prefix: 'ratelimit:hubspot-sync',
+      })
+    : null,
+
   // CRM operations: 20 requests per minute
   crm: redis
     ? new Ratelimit({
@@ -110,65 +120,10 @@ export const rateLimiters = {
         prefix: 'ratelimit:crm',
       })
     : null,
-
-  // Referral tracking: 10 requests per hour per IP (prevent abuse)
-  referral: redis
-    ? new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(10, '1h'),
-        analytics: true,
-        prefix: 'ratelimit:referral',
-      })
-    : null,
-
-  // Voice call session creation: 10 sessions per hour
-  voiceSession: redis
-    ? new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(10, '1h'),
-        analytics: true,
-        prefix: 'ratelimit:voice:session',
-      })
-    : null,
-
-  // Voice realtime connections: 30 per hour
-  voiceRealtime: redis
-    ? new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(30, '1h'),
-        analytics: true,
-        prefix: 'ratelimit:voice:realtime',
-      })
-    : null,
-
-  // Voice recording operations: 20 per hour
-  voiceRecording: redis
-    ? new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(20, '1h'),
-        analytics: true,
-        prefix: 'ratelimit:voice:recording',
-      })
-    : null,
-
-  // Voice API reads: 100 per 15 minutes
-  voiceRead: redis
-    ? new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(100, '15m'),
-        analytics: true,
-        prefix: 'ratelimit:voice:read',
-      })
-    : null,
-}
-
-// Clear in-memory store (for testing)
-export function clearRateLimitStore(): void {
-  inMemoryStore.clear()
 }
 
 // In-memory rate limiting for development
-export function inMemoryRateLimit(
+function inMemoryRateLimit(
   identifier: string,
   maxRequests: number,
   windowMs: number
@@ -207,12 +162,8 @@ const configs: Record<RateLimitType, RateLimitConfig> = {
   email: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
   pdf: { maxRequests: 10, windowMs: 600000 }, // 10 per 10 minutes
   quote: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
+  'hubspot-sync': { maxRequests: 30, windowMs: 60000 }, // 30 per minute
   crm: { maxRequests: 20, windowMs: 60000 }, // 20 per minute
-  referral: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
-  voiceSession: { maxRequests: 10, windowMs: 3600000 }, // 10 per hour
-  voiceRealtime: { maxRequests: 30, windowMs: 3600000 }, // 30 per hour
-  voiceRecording: { maxRequests: 20, windowMs: 3600000 }, // 20 per hour
-  voiceRead: { maxRequests: 100, windowMs: 900000 }, // 100 per 15 minutes
 }
 
 // Get client IP from request
