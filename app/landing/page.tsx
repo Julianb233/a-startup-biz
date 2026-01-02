@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -70,6 +71,12 @@ export default function LandingPage() {
   const entrepreneurBandRef = useRef<HTMLElement>(null);
   const entrepreneurTrackRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [videoMounted, setVideoMounted] = useState(false);
+
+  // Hydration-safe video mounting
+  useEffect(() => {
+    setVideoMounted(true);
+  }, []);
 
   const gradientColors = useMemo(() => getGradientColors(scrollProgress), [scrollProgress]);
 
@@ -294,6 +301,52 @@ export default function LandingPage() {
                 sizes="(max-width: 768px) 92vw, 960px"
                 priority
               />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================
+            SECTION 4.5: VIDEO — Wistia Embed
+            ============================================ */}
+        <section className="flow-section flow-section-breathe">
+          <div className="flow-animate max-w-lg mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-large font-black text-white mb-3">
+                <span className="text-orange-500 glow-orange-medium">Watch This</span>
+              </h2>
+              <p className="text-lg md:text-xl text-white/90 font-semibold">
+                See how Tory helps entrepreneurs succeed.
+              </p>
+            </div>
+
+            <div className="relative rounded-3xl overflow-hidden border border-orange-500/30 box-glow-orange bg-black/60">
+              {videoMounted ? (
+                <>
+                  <Script
+                    src="https://fast.wistia.com/player.js"
+                    strategy="lazyOnload"
+                  />
+                  <Script
+                    src="https://fast.wistia.com/embed/kono7sttzg.js"
+                    strategy="lazyOnload"
+                    type="module"
+                  />
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: '<wistia-player media-id="kono7sttzg" aspect="0.5625"></wistia-player>'
+                    }}
+                  />
+                </>
+              ) : (
+                <div
+                  className="bg-black/80 animate-pulse flex items-center justify-center"
+                  style={{ paddingTop: '177.78%' }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
