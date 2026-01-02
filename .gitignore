@@ -4,6 +4,7 @@
 node_modules
 *.log
 .DS_Store
+package-lock.json
 
 # Test scripts and assets (development only)
 scripts/test-*.ts
