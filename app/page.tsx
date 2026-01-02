@@ -9,6 +9,7 @@ import ThousandDollarSolution from "@/components/thousand-dollar-solution"
 import BlogPreview from "@/components/blog-preview"
 import CTASection from "@/components/cta-section"
 import Footer from "@/components/footer"
+import HeroSection from "@/components/hero-section"
 // TEMPORARILY DISABLED - Diagnosing production crash
 // import WistiaVideo from "@/components/wistia-video"
 
@@ -49,6 +50,9 @@ export default function Home() {
 
       {/* Navigation */}
       <Header />
+
+      {/* Hero Section */}
+      <HeroSection />
 
       {/* Meet Tory */}
       <AboutSection />
