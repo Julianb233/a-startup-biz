@@ -5,7 +5,13 @@ import { createMicrosite, updateMicrositeWithScrapedData } from '@/lib/partner-o
 import { sendEmail, ADMIN_EMAIL } from '@/lib/email'
 
 // Webhook secret for n8n authentication
-const WEBHOOK_SECRET = process.env.N8N_WEBHOOK_SECRET || 'n8n-partner-automation-secret'
+// SECURITY: No default value - must be explicitly configured
+const WEBHOOK_SECRET = process.env.N8N_WEBHOOK_SECRET
+
+if (!WEBHOOK_SECRET) {
+  console.error('CRITICAL: N8N_WEBHOOK_SECRET environment variable is not set')
+  console.error('This webhook is disabled for security. Configure N8N_WEBHOOK_SECRET to enable.')
+}
 
 interface WebhookPayload {
   action: 'scrape_website' | 'create_microsite' | 'send_welcome_email' | 'rescrape_all' | 'sync_partner'
@@ -27,9 +33,19 @@ interface WebhookPayload {
  */
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Reject all requests if webhook secret is not configured
+    if (!WEBHOOK_SECRET) {
+      console.warn('n8n webhook attempt blocked - N8N_WEBHOOK_SECRET not configured')
+      return NextResponse.json(
+        { error: 'Service unavailable' },
+        { status: 503 }
+      )
+    }
+
     // Verify webhook secret
     const authHeader = request.headers.get('x-webhook-secret') || request.headers.get('authorization')
     if (authHeader !== WEBHOOK_SECRET && authHeader !== `Bearer ${WEBHOOK_SECRET}`) {
+      console.warn('n8n webhook authentication failed - invalid secret')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
