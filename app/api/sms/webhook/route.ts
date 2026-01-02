@@ -18,11 +18,12 @@ export async function POST(request: NextRequest) {
       params[key] = value.toString();
     });
 
-    // Validate webhook signature in production
-    if (process.env.NODE_ENV === 'production') {
+    // Validate webhook signature (enabled by default, opt-out with VALIDATE_WEBHOOKS=false)
+    const shouldValidate = process.env.VALIDATE_WEBHOOKS !== 'false';
+    if (shouldValidate) {
       const isValid = validateWebhook(signature, url, params);
       if (!isValid) {
-        console.warn('Invalid Twilio webhook signature');
+        console.warn('[Security] Invalid Twilio webhook signature');
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
     }

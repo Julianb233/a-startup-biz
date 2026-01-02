@@ -23,19 +23,29 @@ export async function POST(request: NextRequest) {
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
-    // Verify webhook signature in production
+    // Verify webhook signature (enabled by default, opt-out with VALIDATE_WEBHOOKS=false)
+    const shouldValidate = process.env.VALIDATE_WEBHOOKS !== 'false';
     let body;
+    const rawBody = await request.text();
+
     if (apiKey && apiSecret && authHeader) {
       try {
         const receiver = new WebhookReceiver(apiKey, apiSecret);
-        const rawBody = await request.text();
         body = await receiver.receive(rawBody, authHeader);
       } catch (verifyError) {
-        console.warn('Webhook verification failed, using raw body:', verifyError);
-        body = JSON.parse(await request.text());
+        console.warn('[Security] LiveKit webhook verification failed:', verifyError);
+        if (shouldValidate) {
+          return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+        }
+        // Only continue with unverified body if explicitly opted out
+        body = JSON.parse(rawBody);
       }
+    } else if (shouldValidate && !apiKey) {
+      // Missing credentials in validated mode
+      console.warn('[Security] LiveKit credentials missing');
+      return NextResponse.json({ error: 'Webhook configuration error' }, { status: 500 });
     } else {
-      body = await request.json();
+      body = JSON.parse(rawBody);
     }
 
     const { event, room, participant, track, egressInfo } = body;
