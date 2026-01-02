@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (shouldValidate) {
       const isValid = validateWebhook(signature, url, params);
       if (!isValid) {
-        console.warn('[Security] Invalid Twilio webhook signature');
+        // Invalid Twilio webhook signature
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
       }
     }
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       MediaContentType0,
     } = params;
 
-    console.log('SMS received:', { MessageSid, From, Body: Body?.substring(0, 50) });
+    // SMS received
 
     // Process incoming SMS
     const responseMessage = await processIncomingSMS({
@@ -63,7 +63,6 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error processing SMS webhook:', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -88,36 +87,29 @@ async function processIncomingSMS(data: {
     case 'STOP':
     case 'UNSUBSCRIBE':
       // Mark contact as unsubscribed in database
-      console.log(`Unsubscribe request from ${from}`);
       return 'You have been unsubscribed. Reply START to resubscribe.';
 
     case 'START':
     case 'SUBSCRIBE':
       // Mark contact as subscribed in database
-      console.log(`Subscribe request from ${from}`);
       return 'You have been subscribed to our messages. Reply STOP to unsubscribe.';
 
     case 'CONFIRM':
       // Handle appointment confirmation
-      console.log(`Appointment confirmation from ${from}`);
       return 'Your appointment has been confirmed. We look forward to seeing you!';
 
     case 'RESCHEDULE':
       // Handle reschedule request
-      console.log(`Reschedule request from ${from}`);
       return 'No problem! Please visit our website or call us to reschedule your appointment.';
 
     case 'YES':
       // Handle lead follow-up positive response
-      console.log(`Positive lead response from ${from}`);
       return 'Great! One of our team members will reach out to you shortly to schedule a call.';
 
     case 'HELP':
       return 'Reply STOP to unsubscribe. For support, visit astartupbiz.com or call us.';
 
     default:
-      // Log for manual review / AI processing
-      console.log(`Unhandled SMS from ${from}: ${body}`);
       // Don't auto-respond to unknown messages to avoid loops
       return null;
   }

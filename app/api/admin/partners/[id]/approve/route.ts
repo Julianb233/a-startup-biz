@@ -86,7 +86,7 @@ export async function POST(request: Request, { params }: RouteParams) {
           approvedBy: userId,
           timestamp: new Date().toISOString()
         })
-      }).catch(err => console.log('n8n webhook failed (non-blocking):', err.message))
+      }).catch(() => { /* n8n webhook failure is non-blocking */ })
     }
 
     return NextResponse.json({

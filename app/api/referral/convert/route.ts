@@ -122,9 +122,6 @@ export async function POST(request: NextRequest) {
       }
     )
 
-    // Log fraud detection results
-    console.log(`[Fraud Detection - Conversion] Risk Score: ${fraudCheck.riskScore}, Action: ${fraudCheck.action}`)
-
     // Block high-risk conversions
     if (fraudCheck.action === 'block') {
       console.warn(`[Fraud Detection] BLOCKED - High risk conversion attempt`, {

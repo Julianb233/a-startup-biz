@@ -118,15 +118,6 @@ export async function POST(request: NextRequest) {
 
       // Save to database
       submission = await createOnboardingSubmission(submissionData);
-
-      console.log('Onboarding submission saved:', {
-        id: submission.id,
-        businessName: submission.business_name,
-        contactEmail: submission.contact_email,
-        status: submission.status,
-        isUpdate,
-      });
-
     } catch (dbError) {
       // SECURITY FIX: Don't silently fail - database save is critical
       // Users must know if their submission wasn't saved properly
@@ -157,8 +148,6 @@ export async function POST(request: NextRequest) {
         subject: emailContent.subject,
         html: emailContent.html,
       });
-
-      console.log(`Onboarding confirmation email sent to ${validatedData.contactEmail}`);
     } catch (emailError) {
       // Don't fail the request if email fails
       console.error('Failed to send onboarding confirmation email:', emailError);
@@ -184,8 +173,6 @@ export async function POST(request: NextRequest) {
         html: adminEmailContent.html,
         replyTo: validatedData.contactEmail,
       });
-
-      console.log(`Admin notification sent for onboarding from ${validatedData.contactEmail}`);
     } catch (adminEmailError) {
       // Don't fail the request if admin email fails
       console.error('Failed to send admin onboarding notification:', adminEmailError);

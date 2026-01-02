@@ -48,7 +48,6 @@ export async function POST(request: Request) {
   // Check for duplicate event (idempotency)
   const alreadyProcessed = await isConnectEventProcessed(event.id)
   if (alreadyProcessed) {
-    console.log(`Skipping duplicate Connect event: ${event.id}`)
     return NextResponse.json({ received: true, duplicate: true })
   }
 
@@ -64,7 +63,6 @@ export async function POST(request: Request) {
         const account = event.data.object as Stripe.Account
 
         if (!accountId) {
-          console.log('No account ID in account.updated event')
           break
         }
 
@@ -101,8 +99,6 @@ export async function POST(request: Request) {
           onboardingComplete,
         })
 
-        console.log(`Updated Connect account ${accountId} status to ${status}`)
-
         // Get partner for logging
         const partner = await getPartnerByStripeAccountId(accountId)
 
@@ -135,8 +131,6 @@ export async function POST(request: Request) {
           onboardingComplete: false,
         })
 
-        console.log(`Connect account ${accountId} was deauthorized`)
-
         const partner = await getPartnerByStripeAccountId(accountId)
         await logConnectEvent({
           eventId: event.id,
@@ -155,9 +149,6 @@ export async function POST(request: Request) {
       // ============================================
       case 'transfer.created': {
         const transfer = event.data.object as Stripe.Transfer
-
-        // Log the event - transfer record should already exist from our API
-        console.log(`Transfer ${transfer.id} created`)
 
         await logConnectEvent({
           eventId: event.id,
@@ -178,7 +169,6 @@ export async function POST(request: Request) {
         const transfer = event.data.object as Stripe.Transfer
 
         await updatePartnerTransferStatus(transfer.id, 'reversed')
-        console.log(`Transfer ${transfer.id} was reversed`)
 
         await logConnectEvent({
           eventId: event.id,
@@ -196,8 +186,6 @@ export async function POST(request: Request) {
       // ============================================
       case 'payout.created': {
         const payout = event.data.object as Stripe.Payout
-
-        console.log(`Payout ${payout.id} created for account ${accountId}`)
 
         await logConnectEvent({
           eventId: event.id,
@@ -244,8 +232,6 @@ export async function POST(request: Request) {
             : undefined,
         })
 
-        console.log(`Payout ${payout.id} updated to ${status}`)
-
         await logConnectEvent({
           eventId: event.id,
           eventType: event.type,
@@ -272,8 +258,6 @@ export async function POST(request: Request) {
               : undefined,
         })
 
-        console.log(`Payout ${payout.id} paid successfully`)
-
         await logConnectEvent({
           eventId: event.id,
           eventType: event.type,
@@ -292,10 +276,6 @@ export async function POST(request: Request) {
           failureCode: payout.failure_code || undefined,
           failureMessage: payout.failure_message || undefined,
         })
-
-        console.log(
-          `Payout ${payout.id} failed: ${payout.failure_message || 'Unknown error'}`
-        )
 
         await logConnectEvent({
           eventId: event.id,
@@ -316,8 +296,6 @@ export async function POST(request: Request) {
         const payout = event.data.object as Stripe.Payout
 
         await updatePartnerPayoutStatus(payout.id, 'canceled')
-
-        console.log(`Payout ${payout.id} was canceled`)
 
         await logConnectEvent({
           eventId: event.id,
@@ -367,7 +345,7 @@ export async function POST(request: Request) {
       }
 
       default:
-        console.log(`Unhandled Connect event type: ${event.type}`)
+        // Unhandled event type - log for record keeping
         await logConnectEvent({
           eventId: event.id,
           eventType: event.type,

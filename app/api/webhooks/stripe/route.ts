@@ -26,7 +26,6 @@ export async function POST(request: Request) {
   const signature = headersList.get('stripe-signature')
 
   if (!signature || !webhookSecret) {
-    console.error('Missing signature or webhook secret')
     return NextResponse.json(
       { error: 'Missing signature or webhook secret' },
       { status: 400 }
@@ -38,7 +37,6 @@ export async function POST(request: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
   } catch (error) {
-    console.error('Webhook signature verification failed:', error)
     return NextResponse.json(
       { error: 'Webhook signature verification failed' },
       { status: 400 }
@@ -48,7 +46,6 @@ export async function POST(request: Request) {
   // SECURITY: Check for duplicate events (idempotency)
   const alreadyProcessed = await isEventProcessed(event.id, 'stripe')
   if (alreadyProcessed) {
-    console.log(`Stripe event ${event.id} already processed, acknowledging`)
     return NextResponse.json({ received: true, duplicate: true })
   }
 
@@ -75,7 +72,7 @@ export async function POST(request: Request) {
           try {
             items = JSON.parse(session.metadata.items)
           } catch {
-            console.log('Could not parse items from metadata')
+            // Items metadata parsing failed - use default
           }
         }
 
@@ -113,8 +110,6 @@ export async function POST(request: Request) {
           customerPhone,
         })
 
-        console.log(`Order created for ${customerEmail}, total: $${amountTotal}`)
-
         // Send order confirmation email
         if (customerEmail && order) {
           const emailContent = orderConfirmationEmail({
@@ -129,8 +124,6 @@ export async function POST(request: Request) {
             subject: emailContent.subject,
             html: emailContent.html,
           })
-
-          console.log(`Confirmation email sent to ${customerEmail}`)
 
           // Send admin notification
           try {
@@ -149,24 +142,20 @@ export async function POST(request: Request) {
               html: adminEmailContent.html,
               replyTo: customerEmail,
             })
-
-            console.log(`Admin notification sent for order ${order.id}`)
           } catch (adminEmailError) {
-            console.error('Failed to send admin order notification:', adminEmailError)
+            // Admin notification failed - non-critical
           }
         }
         break
       }
 
       case 'payment_intent.succeeded': {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent
-        console.log(`PaymentIntent ${paymentIntent.id} succeeded`)
+        // PaymentIntent succeeded - no additional handling needed
         break
       }
 
       case 'payment_intent.payment_failed': {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent
-        console.log(`PaymentIntent ${paymentIntent.id} failed: ${paymentIntent.last_payment_error?.message}`)
+        // PaymentIntent failed - handled by checkout.session if applicable
         break
       }
 
@@ -176,12 +165,10 @@ export async function POST(request: Request) {
 
       case 'account.updated': {
         const account = event.data.object as Stripe.Account
-        console.log(`Processing account.updated for ${account.id}`)
 
         // Check idempotency for Connect events
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -228,10 +215,7 @@ export async function POST(request: Request) {
               },
               processed: true,
             })
-
-            console.log(`Updated partner ${partner.id} Stripe status to ${status}`)
           } else {
-            console.log(`No partner found for Stripe account ${account.id}`)
             await logConnectEvent({
               eventId: event.id,
               eventType: event.type,
@@ -242,7 +226,6 @@ export async function POST(request: Request) {
             })
           }
         } catch (error) {
-          console.error('Error processing account.updated:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -259,11 +242,9 @@ export async function POST(request: Request) {
       case 'account.application.deauthorized': {
         const application = event.data.object as any // Stripe.Application doesn't expose account property directly
         const accountId = event.account // Account ID is in the event.account field for connected account events
-        console.log(`Processing account.application.deauthorized for ${accountId}`)
 
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -289,12 +270,9 @@ export async function POST(request: Request) {
                 eventData: { deauthorized: true },
                 processed: true,
               })
-
-              console.log(`Deauthorized Stripe account for partner ${partner.id}`)
             }
           }
         } catch (error) {
-          console.error('Error processing account.application.deauthorized:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -310,11 +288,9 @@ export async function POST(request: Request) {
 
       case 'transfer.created': {
         const transfer = event.data.object as Stripe.Transfer
-        console.log(`Processing transfer.created: ${transfer.id}`)
 
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -335,10 +311,7 @@ export async function POST(request: Request) {
             },
             processed: true,
           })
-
-          console.log(`Transfer ${transfer.id} created with status ${status}`)
         } catch (error) {
-          console.error('Error processing transfer.created:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -353,11 +326,9 @@ export async function POST(request: Request) {
 
       case 'transfer.updated': {
         const transfer = event.data.object as Stripe.Transfer
-        console.log(`Processing transfer.updated: ${transfer.id}`)
 
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -385,10 +356,7 @@ export async function POST(request: Request) {
             },
             processed: true,
           })
-
-          console.log(`Transfer ${transfer.id} updated to status ${status}`)
         } catch (error) {
-          console.error('Error processing transfer.updated:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -403,11 +371,9 @@ export async function POST(request: Request) {
 
       case 'payout.created': {
         const payout = event.data.object as Stripe.Payout
-        console.log(`Processing payout.created: ${payout.id}`)
 
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -432,10 +398,7 @@ export async function POST(request: Request) {
             },
             processed: true,
           })
-
-          console.log(`Payout ${payout.id} created with status ${status}`)
         } catch (error) {
-          console.error('Error processing payout.created:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -450,11 +413,9 @@ export async function POST(request: Request) {
 
       case 'payout.paid': {
         const payout = event.data.object as Stripe.Payout
-        console.log(`Processing payout.paid: ${payout.id}`)
 
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -476,10 +437,7 @@ export async function POST(request: Request) {
             },
             processed: true,
           })
-
-          console.log(`Payout ${payout.id} marked as paid`)
         } catch (error) {
-          console.error('Error processing payout.paid:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -494,11 +452,9 @@ export async function POST(request: Request) {
 
       case 'payout.failed': {
         const payout = event.data.object as Stripe.Payout
-        console.log(`Processing payout.failed: ${payout.id}`)
 
         const alreadyProcessedConnect = await isConnectEventProcessed(event.id)
         if (alreadyProcessedConnect) {
-          console.log(`Connect event ${event.id} already processed`)
           break
         }
 
@@ -520,10 +476,7 @@ export async function POST(request: Request) {
             },
             processed: true,
           })
-
-          console.log(`Payout ${payout.id} failed: ${payout.failure_message}`)
         } catch (error) {
-          console.error('Error processing payout.failed:', error)
           await logConnectEvent({
             eventId: event.id,
             eventType: event.type,
@@ -537,13 +490,12 @@ export async function POST(request: Request) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        // Unhandled event type - silently ignore
     }
 
     return NextResponse.json({ received: true })
 
   } catch (error) {
-    console.error('Webhook processing error:', error)
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

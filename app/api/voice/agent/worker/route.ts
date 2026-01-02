@@ -206,12 +206,8 @@ async function spawnWorkerAsync(
   let worker: VoiceAgentWorker | null = null;
 
   try {
-    console.log(`[VoiceAgentWorker] Starting worker for room: ${roomName}`);
-
     worker = new VoiceAgentWorker(config);
     await worker.start();
-
-    console.log(`[VoiceAgentWorker] Worker started successfully for room: ${roomName}`);
 
     // Keep worker running until it's disconnected or errors out
     // Note: In serverless environment, this will be limited by maxDuration
@@ -241,6 +237,5 @@ async function spawnWorkerAsync(
     if (worker) {
       await worker.stop();
     }
-    console.log(`[VoiceAgentWorker] Worker stopped for room: ${roomName}`);
   }
 }

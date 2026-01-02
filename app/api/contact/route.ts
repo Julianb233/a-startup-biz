@@ -64,14 +64,6 @@ export async function POST(request: NextRequest) {
         userAgent,
       })
 
-      console.log('Contact submission saved:', {
-        id: submission.id,
-        name: submission.name,
-        email: submission.email,
-        services: submission.services,
-        isExistingContact,
-      })
-
     } catch (dbError) {
       // If database save fails, log but still return success with mock ID
       console.error('Database save failed, using fallback:', dbError)
@@ -105,7 +97,6 @@ export async function POST(request: NextRequest) {
         html: emailContent.html,
       })
 
-      console.log(`Contact confirmation email sent to ${validatedData.email}`)
     } catch (emailError) {
       // Don't fail the request if email fails
       console.error('Failed to send contact confirmation email:', emailError)
@@ -132,7 +123,6 @@ export async function POST(request: NextRequest) {
         replyTo: validatedData.email,
       })
 
-      console.log(`Admin notification sent for contact from ${validatedData.email}`)
     } catch (adminEmailError) {
       // Don't fail the request if admin email fails
       console.error('Failed to send admin notification email:', adminEmailError)

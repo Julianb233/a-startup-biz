@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         const receiver = new WebhookReceiver(apiKey, apiSecret);
         body = await receiver.receive(rawBody, authHeader);
       } catch (verifyError) {
-        console.warn('[Security] LiveKit webhook verification failed:', verifyError);
+        // LiveKit webhook verification failed
         if (shouldValidate) {
           return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
         }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       }
     } else if (shouldValidate && !apiKey) {
       // Missing credentials in validated mode
-      console.warn('[Security] LiveKit credentials missing');
+      // LiveKit credentials missing
       return NextResponse.json({ error: 'Webhook configuration error' }, { status: 500 });
     } else {
       body = JSON.parse(rawBody);
@@ -50,26 +50,22 @@ export async function POST(request: NextRequest) {
 
     const { event, room, participant, track, egressInfo } = body;
 
-    console.log('[LiveKit Webhook]', event, room?.name);
+    // LiveKit webhook event received
 
     switch (event) {
       case 'room_started':
-        console.log(`[Room] Started: ${room?.name}`);
         // Room is ready - call record should already be created by token endpoint
         // Start recording if configured
         if (room?.name && isRecordingConfigured()) {
           try {
             await startRecording({ roomName: room.name });
-            console.log(`[Recording] Auto-started for ${room.name}`);
           } catch (recError) {
-            console.warn(`[Recording] Failed to auto-start:`, recError);
+            // Recording auto-start failed - non-critical
           }
         }
         break;
 
       case 'room_finished':
-        console.log(`[Room] Finished: ${room?.name}`);
-
         if (room?.name) {
           // Stop recording and get URL
           let recordingUrl: string | undefined;
@@ -77,9 +73,8 @@ export async function POST(request: NextRequest) {
             try {
               const result = await stopRecording(room.name);
               recordingUrl = result.url;
-              console.log(`[Recording] Stopped, URL: ${recordingUrl}`);
             } catch (recError) {
-              console.warn(`[Recording] Failed to stop:`, recError);
+              // Recording stop failed - non-critical
             }
           }
 
@@ -97,21 +92,16 @@ export async function POST(request: NextRequest) {
 
           // Clean up agent session
           await removeAgent(room.name);
-
-          console.log(`[Room] Call record updated: ${room.name}, duration: ${duration}s`);
         }
         break;
 
       case 'participant_joined':
-        console.log(`[Participant] Joined: ${participant?.identity} in ${room?.name}`);
-
         if (room?.name && participant?.identity) {
           // Check if this is an AI agent
           const isAgent = participant.identity.startsWith('ai-agent-');
 
           if (isAgent) {
             updateAgentStatus(room.name, 'active');
-            console.log(`[Agent] Now active in room ${room.name}`);
           } else {
             // Human participant joined
             // Get or create call record
@@ -142,14 +132,11 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'participant_left':
-        console.log(`[Participant] Left: ${participant?.identity} from ${room?.name}`);
-
         if (room?.name && participant?.identity) {
           const agentLeft = participant.identity.startsWith('ai-agent-');
 
           if (agentLeft) {
             updateAgentStatus(room.name, 'disconnected');
-            console.log(`[Agent] Disconnected from room ${room.name}`);
           } else {
             // Update participant record
             const call = await getVoiceCallByRoom(room.name);
@@ -161,33 +148,30 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'track_published':
-        console.log(`[Track] Published: ${track?.type} by ${participant?.identity}`);
+        // Track published event - no action needed
         break;
 
       case 'track_unpublished':
-        console.log(`[Track] Unpublished: ${track?.type} by ${participant?.identity}`);
+        // Track unpublished event - no action needed
         break;
 
       case 'egress_started':
-        console.log(`[Egress] Recording started for ${room?.name}, egress: ${egressInfo?.egressId}`);
+        // Recording started - no action needed
         break;
 
       case 'egress_ended':
-        console.log(`[Egress] Recording ended for ${room?.name}`);
         // Update recording URL from egress info
         if (room?.name && egressInfo?.fileResults?.[0]?.location) {
           await setCallRecordingUrl(room.name, egressInfo.fileResults[0].location);
-          console.log(`[Egress] Recording URL saved: ${egressInfo.fileResults[0].location}`);
         }
         break;
 
       default:
-        console.log(`[Webhook] Unhandled event: ${event}`);
+        // Unhandled event - silently ignore
     }
 
     return NextResponse.json({ received: true, event });
   } catch (error) {
-    console.error('[Webhook] Error processing:', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }

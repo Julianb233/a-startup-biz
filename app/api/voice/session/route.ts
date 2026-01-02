@@ -122,10 +122,6 @@ export async function POST(request: NextRequest) {
           voice: voice as 'alloy' | 'echo' | 'fable' | 'onyx' | 'nova' | 'shimmer',
         });
         agentSpawned = !!agentSession;
-
-        if (agentSpawned) {
-          console.log(`[Session] AI agent spawned for room ${roomName}`);
-        }
       } catch (agentError) {
         console.error('[Session] Failed to spawn AI agent:', agentError);
         // Continue without agent - don't fail the session creation
@@ -138,10 +134,6 @@ export async function POST(request: NextRequest) {
       try {
         const recordingSession = await startRecording({ roomName });
         recordingStarted = !!recordingSession;
-
-        if (recordingStarted) {
-          console.log(`[Session] Recording started for room ${roomName}`);
-        }
       } catch (recordingError) {
         console.error('[Session] Failed to start recording:', recordingError);
         // Continue without recording - don't fail the session creation
@@ -424,7 +416,6 @@ export async function DELETE(request: NextRequest) {
     // Remove AI agent
     try {
       await removeAgent(roomName);
-      console.log(`[Session] AI agent removed from room ${roomName}`);
     } catch (agentError) {
       console.warn('[Session] Failed to remove agent:', agentError);
     }

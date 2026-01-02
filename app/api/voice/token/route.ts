@@ -75,7 +75,6 @@ export async function POST(request: NextRequest) {
         },
       });
       callId = call.id;
-      console.log(`[VoiceToken] Call record created: ${callId}`);
     } catch (dbError) {
       console.error('[VoiceToken] Failed to create call record:', dbError);
       // Continue without database record
@@ -90,7 +89,6 @@ export async function POST(request: NextRequest) {
           voice: 'alloy', // Default voice
         });
         agentSpawned = !!agentSession;
-        console.log(`[VoiceToken] AI agent spawned for room ${finalRoomName}: ${agentSpawned}`);
       } catch (agentError) {
         console.error('[VoiceToken] Failed to spawn AI agent:', agentError);
         // Don't fail the request if agent spawn fails

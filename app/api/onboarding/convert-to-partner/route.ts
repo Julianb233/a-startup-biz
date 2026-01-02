@@ -106,8 +106,6 @@ export async function POST(request: NextRequest) {
           subject: emailContent.subject,
           html: emailContent.html,
         });
-
-        console.log(`Partner account created email sent to ${partner.contact_email}`);
       } catch (emailError) {
         console.error('Failed to send partner account created email:', emailError);
         // Don't fail the request if email fails

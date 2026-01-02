@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
 
     // Verify webhook signature
     if (!verifyWebhookSignature(rawBody, signature)) {
-      console.error('Invalid webhook signature')
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 401 }
@@ -39,8 +38,6 @@ export async function POST(req: NextRequest) {
     // Parse event data
     const eventData = JSON.parse(rawBody)
     const event = parseWebhookEvent(eventData)
-
-    console.log('Received webhook event:', event.eventType, event.eventHash)
 
     // Handle different event types
     switch (event.eventType) {
@@ -77,14 +74,13 @@ export async function POST(req: NextRequest) {
         break
 
       default:
-        console.log('Unhandled event type:', event.eventType)
+        // Unhandled event type - silently ignore
     }
 
     // Dropbox Sign expects "Hello API Event Received"
     return new NextResponse('Hello API Event Received', { status: 200 })
   } catch (error: unknown) {
     const err = error as Error
-    console.error('Error processing webhook:', err)
     return NextResponse.json(
       { error: err.message || 'Failed to process webhook' },
       { status: 500 }
@@ -104,8 +100,6 @@ async function handleSignatureRequestSent(event: ReturnType<typeof parseWebhookE
       updated_at = NOW()
     WHERE signature_request_id = ${event.signatureRequest.signatureRequestId}
   `
-
-  console.log(`Signature request sent: ${event.signatureRequest.signatureRequestId}`)
 }
 
 async function handleSignatureRequestViewed(event: ReturnType<typeof parseWebhookEvent>) {
@@ -127,8 +121,6 @@ async function handleSignatureRequestViewed(event: ReturnType<typeof parseWebhoo
       ${event.eventHash}
     )
   `
-
-  console.log(`Document viewed by: ${event.signature.signerEmailAddress}`)
 }
 
 async function handleSignatureRequestSigned(event: ReturnType<typeof parseWebhookEvent>) {
@@ -169,8 +161,6 @@ async function handleSignatureRequestSigned(event: ReturnType<typeof parseWebhoo
       'signed'
     )
   }
-
-  console.log(`Document signed by: ${event.signature.signerEmailAddress}`)
 }
 
 async function handleSignatureRequestAllSigned(event: ReturnType<typeof parseWebhookEvent>) {
@@ -217,10 +207,8 @@ async function handleSignatureRequestAllSigned(event: ReturnType<typeof parseWeb
         event.signatureRequest.signatureRequestId
       )
     }
-
-    console.log(`All signatures completed: ${event.signatureRequest.signatureRequestId}`)
   } catch (error) {
-    console.error('Error downloading signed document:', error)
+    // Document download failed - will need manual retrieval
   }
 }
 
@@ -270,8 +258,6 @@ async function handleSignatureRequestDeclined(event: ReturnType<typeof parseWebh
       'declined'
     )
   }
-
-  console.log(`Document declined by: ${event.signature.signerEmailAddress}`)
 }
 
 async function handleSignatureRequestExpired(event: ReturnType<typeof parseWebhookEvent>) {
@@ -284,8 +270,6 @@ async function handleSignatureRequestExpired(event: ReturnType<typeof parseWebho
       updated_at = NOW()
     WHERE signature_request_id = ${event.signatureRequest.signatureRequestId}
   `
-
-  console.log(`Signature request expired: ${event.signatureRequest.signatureRequestId}`)
 }
 
 async function handleSignatureRequestCancelled(event: ReturnType<typeof parseWebhookEvent>) {
@@ -298,8 +282,6 @@ async function handleSignatureRequestCancelled(event: ReturnType<typeof parseWeb
       updated_at = NOW()
     WHERE signature_request_id = ${event.signatureRequest.signatureRequestId}
   `
-
-  console.log(`Signature request cancelled: ${event.signatureRequest.signatureRequestId}`)
 }
 
 async function handleSignatureRequestInvalid(event: ReturnType<typeof parseWebhookEvent>) {
@@ -312,8 +294,6 @@ async function handleSignatureRequestInvalid(event: ReturnType<typeof parseWebho
       updated_at = NOW()
     WHERE signature_request_id = ${event.signatureRequest.signatureRequestId}
   `
-
-  console.log(`Signature request invalid: ${event.signatureRequest.signatureRequestId}`)
 }
 
 // Notification helpers
@@ -346,7 +326,7 @@ async function sendSignatureNotification(
       `,
     })
   } catch (error) {
-    console.error('Error sending signature notification:', error)
+    // Notification email failed - non-critical
   }
 }
 
@@ -377,6 +357,6 @@ async function sendCompletionNotification(
       `,
     })
   } catch (error) {
-    console.error('Error sending completion notification:', error)
+    // Completion notification email failed - non-critical
   }
 }

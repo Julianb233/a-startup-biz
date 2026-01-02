@@ -99,9 +99,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log referral activity for monitoring
     const normalizedReferredEmail = referredEmail.toLowerCase().trim()
-    console.log(`[Referral Tracking] Code: ${referralCode}, Referred: ${normalizedReferredEmail}`)
 
     // Get IP address from headers if not provided
     const clientIp = ipAddress ||
@@ -129,9 +127,6 @@ export async function POST(request: NextRequest) {
         userAgent: clientUserAgent,
       }
     )
-
-    // Log fraud detection results
-    console.log(`[Fraud Detection] Code: ${referralCode}, Risk Score: ${fraudCheck.riskScore}, Action: ${fraudCheck.action}`)
 
     // Block if fraud score is too high
     if (fraudCheck.action === 'block') {
