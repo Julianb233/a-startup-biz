@@ -7,9 +7,17 @@ import type { User, Session } from '@supabase/supabase-js'
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const supabase = getSupabaseClient()
 
   useEffect(() => {
+    const supabase = getSupabaseClient()
+
+    // Handle case where Supabase is not configured
+    if (!supabase) {
+      console.warn("[use-auth] Supabase client not available - auth disabled")
+      setIsLoading(false)
+      return
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
       setUser(data.session?.user ?? null)
@@ -25,10 +33,13 @@ export function useAuth() {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    const supabase = getSupabaseClient()
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
   }
 
   return {

@@ -14,10 +14,16 @@ import type { User, Session } from '@supabase/supabase-js'
 export function SignedOut({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [mounted, setMounted] = useState(false)
-  const supabase = getSupabaseClient()
 
   useEffect(() => {
     setMounted(true)
+    const supabase = getSupabaseClient()
+
+    // Handle case where Supabase is not configured
+    if (!supabase) {
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setUser(session?.user ?? null)
     })
@@ -29,7 +35,7 @@ export function SignedOut({ children }: { children: ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   if (!mounted) return null
   if (user) return null
@@ -41,10 +47,16 @@ export function SignedOut({ children }: { children: ReactNode }) {
 export function SignedIn({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [mounted, setMounted] = useState(false)
-  const supabase = getSupabaseClient()
 
   useEffect(() => {
     setMounted(true)
+    const supabase = getSupabaseClient()
+
+    // Handle case where Supabase is not configured
+    if (!supabase) {
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setUser(session?.user ?? null)
     })
@@ -56,7 +68,7 @@ export function SignedIn({ children }: { children: ReactNode }) {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   if (!mounted) return null
   if (!user) return null
@@ -137,9 +149,15 @@ export function UserButton({
   const [user, setUser] = useState<User | null>(null)
   const [showMenu, setShowMenu] = useState(false)
   const router = useRouter()
-  const supabase = getSupabaseClient()
 
   useEffect(() => {
+    const supabase = getSupabaseClient()
+
+    // Handle case where Supabase is not configured
+    if (!supabase) {
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setUser(session?.user ?? null)
     })
@@ -151,10 +169,13 @@ export function UserButton({
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
+    const supabase = getSupabaseClient()
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
     router.push(afterSignOutUrl)
   }
 
@@ -211,9 +232,16 @@ export function RedirectToSignIn() {
 export function useUser() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
-  const supabase = getSupabaseClient()
 
   useEffect(() => {
+    const supabase = getSupabaseClient()
+
+    // Handle case where Supabase is not configured
+    if (!supabase) {
+      setIsLoaded(true)
+      return
+    }
+
     supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       setUser(session?.user ?? null)
       setIsLoaded(true)
@@ -227,7 +255,7 @@ export function useUser() {
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [])
 
   return {
     user,
@@ -239,15 +267,21 @@ export function useUser() {
 // useAuth hook
 export function useAuth() {
   const { user, isLoaded } = useUser()
-  const supabase = getSupabaseClient()
 
   return {
     isLoaded,
     isSignedIn: !!user,
     userId: user?.id || null,
     sessionId: null, // Supabase doesn't expose session ID directly
-    signOut: () => supabase.auth.signOut(),
+    signOut: async () => {
+      const supabase = getSupabaseClient()
+      if (supabase) {
+        await supabase.auth.signOut()
+      }
+    },
     getToken: async () => {
+      const supabase = getSupabaseClient()
+      if (!supabase) return null
       const { data: { session } } = await supabase.auth.getSession()
       return session?.access_token || null
     },
