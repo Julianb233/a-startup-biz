@@ -74,6 +74,13 @@ function useSupabaseSession() {
   useEffect(() => {
     const supabase = getSupabaseClient()
 
+    // Handle case where Supabase is not configured (missing env vars)
+    if (!supabase) {
+      console.warn("[clerk-safe] Supabase client not available - auth disabled")
+      setIsLoading(false)
+      return
+    }
+
     // Get initial session
     const getInitialSession = async () => {
       try {
@@ -105,7 +112,9 @@ function useSupabaseSession() {
 
   const signOut = useCallback(async (options?: SignOutOptions) => {
     const supabase = getSupabaseClient()
-    await supabase.auth.signOut()
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
     setUser(null)
     setSession(null)
     // Redirect after sign out (use provided URL or default to home)
