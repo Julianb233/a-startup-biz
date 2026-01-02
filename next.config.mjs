@@ -13,10 +13,43 @@ const nextConfig = {
     ],
   },
   async headers() {
+    // Content Security Policy - restrict resource loading
+    const cspDirectives = [
+      "default-src 'self'",
+      // Scripts: self + trusted third parties (Stripe, Sentry, analytics)
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.sentry.io https://browser.sentry-cdn.com https://vercel.live https://*.vercel-scripts.com",
+      // Styles: self + inline (required for styled-components/emotion)
+      "style-src 'self' 'unsafe-inline'",
+      // Images: self + data URIs + trusted image sources
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.stripe.com https://*.supabase.co",
+      // Fonts: self + data URIs
+      "font-src 'self' data:",
+      // Connect: API endpoints and services
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://api.resend.com https://*.livekit.cloud wss://*.livekit.cloud https://*.neon.tech https://vercel.live wss://vercel.live",
+      // Frames: Stripe checkout iframe
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+      // Media: voice/video calling
+      "media-src 'self' blob:",
+      // Object: none (block plugins)
+      "object-src 'none'",
+      // Base: restrict base URI
+      "base-uri 'self'",
+      // Form actions: restrict form submissions
+      "form-action 'self'",
+      // Frame ancestors: prevent clickjacking
+      "frame-ancestors 'none'",
+      // Upgrade insecure requests in production
+      "upgrade-insecure-requests",
+    ].join('; ')
+
     return [
       {
         source: '/:path*',
         headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspDirectives,
+          },
           {
             key: 'X-Frame-Options',
             value: 'DENY',
@@ -36,6 +69,10 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(self), geolocation=()',
           },
         ],
       },
