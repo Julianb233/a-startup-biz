@@ -140,7 +140,7 @@ export function useChatRoom({
       // Track presence
       trackPresence(channel, user.id, {
         name: user.fullName || user.username || 'Anonymous',
-        avatar: user.imageUrl,
+        avatar: user.imageUrl ?? undefined,
         status: 'online',
       });
     }

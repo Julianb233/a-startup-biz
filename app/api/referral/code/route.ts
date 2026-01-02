@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { auth, clerkClient } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@/lib/clerk-server-safe'
 import {
   getOrCreateReferralCode,
   getUserReferrals,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@/lib/clerk-server-safe';
 import { generateToken, generateSupportRoomName, isLiveKitConfigured } from '@/lib/livekit';
 import { spawnAgent } from '@/lib/voice-agent';
 import { createVoiceCall } from '@/lib/db-queries';

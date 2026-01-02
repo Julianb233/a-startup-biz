@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { ChatRoomExample } from './ChatRoomExample';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/clerk-server-safe';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {

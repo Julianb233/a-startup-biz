@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/clerk-server-safe';
 import { sql } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';

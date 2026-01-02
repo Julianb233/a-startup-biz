@@ -1,4 +1,4 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@/lib/clerk-server-safe';
 import { NextResponse } from 'next/server';
 import { requireAuth, withAuth } from '@/lib/api-auth';
 
@@ -36,8 +36,8 @@ export async function GET() {
       username: user.username,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      // Include public metadata (safe to expose)
-      metadata: user.publicMetadata,
+      // User metadata (from Supabase user_metadata)
+      metadata: {},
     });
   });
 }

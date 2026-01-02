@@ -8,6 +8,61 @@ import type { User as SupabaseUser, Session, AuthChangeEvent } from "@supabase/s
 import { getSupabaseClient } from "@/lib/supabase/client"
 
 /**
+ * Local type definitions for Clerk-compatible hooks
+ * These replace the @clerk/nextjs type imports to avoid package dependency
+ */
+
+// Clerk-compatible user type
+interface ClerkCompatibleUser {
+  id: string
+  primaryEmailAddress: { emailAddress: string } | null | undefined
+  emailAddresses: { emailAddress: string }[]
+  firstName: string | null | undefined
+  lastName: string | null | undefined
+  fullName: string | null | undefined
+  imageUrl: string | null | undefined
+  username: string | null | undefined
+  createdAt: Date | null | undefined
+  updatedAt: Date | null | undefined
+  publicMetadata: Record<string, unknown>
+}
+
+// Return type for useUser hook
+interface UseUserReturn {
+  isLoaded: boolean
+  isSignedIn: boolean | undefined
+  user: ClerkCompatibleUser | null | undefined
+}
+
+// SignOut options type
+interface SignOutOptions {
+  redirectUrl?: string
+}
+
+// Return type for useAuth hook
+interface UseAuthReturn {
+  isLoaded: boolean
+  isSignedIn: boolean | undefined
+  userId: string | null
+  sessionId: string | null
+  orgId: string | null
+  orgRole: string | null
+  orgSlug: string | null
+  has: (permission: unknown) => boolean
+  signOut: (options?: SignOutOptions) => Promise<void>
+  getToken: () => Promise<string | null>
+}
+
+// Return type for useClerk hook
+interface UseClerkReturn {
+  loaded: boolean
+  signOut: (options?: SignOutOptions) => Promise<void>
+  openSignIn: () => void
+  openSignUp: () => void
+  openUserProfile: () => void
+}
+
+/**
  * Hook to get Supabase session state
  * Used as fallback when Clerk is not configured
  */
@@ -48,14 +103,14 @@ function useSupabaseSession() {
     }
   }, [])
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(async (options?: SignOutOptions) => {
     const supabase = getSupabaseClient()
     await supabase.auth.signOut()
     setUser(null)
     setSession(null)
-    // Redirect to home after sign out
+    // Redirect after sign out (use provided URL or default to home)
     if (typeof window !== "undefined") {
-      window.location.href = "/"
+      window.location.href = options?.redirectUrl ?? "/"
     }
   }, [])
 
@@ -383,7 +438,7 @@ export function useUser() {
       isLoaded: false,
       isSignedIn: undefined,
       user: undefined,
-    } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
+    } as UseUserReturn
   }
 
   // If Clerk is not configured, use Supabase session
@@ -404,13 +459,14 @@ export function useUser() {
       username: user.email?.split("@")[0] || null,
       createdAt: user.created_at ? new Date(user.created_at) : null,
       updatedAt: user.updated_at ? new Date(user.updated_at) : null,
+      publicMetadata: user.user_metadata || {},
     } : null
 
     return {
       isLoaded: !isLoading,
       isSignedIn: !!user,
       user: clerkCompatibleUser,
-    } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
+    } as UseUserReturn
   }
 
   // Clerk is disabled - this branch is never reached
@@ -421,7 +477,7 @@ export function useUser() {
     isLoaded: true,
     isSignedIn: false,
     user: null,
-  } as unknown as ReturnType<typeof import("@clerk/nextjs").useUser>
+  } as UseUserReturn
 }
 
 // Safe useAuth hook that handles SSR/prerendering
@@ -446,7 +502,7 @@ export function useAuth() {
       has: () => false,
       signOut: async () => {},
       getToken: async () => null,
-    } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
+    } as UseAuthReturn
   }
 
   // If Clerk is not configured, use Supabase session
@@ -464,7 +520,7 @@ export function useAuth() {
       has: () => false,
       signOut: signOut,
       getToken: async () => session?.access_token || null,
-    } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
+    } as UseAuthReturn
   }
 
   // Clerk is disabled - this branch is never reached
@@ -482,7 +538,7 @@ export function useAuth() {
     has: () => false,
     signOut: async () => {},
     getToken: async () => null,
-  } as unknown as ReturnType<typeof import("@clerk/nextjs").useAuth>
+  } as UseAuthReturn
 }
 
 // Safe useClerk hook that handles SSR/prerendering
@@ -503,7 +559,7 @@ export function useClerk() {
       openSignIn: () => {},
       openSignUp: () => {},
       openUserProfile: () => {},
-    } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
+    } as UseClerkReturn
   }
 
   // If Clerk is not configured, use Supabase for sign out
@@ -512,8 +568,8 @@ export function useClerk() {
 
     return {
       loaded: !isLoading,
-      signOut: async () => {
-        await signOut()
+      signOut: async (options?: SignOutOptions) => {
+        await signOut(options)
       },
       openSignIn: () => {
         router.push("/login")
@@ -524,7 +580,7 @@ export function useClerk() {
       openUserProfile: () => {
         router.push("/dashboard/profile")
       },
-    } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
+    } as UseClerkReturn
   }
 
   // Clerk is disabled - this branch is never reached
@@ -537,7 +593,7 @@ export function useClerk() {
     openSignIn: () => {},
     openSignUp: () => {},
     openUserProfile: () => {},
-  } as unknown as ReturnType<typeof import("@clerk/nextjs").useClerk>
+  } as UseClerkReturn
 }
 
 // Safe RedirectToSignIn - redirects to login page when Clerk is disabled

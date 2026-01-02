@@ -9,7 +9,6 @@
  *   const { userId, email, isAuthenticated } = await getServerAuth()
  */
 
-import { isClerkConfigured } from "@/components/clerk-safe"
 import { getServerUser } from "@/lib/supabase/server"
 
 export interface AuthResult {
@@ -24,31 +23,7 @@ export interface AuthResult {
  * This is the primary auth function for API routes and server components
  */
 export async function getServerAuth(): Promise<AuthResult> {
-  // Try Clerk first if configured
-  if (isClerkConfigured()) {
-    try {
-      const { auth } = await import("@clerk/nextjs/server")
-      const { userId } = await auth()
-
-      if (userId) {
-        // Get email from Clerk user
-        const { currentUser } = await import("@clerk/nextjs/server")
-        const user = await currentUser()
-
-        return {
-          userId,
-          email: user?.emailAddresses?.[0]?.emailAddress || null,
-          isAuthenticated: true,
-          provider: "clerk"
-        }
-      }
-    } catch (error) {
-      console.error("[auth-unified] Clerk auth error:", error)
-      // Fall through to Supabase
-    }
-  }
-
-  // Fall back to Supabase
+  // Use Supabase for authentication (Clerk has been removed)
   try {
     const { user, error } = await getServerUser()
 

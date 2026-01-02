@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/lib/clerk-server-safe'
 import { requireAdmin } from '@/lib/api-auth'
 import { approvePartner, canApprovePartner } from '@/lib/partner-onboarding'
 import { logAdminAction, getIpFromHeaders } from '@/lib/audit'

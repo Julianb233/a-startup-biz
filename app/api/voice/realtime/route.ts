@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth } from '@/lib/clerk-server-safe';
 import { isLiveKitConfigured } from '@/lib/livekit';
 import { getVoiceCallByRoom, updateVoiceCallStatus } from '@/lib/db-queries';
 import { getAgentSession } from '@/lib/voice-agent';

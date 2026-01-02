@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { sql, query } from '@/lib/db'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/lib/clerk-server-safe'
 import { withRateLimit } from '@/lib/rate-limit'
 import { generateQuotePDF, generateQuoteFilename } from '@/lib/pdf/generator'
 import {

@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server"
+import { auth } from "@/lib/clerk-server-safe"
 import { redirect } from "next/navigation"
 import { resources, categories, type Resource } from "@/lib/resources-data"
 import {

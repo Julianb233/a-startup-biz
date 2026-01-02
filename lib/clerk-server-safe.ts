@@ -108,4 +108,30 @@ export async function currentUser() {
   return null;
 }
 
+/**
+ * Safe clerkClient() wrapper that returns Supabase-compatible user lookup
+ * Used by routes that need to fetch user details by ID
+ */
+export async function clerkClient() {
+  return {
+    users: {
+      getUser: async (userId: string) => {
+        // In Supabase mode, we can't look up arbitrary users
+        // Return a minimal structure - the calling code should use the email param
+        console.warn('[clerk-server-safe] clerkClient.users.getUser called but Clerk is disabled. Using fallback.');
+        return {
+          id: userId,
+          emailAddresses: [] as { emailAddress: string }[],
+          primaryEmailAddress: null,
+          firstName: null,
+          lastName: null,
+          fullName: null,
+          imageUrl: null,
+          username: null,
+        };
+      },
+    },
+  };
+}
+
 export { isClerkConfigured };

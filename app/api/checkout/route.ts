@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/lib/clerk-server-safe'
 import { stripe, formatAmountForStripe } from '@/lib/stripe'
 import { SITE_CONFIG } from '@/lib/site-config'
 import { withRateLimit } from '@/lib/rate-limit'
