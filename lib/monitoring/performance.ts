@@ -8,17 +8,21 @@
 import * as Sentry from '@sentry/nextjs';
 
 /**
- * Track a business metric to Sentry and Vercel Analytics
+ * Track a business metric to Sentry (breadcrumb) and Vercel Analytics
  */
 export const trackBusinessMetric = (
   metricName: string,
   value: number,
   tags?: Record<string, string>
 ) => {
-  // Send to Sentry
-  Sentry.metrics.gauge(metricName, value, {
-    tags: {
-      environment: process.env.NODE_ENV,
+  // Send to Sentry as breadcrumb
+  Sentry.addBreadcrumb({
+    category: 'metric',
+    message: metricName,
+    level: 'info',
+    data: {
+      value,
+      environment: process.env.NODE_ENV || 'development',
       ...tags,
     },
   });
@@ -39,9 +43,13 @@ export const trackEvent = (
   eventName: string,
   tags?: Record<string, string>
 ) => {
-  Sentry.metrics.increment(eventName, 1, {
-    tags: {
-      environment: process.env.NODE_ENV,
+  // Send to Sentry as breadcrumb
+  Sentry.addBreadcrumb({
+    category: 'event',
+    message: eventName,
+    level: 'info',
+    data: {
+      environment: process.env.NODE_ENV || 'development',
       ...tags,
     },
   });
@@ -59,9 +67,15 @@ export const trackDistribution = (
   value: number,
   tags?: Record<string, string>
 ) => {
-  Sentry.metrics.distribution(metricName, value, {
-    tags: {
-      environment: process.env.NODE_ENV,
+  // Send to Sentry as breadcrumb with duration data
+  Sentry.addBreadcrumb({
+    category: 'performance',
+    message: metricName,
+    level: 'info',
+    data: {
+      value,
+      unit: 'ms',
+      environment: process.env.NODE_ENV || 'development',
       ...tags,
     },
   });

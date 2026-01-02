@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getCorsHeaders } from '@/lib/cors'
 import { auth } from '@/lib/clerk-server-safe'
 import {
   getReferralStats,
@@ -145,16 +146,13 @@ export async function GET(request: NextRequest) {
 /**
  * OPTIONS handler for CORS preflight
  */
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin')
   return NextResponse.json(
     {},
     {
       status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
+      headers: getCorsHeaders(origin, 'GET, OPTIONS'),
     }
   )
 }

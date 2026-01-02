@@ -13,6 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getCorsHeaders } from '@/lib/cors'
 import { sql, query } from '@/lib/db'
 import { withRateLimit } from '@/lib/rate-limit'
 import { requireAdmin, withAuth, getCurrentUserId } from '@/lib/api-auth'
@@ -331,16 +332,13 @@ export async function POST(request: NextRequest) {
 /**
  * OPTIONS handler for CORS preflight
  */
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin')
   return NextResponse.json(
     {},
     {
       status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
+      headers: getCorsHeaders(origin, 'GET, POST, OPTIONS'),
     }
   )
 }

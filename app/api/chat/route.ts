@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getCorsHeaders } from '@/lib/cors'
 import OpenAI from 'openai'
 import { sql } from '@/lib/db'
 import { chatbotKnowledge } from '@/lib/chatbot-knowledge'
@@ -195,13 +196,10 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle OPTIONS for CORS
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin')
   return NextResponse.json({}, {
     status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
+    headers: getCorsHeaders(origin, 'POST, OPTIONS'),
   })
 }
