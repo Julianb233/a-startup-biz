@@ -10,8 +10,7 @@ import BlogPreview from "@/components/blog-preview"
 import CTASection from "@/components/cta-section"
 import Footer from "@/components/footer"
 import HeroSection from "@/components/hero-section"
-// TEMPORARILY DISABLED - Diagnosing production crash
-// import WistiaVideo from "@/components/wistia-video"
+import WistiaVideo from "@/components/wistia-video"
 
 export const metadata: Metadata = {
   title: "A Startup Biz - Expert Business Consulting for Entrepreneurs",
@@ -57,8 +56,8 @@ export default function Home() {
       {/* Meet Tory */}
       <AboutSection />
 
-      {/* Video Introduction - TEMPORARILY DISABLED for crash diagnosis */}
-      {/* <WistiaVideo /> */}
+      {/* Video Introduction */}
+      <WistiaVideo />
 
       {/* How It Works */}
       <HowItWorks />

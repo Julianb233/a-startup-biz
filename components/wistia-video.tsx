@@ -1,13 +1,14 @@
 "use client"
 
-import Script from "next/script"
 import { useState, useEffect } from "react"
 
 export default function WistiaVideo() {
-  const [mounted, setMounted] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    // Small delay to ensure smooth transition
+    const timer = setTimeout(() => setIsLoaded(true), 100)
+    return () => clearTimeout(timer)
   }, [])
 
   return (
@@ -18,33 +19,32 @@ export default function WistiaVideo() {
             See How We Help Entrepreneurs
           </h2>
 
-          {/* Wistia Player - only render after hydration */}
+          {/* Wistia Video - Standard iframe embed for reliability */}
           <div className="rounded-2xl overflow-hidden shadow-2xl">
-            {mounted ? (
-              <>
-                <Script
-                  src="https://fast.wistia.com/player.js"
-                  strategy="lazyOnload"
-                />
-                <Script
-                  src="https://fast.wistia.com/embed/kono7sttzg.js"
-                  strategy="lazyOnload"
-                  type="module"
-                />
-                {/* Wistia custom element */}
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: '<wistia-player media-id="kono7sttzg" aspect="0.5625"></wistia-player>'
-                  }}
-                />
-              </>
-            ) : (
-              /* Placeholder during SSR/hydration */
-              <div
-                className="bg-gray-200 dark:bg-gray-700 animate-pulse"
-                style={{ paddingTop: '177.78%' }}
+            <div className="relative w-full" style={{ paddingTop: '177.78%' }}>
+              {/* Loading placeholder */}
+              {!isLoaded && (
+                <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center">
+                  <div className="text-gray-400 dark:text-gray-500">
+                    <svg className="w-12 h-12 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  </div>
+                </div>
+              )}
+
+              {/* Wistia iframe embed - more stable than custom web component */}
+              <iframe
+                src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
+                title="A Startup Biz Introduction Video"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+                className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                onLoad={() => setIsLoaded(true)}
+                style={{ border: 'none' }}
               />
-            )}
+            </div>
           </div>
         </div>
       </div>
