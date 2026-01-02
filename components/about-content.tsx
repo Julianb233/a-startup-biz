@@ -98,6 +98,7 @@ export default function AboutContent() {
   const { about, clarityCall } = siteContent
   const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
+  const entrepreneurRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
 
   // Calculate gradient colors based on scroll
@@ -171,6 +172,47 @@ export default function AboutContent() {
           },
         })
       })
+
+      // Entrepreneur quote - left-to-right reveal animation
+      if (entrepreneurRef.current) {
+        const quoteText = entrepreneurRef.current.querySelector('.entrepreneur-quote')
+        const authorText = entrepreneurRef.current.querySelector('.entrepreneur-author')
+
+        if (quoteText) {
+          gsap.fromTo(quoteText,
+            { x: -100, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 1,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: entrepreneurRef.current,
+                start: "top 80%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          )
+        }
+
+        if (authorText) {
+          gsap.fromTo(authorText,
+            { x: -50, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.8,
+              delay: 0.3,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: entrepreneurRef.current,
+                start: "top 80%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          )
+        }
+      }
 
       return () => {
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
@@ -607,22 +649,17 @@ export default function AboutContent() {
         </div>
       </section>
 
-      {/* Footer Quote */}
-      <section className="py-16 bg-black border-t border-[#ff6a1a]/20 relative z-10 gsap-section">
+      {/* Footer Quote - GSAP left-to-right animation */}
+      <section ref={entrepreneurRef} className="py-16 bg-black border-t border-[#ff6a1a]/20 relative z-10 gsap-section overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <p className="text-2xl md:text-3xl font-bold text-white/90 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <div>
+            <p className="entrepreneur-quote text-2xl md:text-3xl font-bold text-white/90 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               &ldquo;Are you an entrepreneur or a wantrepreneur?&rdquo;
             </p>
-            <p className="text-lg text-white/60" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <p className="entrepreneur-author text-lg text-white/60" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               &mdash; {about.name}
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
