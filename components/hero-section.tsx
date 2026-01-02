@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, CheckCircle } from 'lucide-react'
 
 export default function HeroSection() {
@@ -28,6 +29,20 @@ export default function HeroSection() {
     },
   }
 
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.9, x: 50 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      x: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+        delay: 0.3,
+      },
+    },
+  }
+
   const highlights = [
     "46+ years of lived experience",
     "100+ businesses started",
@@ -50,7 +65,9 @@ export default function HeroSection() {
         animate="visible"
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28"
       >
-        <div className="text-center max-w-4xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left: Text content */}
+          <div className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
           {/* Main headline */}
           <motion.h1
             variants={itemVariants}
@@ -161,6 +178,44 @@ export default function HeroSection() {
                 <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>46+</div>
                 <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Years Experience</div>
               </div>
+            </div>
+          </motion.div>
+        </div>
+
+          {/* Right: Tory's Image with GSAP Parallax */}
+          <motion.div
+            variants={imageVariants}
+            className="relative hidden lg:flex items-center justify-center"
+          >
+            <div className="relative w-full max-w-md">
+              {/* Decorative background elements */}
+              <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-[#ff6a1a] rounded-3xl -z-10 opacity-80" />
+              <div className="absolute -top-6 -left-6 w-32 h-32 border-4 border-[#c0c0c0] dark:border-gray-600 rounded-3xl -z-10" />
+
+              {/* Main image container */}
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/tory-profile.jpg"
+                  alt="Tory - Business Strategy Expert with 46+ years of experience"
+                  fill
+                  className="object-cover parallax-image"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 400px"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              </div>
+
+              {/* Floating stats badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 border border-gray-100 dark:border-gray-700"
+              >
+                <div className="text-2xl font-bold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>100+</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Businesses Built</div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
