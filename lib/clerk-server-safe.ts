@@ -1,18 +1,18 @@
 /**
  * Safe Clerk Server-Side Utilities
  *
- * These utilities wrap Clerk's server-side functions to handle
- * the case when Clerk isn't configured with valid credentials.
- * Falls back to Supabase Auth when Clerk is not available.
+ * CLERK DISABLED: Using Supabase Auth exclusively.
+ * The Clerk imports have been removed to prevent SDK bundling.
+ *
+ * TODO: To re-enable Clerk, get production keys (pk_live_*) and restore
+ * the dynamic imports for clerkAuth and clerkCurrentUser.
  */
 
-import { auth as clerkAuth, currentUser as clerkCurrentUser } from '@clerk/nextjs/server';
 import { getServerUser } from '@/lib/supabase/server';
 
-// Check if Clerk is properly configured (not using placeholder keys)
+// Clerk is disabled - always returns false
 const isClerkConfigured = () => {
-  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  return key && !key.includes('placeholder') && key.startsWith('pk_');
+  return false;
 };
 
 /**
@@ -66,7 +66,10 @@ export async function auth() {
       };
     }
   }
-  return clerkAuth();
+
+  // Clerk disabled - this code path is unreachable
+  // TODO: Re-enable when Clerk production keys are configured
+  throw new Error('Clerk is not configured');
 }
 
 /**
@@ -99,7 +102,10 @@ export async function currentUser() {
       return null;
     }
   }
-  return clerkCurrentUser();
+
+  // Clerk disabled - this code path is unreachable
+  // TODO: Re-enable when Clerk production keys are configured
+  return null;
 }
 
 export { isClerkConfigured };
