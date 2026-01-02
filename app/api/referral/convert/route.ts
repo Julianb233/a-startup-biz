@@ -107,6 +107,62 @@ export async function POST(request: NextRequest) {
     // - The referred user matches the order
     // - This is the first qualifying purchase
 
+    // FRAUD DETECTION: Check for suspicious conversion patterns
+    const fraudCheck = await detectFraud(
+      referralCode || '',
+      referredEmail || '',
+      {
+        ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0] ||
+                   request.headers.get('x-real-ip') ||
+                   'unknown',
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        referredUserId,
+        purchaseValue,
+      }
+    )
+
+    // Log fraud detection results
+    console.log(`[Fraud Detection - Conversion] Risk Score: ${fraudCheck.riskScore}, Action: ${fraudCheck.action}`)
+
+    // Block high-risk conversions
+    if (fraudCheck.action === 'block') {
+      console.warn(`[Fraud Detection] BLOCKED - High risk conversion attempt`, {
+        referralCode,
+        referredEmail,
+        purchaseValue,
+        riskScore: fraudCheck.riskScore,
+        signals: fraudCheck.signals.map(s => ({
+          type: s.type,
+          severity: s.severity,
+          description: s.description,
+        })),
+      })
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'This conversion could not be processed due to suspicious activity. Support has been notified.',
+        } satisfies ConvertReferralResponse,
+        { status: 403 }
+      )
+    }
+
+    // Flag suspicious conversions for review
+    if (fraudCheck.action === 'review') {
+      console.warn(`[Fraud Detection] FLAGGED - Conversion marked for manual review`, {
+        referralCode,
+        referredEmail,
+        purchaseValue,
+        riskScore: fraudCheck.riskScore,
+        signals: fraudCheck.signals.map(s => ({
+          type: s.type,
+          severity: s.severity,
+          description: s.description,
+        })),
+      })
+      // Continue with conversion but flag for review
+    }
+
     // Convert the referral
     const result = await convertReferral({
       referralCode,

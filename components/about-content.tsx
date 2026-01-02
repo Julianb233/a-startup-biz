@@ -19,8 +19,10 @@ import {
   ArrowRight
 } from "lucide-react"
 
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger, useGSAP)
+// Register GSAP plugins (only in browser to avoid SSR issues)
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger, useGSAP)
+}
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },

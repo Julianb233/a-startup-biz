@@ -24,14 +24,16 @@ vi.mock('next/headers', () => ({
   })),
 }));
 
-// Mock Clerk
-vi.mock('@clerk/nextjs/server', () => ({
-  auth: vi.fn(async () => ({ userId: 'test-user-123' })),
-  currentUser: vi.fn(async () => ({
-    id: 'test-user-123',
-    publicMetadata: { role: 'user' },
-    privateMetadata: {},
-  })),
+// Mock our local Clerk wrapper (the actual @clerk/nextjs package has been removed)
+vi.mock('@/components/clerk-safe', () => ({
+  useUser: () => ({ isLoaded: true, isSignedIn: true, user: { id: 'test-user-123' } }),
+  useAuth: () => ({ isLoaded: true, isSignedIn: true, userId: 'test-user-123' }),
+  useClerk: () => ({ signOut: vi.fn() }),
+  SignedIn: ({ children }: { children: React.ReactNode }) => children,
+  SignedOut: () => null,
+  SignIn: () => null,
+  SignUp: () => null,
+  UserButton: () => null,
 }));
 
 // Setup global test utilities
