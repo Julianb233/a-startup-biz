@@ -122,5 +122,8 @@ export const config = {
     "/dashboard/:path*",
     "/admin/:path*",
     "/partner-portal/:path*",
+    // Legacy Clerk SSO callback - must be in matcher for middleware to intercept cached 404
+    "/login/sso-callback",
+    "/login/sso-callback/",
   ],
 }
