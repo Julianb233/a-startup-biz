@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 /**
  * SSO Callback Redirect Handler
+ * Cache-bust timestamp: 2026-01-03T08:00:00Z
  *
  * This route handles old Clerk SSO callback URLs that may still be cached
  * or bookmarked. Since we migrated from Clerk to Supabase, these URLs
