@@ -10,3 +10,10 @@ package-lock.json
 scripts/test-*.ts
 test-assets/
 .env.production
+
+# Build artifacts
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Swarm memory
+.swarm/
