@@ -12,6 +12,17 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Legacy Clerk SSO callback - redirect to login page
+      // This handles old bookmarks/cached URLs from before Supabase migration
+      {
+        source: '/login/sso-callback',
+        destination: '/login',
+        permanent: false, // Use 307 to preserve query params behavior
+      },
+    ]
+  },
   async headers() {
     // Content Security Policy - restrict resource loading
     const cspDirectives = [
