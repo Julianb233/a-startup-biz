@@ -2,6 +2,16 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Config-level redirect to bypass Vercel edge cache for legacy Clerk SSO callback
+  async redirects() {
+    return [
+      {
+        source: '/login/sso-callback',
+        destination: '/login',
+        permanent: false,
+      },
+    ]
+  },
   images: {
     remotePatterns: [
       {
