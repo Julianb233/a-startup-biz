@@ -17,6 +17,48 @@ const isSupabaseConfigured = () => {
 }
 
 export async function middleware(req: NextRequest) {
+  // CRITICAL: Handle legacy Clerk SSO callback URLs
+  // This runs at edge BEFORE cached 404 responses are served
+  // Cache-bust timestamp: 2026-01-03T09:00:00Z
+  if (req.nextUrl.pathname === '/login/sso-callback' ||
+      req.nextUrl.pathname === '/login/sso-callback/') {
+    const { searchParams } = req.nextUrl
+
+    // Extract redirect from Clerk-style params
+    const redirectTo = searchParams.get('after_sign_in_url') ||
+                       searchParams.get('sign_in_force_redirect_url') ||
+                       searchParams.get('redirect_url') ||
+                       '/dashboard'
+
+    // Parse and validate redirect path
+    let redirectPath = '/dashboard'
+    try {
+      const redirectUrl = new URL(redirectTo)
+      if (redirectUrl.hostname === 'astartupbiz.com' ||
+          redirectUrl.hostname === 'localhost' ||
+          redirectUrl.hostname.endsWith('.vercel.app')) {
+        redirectPath = redirectUrl.pathname
+      }
+    } catch {
+      if (redirectTo.startsWith('/')) {
+        redirectPath = redirectTo
+      }
+    }
+
+    // Redirect to login with the redirect param
+    const loginUrl = new URL('/login', req.url)
+    loginUrl.searchParams.set('redirectTo', redirectPath)
+    loginUrl.searchParams.set('from', 'sso')
+
+    const response = NextResponse.redirect(loginUrl, 307)
+    response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
+    response.headers.set('CDN-Cache-Control', 'private, no-store')
+    response.headers.set('Vercel-CDN-Cache-Control', 'private, no-store, max-age=0')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    return response
+  }
+
   const res = NextResponse.next()
 
   // Check if route is protected
