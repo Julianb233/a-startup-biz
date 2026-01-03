@@ -1,4 +1,21 @@
 {
+  "redirects": [
+    {
+      "source": "/login/sso-callback",
+      "destination": "/login",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/login/sso-callback",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" }
+      ]
+    }
+  ],
   "crons": [
     {
       "path": "/api/notifications/send-email",
