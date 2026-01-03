@@ -11,32 +11,17 @@
  * 4. Email Pattern Detection - Suspicious email domain patterns
  * 5. User Agent Anomalies - Bot-like behavior
  * 6. Conversion Time Anomalies - Unrealistic conversion timing
+ *
+ * @module lib/referral-fraud-detection
  */
 
 import { sql, query } from './db'
 import type { Referral } from './types/referral'
 
 /**
- * Fraud detection result with severity levels
+ * Fraud signal severity levels (ordered by risk)
  */
-export interface FraudDetectionResult {
-  isSuspicious: boolean
-  riskScore: number // 0-100, higher is more suspicious
-  signals: FraudSignal[]
-  action: FraudAction
-  metadata: Record<string, any>
-}
-
-/**
- * Individual fraud signal detected
- */
-export interface FraudSignal {
-  type: FraudSignalType
-  severity: 'low' | 'medium' | 'high' | 'critical'
-  description: string
-  details: Record<string, any>
-  timestamp: Date
-}
+export type FraudSeverity = 'low' | 'medium' | 'high' | 'critical'
 
 /**
  * Types of fraud signals we detect
@@ -53,13 +38,66 @@ export type FraudSignalType =
   | 'rapid_signup'
 
 /**
- * Recommended action based on risk score
+ * Recommended action based on risk score (discriminated union)
  */
 export type FraudAction =
   | 'allow' // 0-30: Normal activity
   | 'monitor' // 31-60: Slightly suspicious, allow but watch
   | 'review' // 61-80: Suspicious, flag for manual review
   | 'block' // 81-100: Highly suspicious, block and review
+
+/**
+ * Individual fraud signal detected
+ */
+export interface FraudSignal {
+  readonly type: FraudSignalType
+  readonly severity: FraudSeverity
+  readonly description: string
+  readonly details: Readonly<Record<string, unknown>>
+  readonly timestamp: Date
+}
+
+/**
+ * Fraud detection metadata for tracking
+ */
+export interface FraudDetectionMetadata {
+  readonly referralCode?: string
+  readonly referredEmail?: string
+  readonly ipAddress?: string
+  readonly userAgent?: string
+  readonly referrerId?: string
+  readonly referredUserId?: string
+  readonly purchaseValue?: number
+  readonly checksPerformed: number
+  readonly timestamp: Date
+}
+
+/**
+ * Fraud detection result with severity levels
+ */
+export interface FraudDetectionResult {
+  readonly isSuspicious: boolean
+  readonly riskScore: number // 0-100, higher is more suspicious
+  readonly signals: readonly FraudSignal[]
+  readonly action: FraudAction
+  readonly metadata: FraudDetectionMetadata
+}
+
+/**
+ * Parameters for fraud detection check
+ */
+export interface FraudDetectionParams {
+  readonly referralCode: string
+  readonly referredEmail: string
+  readonly metadata?: {
+    readonly ipAddress?: string
+    readonly userAgent?: string
+    readonly referrerId?: string
+    readonly referredUserId?: string
+    readonly purchaseValue?: number
+  }
+  readonly config?: FraudConfig
+}
 
 /**
  * Fraud detection configuration
@@ -124,16 +162,39 @@ export const DEFAULT_FRAUD_CONFIG: FraudConfig = {
 
 /**
  * Main fraud detection function - checks all patterns
+ *
+ * @param referralCode - The referral code being checked
+ * @param referredEmail - Email of the person being referred
+ * @param metadata - Additional context for fraud detection (IP, user agent, etc.)
+ * @param config - Fraud detection configuration thresholds
+ * @returns Comprehensive fraud detection result with risk score and recommended action
+ *
+ * @example
+ * ```typescript
+ * const result = await detectFraud(
+ *   'REF-ABC-123456',
+ *   'user@example.com',
+ *   {
+ *     ipAddress: '192.168.1.1',
+ *     userAgent: 'Mozilla/5.0...',
+ *     purchaseValue: 150.00
+ *   }
+ * );
+ *
+ * if (result.action === 'block') {
+ *   console.log('High-risk transaction blocked');
+ * }
+ * ```
  */
 export async function detectFraud(
   referralCode: string,
   referredEmail: string,
   metadata: {
-    ipAddress?: string
-    userAgent?: string
-    referrerId?: string
-    referredUserId?: string
-    purchaseValue?: number
+    readonly ipAddress?: string
+    readonly userAgent?: string
+    readonly referrerId?: string
+    readonly referredUserId?: string
+    readonly purchaseValue?: number
   } = {},
   config: FraudConfig = DEFAULT_FRAUD_CONFIG
 ): Promise<FraudDetectionResult> {
@@ -215,13 +276,16 @@ export async function detectFraud(
   const result: FraudDetectionResult = {
     isSuspicious: signals.length > 0,
     riskScore,
-    signals,
+    signals: signals as readonly FraudSignal[],
     action,
     metadata: {
       referralCode,
       referredEmail,
       ipAddress: metadata.ipAddress,
       userAgent: metadata.userAgent,
+      referrerId: metadata.referrerId,
+      referredUserId: metadata.referredUserId,
+      purchaseValue: metadata.purchaseValue,
       checksPerformed: 6,
       timestamp: new Date(),
     },
@@ -821,14 +885,87 @@ function levenshteinDistance(str1: string, str2: string): number {
 }
 
 /**
- * Get fraud statistics for a referrer
+ * Type guard to check if a value is a valid fraud action
  */
-export async function getReferrerFraudStats(referrerId: string): Promise<{
-  totalReferrals: number
-  flaggedReferrals: number
-  avgRiskScore: number
-  topSignals: Array<{ type: FraudSignalType; count: number }>
-}> {
+export function isFraudAction(value: unknown): value is FraudAction {
+  return (
+    typeof value === 'string' &&
+    ['allow', 'monitor', 'review', 'block'].includes(value)
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid fraud severity
+ */
+export function isFraudSeverity(value: unknown): value is FraudSeverity {
+  return (
+    typeof value === 'string' &&
+    ['low', 'medium', 'high', 'critical'].includes(value)
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid fraud signal type
+ */
+export function isFraudSignalType(value: unknown): value is FraudSignalType {
+  return (
+    typeof value === 'string' &&
+    [
+      'ip_abuse',
+      'self_referral',
+      'velocity_abuse',
+      'email_pattern',
+      'user_agent_anomaly',
+      'conversion_timing',
+      'duplicate_conversion',
+      'suspicious_domain',
+      'rapid_signup',
+    ].includes(value)
+  )
+}
+
+/**
+ * Type guard to validate a fraud signal object
+ */
+export function isFraudSignal(value: unknown): value is FraudSignal {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const signal = value as Record<string, unknown>
+
+  return (
+    isFraudSignalType(signal.type) &&
+    isFraudSeverity(signal.severity) &&
+    typeof signal.description === 'string' &&
+    typeof signal.details === 'object' &&
+    signal.details !== null &&
+    signal.timestamp instanceof Date
+  )
+}
+
+/**
+ * Fraud statistics result interface
+ */
+export interface ReferrerFraudStats {
+  readonly totalReferrals: number
+  readonly flaggedReferrals: number
+  readonly avgRiskScore: number
+  readonly topSignals: ReadonlyArray<{
+    readonly type: FraudSignalType
+    readonly count: number
+  }>
+}
+
+/**
+ * Get fraud statistics for a referrer
+ *
+ * @param referrerId - The referrer's user ID
+ * @returns Aggregated fraud statistics for the referrer
+ */
+export async function getReferrerFraudStats(
+  referrerId: string
+): Promise<ReferrerFraudStats> {
   try {
     const stats = await sql`
       SELECT

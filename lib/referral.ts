@@ -3,20 +3,27 @@
  *
  * Core business logic for referral tracking, commission calculation,
  * and code generation. Used by API routes and background jobs.
+ *
+ * @module lib/referral
  */
 
 import { sql, query } from './db'
-import {
+import type {
   Referral,
   ReferralPayout,
   ReferralStats,
   CommissionConfig,
-  DEFAULT_COMMISSION_CONFIG,
   ReferralCodeConfig,
-  DEFAULT_REFERRAL_CODE_CONFIG,
   ReferralStatus,
   PayoutStatus,
   ReferrerStatsRow,
+  TrackReferralMetadata,
+  ConvertReferralParams,
+  ConvertReferralResult,
+} from './types/referral'
+import {
+  DEFAULT_COMMISSION_CONFIG,
+  DEFAULT_REFERRAL_CODE_CONFIG,
   isValidReferralCode as validateCodeFormat,
 } from './types/referral'
 
@@ -171,20 +178,27 @@ export async function getOrCreateReferralCode(
  *
  * @param referralCode - The referral code used
  * @param referredEmail - Email of person signing up
- * @param metadata - Additional tracking data
+ * @param metadata - Additional tracking data (UTM params, IP, user agent, etc.)
  * @returns Created referral ID
+ * @throws {Error} If referral code is invalid or not found
+ *
+ * @example
+ * ```typescript
+ * const referralId = await trackReferralSignup(
+ *   'REF-ABC-123456',
+ *   'user@example.com',
+ *   {
+ *     ipAddress: '192.168.1.1',
+ *     utmSource: 'google',
+ *     utmMedium: 'cpc'
+ *   }
+ * );
+ * ```
  */
 export async function trackReferralSignup(
   referralCode: string,
   referredEmail: string,
-  metadata: {
-    utmSource?: string
-    utmMedium?: string
-    utmCampaign?: string
-    ipAddress?: string
-    userAgent?: string
-    referrerUrl?: string
-  } = {}
+  metadata: TrackReferralMetadata = {}
 ): Promise<string> {
   try {
     // Validate code format
@@ -262,29 +276,40 @@ export async function trackReferralSignup(
 /**
  * Convert a referral (when referred user makes qualifying purchase)
  *
- * @param referralCode - Referral code (or pass referredEmail)
- * @param referredEmail - Email of person who made purchase
- * @param referredUserId - User ID of person who made purchase
- * @param purchaseValue - Amount of purchase
- * @param orderId - Optional order ID for reference
- * @returns Updated referral with commission info
+ * @param params - Conversion parameters (must include referralCode OR referredEmail)
+ * @param params.referralCode - Referral code (optional if referredEmail provided)
+ * @param params.referredEmail - Email of person who made purchase (optional if code provided)
+ * @param params.referredUserId - User ID of person who made purchase
+ * @param params.purchaseValue - Amount of purchase (must meet minimum threshold)
+ * @param params.orderId - Optional order ID for reference
+ * @param config - Commission calculation configuration
+ * @returns Referral ID and calculated commission amount
+ * @throws {Error} If neither referralCode nor referredEmail provided
+ * @throws {Error} If referral not found or already converted
+ * @throws {Error} If purchase value doesn't meet minimum threshold
+ *
+ * @example
+ * ```typescript
+ * const result = await convertReferral({
+ *   referralCode: 'REF-ABC-123456',
+ *   referredUserId: 'user_123',
+ *   purchaseValue: 150.00,
+ *   orderId: 'order_xyz'
+ * });
+ * console.log(`Commission earned: $${result.commissionAmount}`);
+ * ```
  */
 export async function convertReferral(
-  {
+  params: ConvertReferralParams,
+  config: CommissionConfig = DEFAULT_COMMISSION_CONFIG
+): Promise<ConvertReferralResult> {
+  const {
     referralCode,
     referredEmail,
     referredUserId,
     purchaseValue,
     orderId,
-  }: {
-    referralCode?: string
-    referredEmail?: string
-    referredUserId?: string
-    purchaseValue: number
-    orderId?: string
-  },
-  config: CommissionConfig = DEFAULT_COMMISSION_CONFIG
-): Promise<{ referralId: string; commissionAmount: number }> {
+  } = params
   try {
     // Find the referral record
     let referral

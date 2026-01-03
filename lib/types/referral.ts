@@ -305,15 +305,92 @@ export interface ActiveReferralRow {
 }
 
 /**
+ * Enhanced metadata type for tracking referral signups
+ */
+export interface TrackReferralMetadata {
+  readonly utmSource?: string
+  readonly utmMedium?: string
+  readonly utmCampaign?: string
+  readonly ipAddress?: string
+  readonly userAgent?: string
+  readonly referrerUrl?: string
+}
+
+/**
+ * Parameters for converting a referral
+ * At least one of referralCode or referredEmail must be provided
+ */
+export interface ConvertReferralParams {
+  readonly referralCode?: string
+  readonly referredEmail?: string
+  readonly referredUserId?: string
+  readonly purchaseValue: number
+  readonly orderId?: string
+}
+
+/**
+ * Result of a successful referral conversion
+ */
+export interface ConvertReferralResult {
+  readonly referralId: string
+  readonly commissionAmount: number
+}
+
+/**
+ * Branded type for referral codes to prevent mixing with regular strings
+ */
+export type ReferralCode = string & { readonly __brand: 'ReferralCode' }
+
+/**
+ * Branded type for user IDs
+ */
+export type UserId = string & { readonly __brand: 'UserId' }
+
+/**
+ * Branded type for email addresses
+ */
+export type EmailAddress = string & { readonly __brand: 'EmailAddress' }
+
+/**
+ * Type guard to check if a value is a valid referral status
+ */
+export function isReferralStatus(value: unknown): value is ReferralStatus {
+  return (
+    typeof value === 'string' &&
+    ['pending', 'signed_up', 'converted', 'paid_out', 'expired', 'invalid'].includes(value)
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid payout status
+ */
+export function isPayoutStatus(value: unknown): value is PayoutStatus {
+  return (
+    typeof value === 'string' &&
+    ['pending', 'processing', 'paid', 'failed', 'cancelled'].includes(value)
+  )
+}
+
+/**
+ * Type guard to check if a value is a valid payment method
+ */
+export function isPaymentMethod(value: unknown): value is PaymentMethod {
+  return (
+    typeof value === 'string' &&
+    ['stripe', 'paypal', 'bank_transfer', 'venmo', 'cashapp', 'manual'].includes(value)
+  )
+}
+
+/**
  * Validation helpers
  */
-export function isValidReferralCode(code: string): boolean {
+export function isValidReferralCode(code: string): code is ReferralCode {
   // REF-XXX-XXXXXX format
   const pattern = /^REF-[A-Z0-9]+-[A-Z0-9]{6,}$/
   return pattern.test(code)
 }
 
-export function isValidEmail(email: string): boolean {
+export function isValidEmail(email: string): email is EmailAddress {
   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return pattern.test(email)
 }
@@ -330,4 +407,69 @@ export function canRequestPayout(
   config: CommissionConfig = DEFAULT_COMMISSION_CONFIG
 ): boolean {
   return pendingAmount >= config.payoutThreshold
+}
+
+/**
+ * Type-safe helper to create a referral code from a validated string
+ */
+export function createReferralCode(code: string): ReferralCode | null {
+  return isValidReferralCode(code) ? (code as ReferralCode) : null
+}
+
+/**
+ * Type-safe helper to create an email address from a validated string
+ */
+export function createEmailAddress(email: string): EmailAddress | null {
+  return isValidEmail(email) ? (email as EmailAddress) : null
+}
+
+/**
+ * Strict validation result type with discriminated union
+ */
+export type ValidationResult<T> =
+  | { readonly success: true; readonly data: T }
+  | { readonly success: false; readonly error: string }
+
+/**
+ * Helper to create a successful validation result
+ */
+export function validationSuccess<T>(data: T): ValidationResult<T> {
+  return { success: true, data }
+}
+
+/**
+ * Helper to create a failed validation result
+ */
+export function validationError<T>(error: string): ValidationResult<T> {
+  return { success: false, error }
+}
+
+/**
+ * Validate and parse referral code
+ */
+export function validateReferralCodeStrict(code: unknown): ValidationResult<ReferralCode> {
+  if (typeof code !== 'string') {
+    return validationError('Referral code must be a string')
+  }
+
+  if (!isValidReferralCode(code)) {
+    return validationError('Invalid referral code format (expected REF-XXX-XXXXXX)')
+  }
+
+  return validationSuccess(code)
+}
+
+/**
+ * Validate and parse email address
+ */
+export function validateEmailStrict(email: unknown): ValidationResult<EmailAddress> {
+  if (typeof email !== 'string') {
+    return validationError('Email must be a string')
+  }
+
+  if (!isValidEmail(email)) {
+    return validationError('Invalid email format')
+  }
+
+  return validationSuccess(email)
 }
