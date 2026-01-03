@@ -2,7 +2,12 @@
   "redirects": [
     {
       "source": "/login/sso-callback",
-      "destination": "/login",
+      "destination": "/login?from=sso",
+      "permanent": false
+    },
+    {
+      "source": "/login/sso-callback/",
+      "destination": "/login?from=sso",
       "permanent": false
     }
   ],
@@ -10,9 +15,21 @@
     {
       "source": "/login/sso-callback",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" }
+        { "key": "Cache-Control", "value": "private, no-store, no-cache, must-revalidate, max-age=0" },
+        { "key": "CDN-Cache-Control", "value": "private, no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "private, no-store, max-age=0" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    },
+    {
+      "source": "/login/sso-callback/",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-store, no-cache, must-revalidate, max-age=0" },
+        { "key": "CDN-Cache-Control", "value": "private, no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "private, no-store, max-age=0" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
       ]
     }
   ],
