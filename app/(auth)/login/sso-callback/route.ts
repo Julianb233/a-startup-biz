@@ -39,5 +39,11 @@ export async function GET(request: NextRequest) {
   const loginUrl = new URL('/login', request.url)
   loginUrl.searchParams.set('redirectTo', redirectPath)
 
-  return NextResponse.redirect(loginUrl)
+  // Use 307 redirect with cache-busting headers to prevent edge caching
+  const response = NextResponse.redirect(loginUrl, 307)
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+  response.headers.set('Pragma', 'no-cache')
+  response.headers.set('Expires', '0')
+
+  return response
 }
