@@ -238,29 +238,31 @@ export default function LandingPage() {
   );
 
   return (
-    <div ref={containerRef} className="relative min-h-screen overflow-x-hidden">
-      {/* Background */}
+    <div ref={containerRef} className="relative min-h-screen overflow-x-hidden" style={{ isolation: "isolate" }}>
+      {/* Background - lowest layer */}
       <div
-        className="fixed inset-0 z-0 transition-colors duration-500"
+        className="fixed inset-0 transition-colors duration-500"
         style={{
           background: `linear-gradient(145deg, ${gradientColors.from} 0%, ${gradientColors.mid} 50%, ${gradientColors.to} 100%)`,
+          zIndex: -2,
         }}
       />
 
-      {/* Orange depth orbs */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      {/* Orange depth orbs - behind content but above background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: -1 }}>
         <div className="depth-orb orb-orange w-[680px] h-[680px] top-[8%] left-[-14%]" />
         <div className="depth-orb orb-orange w-[520px] h-[520px] top-[42%] right-[-12%] opacity-70" />
         <div className="depth-orb orb-orange w-[420px] h-[420px] bottom-[-12%] right-[12%] opacity-60" />
       </div>
 
-      <div className="relative z-10 flex flex-col">
+      <div className="relative flex flex-col" style={{ zIndex: 1 }}>
         {/* ============================================
             SECTION 1: HERO — full-frame logo
             ============================================ */}
         <section
           ref={heroRef}
-          className="relative min-h-screen w-full flex items-center justify-center"
+          className="relative min-h-screen w-full flex items-center justify-center bg-black"
+          style={{ zIndex: 5 }}
         >
           <div className="hero-logo-frame relative w-screen h-screen overflow-hidden bg-black">
             <Image
@@ -285,7 +287,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 2: pinned sideways questions
             ============================================ */}
-        <section ref={questionBandRef} className="relative w-full">
+        <section ref={questionBandRef} className="relative w-full" style={{ zIndex: 10 }}>
           <div className="min-h-screen w-full bg-black flex items-center overflow-hidden">
             <div
               ref={questionTrackRef}
@@ -313,7 +315,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 3: pinned parallax word band
             ============================================ */}
-        <section ref={entrepreneurBandRef} className="relative w-full">
+        <section ref={entrepreneurBandRef} className="relative w-full" style={{ zIndex: 20 }}>
           <div className="min-h-screen w-full bg-white flex items-center overflow-hidden">
             <div
               ref={entrepreneurTrackRef}
@@ -332,7 +334,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 4: Me and Tori (use homepage Tory photo)
             ============================================ */}
-        <section className="flow-section flow-section-breathe">
+        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-5xl mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-large font-black text-white mb-3">
@@ -359,7 +361,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 4.5: VIDEO — Wistia Embed
             ============================================ */}
-        <section className="flow-section flow-section-breathe">
+        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-lg mx-auto px-4">
             <div className="text-center mb-8">
               <h2 className="text-large font-black text-white mb-3">
@@ -405,7 +407,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 5+: Core story (updated contrast + weight)
             ============================================ */}
-        <section className="flow-section">
+        <section className="flow-section relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-huge font-black text-white text-center mb-8">
               A Lifetime Devoted to <span className="text-orange-500">Business</span>
@@ -426,7 +428,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="flow-section flow-section-compact">
+        <section className="flow-section flow-section-compact relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-large font-black text-white text-center mb-8">
               Lessons From a Lifetime of <span className="text-orange-500">Business</span>
@@ -442,7 +444,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="flow-section flow-section-breathe">
+        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-huge font-black text-white text-center mb-8">
               Why Most Business Advice <span className="text-orange-500">Fails</span>
@@ -468,7 +470,7 @@ export default function LandingPage() {
             SECTION: G-Step stats (from your images)
             This is placed RIGHT BEFORE the "Animations" section.
             ============================================ */}
-        <section className="flow-section flow-section-breathe">
+        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate">
             <div className="max-w-6xl mx-auto px-4">
               <div className="rounded-[2rem] bg-white/95 border border-black/10 p-6 md:p-10">
@@ -485,7 +487,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION: Animations (infographics)
             ============================================ */}
-        <section className="flow-section flow-section-breathe">
+        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-6xl mx-auto px-4 w-full">
             <div className="text-center mb-10">
               <h2 className="text-large font-black text-white">
@@ -528,7 +530,7 @@ export default function LandingPage() {
         {/* ============================================
             FINAL CTA
             ============================================ */}
-        <section className="flow-section flow-section-breathe">
+        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate max-w-4xl mx-auto text-center px-4">
             <h2 className="text-huge font-black text-white mb-6">
               Book Your <span className="text-orange-500 glow-orange-intense">$1,000</span> Clarity Call Now
@@ -556,7 +558,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <footer className="flow-section flow-section-compact text-center">
+        <footer className="flow-section flow-section-compact text-center relative bg-black" style={{ zIndex: 30 }}>
           <div className="flow-animate px-4">
             <Image
               src="/images/a-startup-biz-logo.webp"
