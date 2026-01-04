@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [main, staging]
+    branches: [main, staging, interactive-site]
   pull_request:
     branches: [main, staging]
 
@@ -71,11 +71,11 @@ jobs:
         continue-on-error: true
 
   deploy:
-    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/interactive-site'
     needs: [build, security]
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/interactive-site' && 'preview' || 'staging' }}
       url: ${{ steps.deploy.outputs.deployment_url }}
 
     steps:
