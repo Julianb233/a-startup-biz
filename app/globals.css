@@ -576,7 +576,7 @@ body {
 
   /* Floating orbs for depth */
   .depth-orb {
-    position: fixed;
+    position: absolute;
     border-radius: 50%;
     filter: blur(80px);
     pointer-events: none;
