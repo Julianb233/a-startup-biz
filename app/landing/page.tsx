@@ -68,6 +68,7 @@ export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const questionBandRef = useRef<HTMLElement>(null);
   const questionTrackRef = useRef<HTMLDivElement>(null);
+  const firstQuestionRef = useRef<HTMLDivElement>(null);
   const entrepreneurBandRef = useRef<HTMLElement>(null);
   const entrepreneurTrackRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -130,6 +131,51 @@ export default function LandingPage() {
             },
           }
         );
+      }
+
+      // Animate the first question text with GSAP
+      if (firstQuestionRef.current) {
+        const textElements = firstQuestionRef.current.querySelectorAll("span");
+        
+        // Set initial state
+        gsap.set(textElements, { 
+          opacity: 0, 
+          y: 50,
+          rotationX: -90 
+        });
+
+        // Animate each span with stagger
+        gsap.to(textElements, {
+          opacity: 1,
+          y: 0,
+          rotationX: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: firstQuestionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        });
+
+        // Add a continuous subtle animation to the "entrepreneur" word
+        const entrepreneurSpan = firstQuestionRef.current.querySelector(".text-orange-500");
+        if (entrepreneurSpan) {
+          gsap.to(entrepreneurSpan, {
+            scale: 1.05,
+            duration: 2,
+            ease: "power1.inOut",
+            yoyo: true,
+            repeat: -1,
+            scrollTrigger: {
+              trigger: firstQuestionRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse",
+            },
+          });
+        }
       }
 
       // Pinned parallax: ENTREPRENEUR ENTREPRENEUR
@@ -250,10 +296,15 @@ export default function LandingPage() {
                 <span className="text-orange-500">entrepreneur</span> or{" "}
                 <span className="text-white/70">not</span>?
               </div>
-              <div className="whitespace-nowrap text-[clamp(2.3rem,6.2vw,6.5rem)] font-black tracking-tight text-white">
-                Are you an{" "}
-                <span className="text-orange-500">entrepreneur</span> or a{" "}
-                <span className="text-white/70">wantrepreneur</span>?
+              <div 
+                ref={firstQuestionRef}
+                className="whitespace-nowrap text-[clamp(2.3rem,6.2vw,6.5rem)] font-black tracking-tight text-white"
+              >
+                <span>Are you an </span>
+                <span className="text-orange-500">entrepreneur</span>
+                <span> or a </span>
+                <span className="text-white/70">wantrepreneur</span>
+                <span>?</span>
               </div>
             </div>
           </div>
