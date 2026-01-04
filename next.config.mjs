@@ -26,20 +26,20 @@ const nextConfig = {
     // Content Security Policy - restrict resource loading
     const cspDirectives = [
       "default-src 'self'",
-      // Scripts: self + trusted third parties (Stripe, Sentry, analytics)
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.sentry.io https://browser.sentry-cdn.com https://vercel.live https://*.vercel-scripts.com",
+      // Scripts: self + trusted third parties (Stripe, Sentry, analytics, Wistia video)
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.sentry.io https://browser.sentry-cdn.com https://vercel.live https://*.vercel-scripts.com https://fast.wistia.com https://fast.wistia.net",
       // Styles: self + inline (required for styled-components/emotion)
       "style-src 'self' 'unsafe-inline'",
-      // Images: self + data URIs + trusted image sources
-      "img-src 'self' data: blob: https://images.unsplash.com https://*.stripe.com https://*.supabase.co",
+      // Images: self + data URIs + trusted image sources + Wistia thumbnails
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.stripe.com https://*.supabase.co https://fast.wistia.com https://fast.wistia.net https://embed-ssl.wistia.com",
       // Fonts: self + data URIs
       "font-src 'self' data:",
-      // Connect: API endpoints and services
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://api.resend.com https://*.livekit.cloud wss://*.livekit.cloud https://*.neon.tech https://vercel.live wss://vercel.live",
-      // Frames: Stripe checkout iframe
-      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
-      // Media: voice/video calling
-      "media-src 'self' blob:",
+      // Connect: API endpoints and services + Wistia API
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://api.resend.com https://*.livekit.cloud wss://*.livekit.cloud https://*.neon.tech https://vercel.live wss://vercel.live https://fast.wistia.com https://fast.wistia.net https://embed-ssl.wistia.com",
+      // Frames: Stripe checkout iframe + Wistia video embeds
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://fast.wistia.com https://fast.wistia.net",
+      // Media: voice/video calling + Wistia video streams
+      "media-src 'self' blob: https://fast.wistia.com https://fast.wistia.net https://embed-ssl.wistia.com",
       // Object: none (block plugins)
       "object-src 'none'",
       // Base: restrict base URI
