@@ -51,7 +51,7 @@ export function useGSAPFadeIn(
     const element = ref.current;
     const { delay = 0, duration = 0.8, y = 50, trigger } = options || {};
 
-    gsap.fromTo(
+    const tween = gsap.fromTo(
       element,
       { opacity: 0, y },
       {
@@ -68,6 +68,14 @@ export function useGSAPFadeIn(
           : undefined,
       }
     );
+
+    // Cleanup ScrollTrigger on unmount
+    return () => {
+      if (tween.scrollTrigger) {
+        tween.scrollTrigger.kill();
+      }
+      tween.kill();
+    };
   }, [ref, options]);
 }
 
@@ -86,7 +94,7 @@ export function useGSAPStagger(
     const { stagger = 0.1, duration = 0.6, y = 30 } = options || {};
     const elements = containerRef.current.querySelectorAll(selector);
 
-    gsap.fromTo(
+    const tween = gsap.fromTo(
       elements,
       { opacity: 0, y },
       {
@@ -101,5 +109,13 @@ export function useGSAPStagger(
         },
       }
     );
+
+    // Cleanup ScrollTrigger on unmount
+    return () => {
+      if (tween.scrollTrigger) {
+        tween.scrollTrigger.kill();
+      }
+      tween.kill();
+    };
   }, [containerRef, selector, options]);
 }
