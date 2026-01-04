@@ -14,12 +14,13 @@ import ParallaxStatsGallery from "@/components/parallax-stats-gallery";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 // Keep the background brand-forward: black + orange ONLY (no gray/silver).
+// Edges stay pure black throughout so diagonal gradient always shows black AND orange.
 const gradientStops = [
   { at: 0.0, from: "#000000", mid: "#1a0a00", to: "#000000" },
   { at: 0.2, from: "#000000", mid: "#2a1200", to: "#000000" },
-  { at: 0.4, from: "#0a0500", mid: "#3a1a00", to: "#0a0500" },
-  { at: 0.6, from: "#0f0800", mid: "#ff6a1a", to: "#0f0800" },
-  { at: 0.8, from: "#0a0500", mid: "#cc5500", to: "#0a0500" },
+  { at: 0.4, from: "#000000", mid: "#4a2000", to: "#000000" },
+  { at: 0.6, from: "#000000", mid: "#ff6a1a", to: "#000000" },
+  { at: 0.8, from: "#000000", mid: "#cc5500", to: "#000000" },
   { at: 1.0, from: "#000000", mid: "#1a0a00", to: "#000000" },
 ];
 
