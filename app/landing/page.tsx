@@ -119,21 +119,21 @@ export default function LandingPage() {
       }
 
       // Pinned sideways questions: entrepreneur vs wantrepreneur
-      // Fixed: Better pin alignment and smoother horizontal scroll
+      // Marquee-style continuous scroll from right to left like a ticker
       if (questionBandRef.current && questionTrackRef.current) {
         const questionTrigger = ScrollTrigger.create({
           trigger: questionBandRef.current,
           start: "top top",
-          end: "+=150%",
+          end: "+=200%",
           pin: true,
           pinSpacing: true,
-          scrub: prefersReducedMotion ? false : 0.8,
+          scrub: prefersReducedMotion ? false : 0.5,
           anticipatePin: 1,
           onUpdate: (self) => {
-            // Smooth horizontal movement based on scroll progress
+            // Marquee effect: continuous scroll from right to left
             const progress = self.progress;
             gsap.set(questionTrackRef.current, {
-              xPercent: gsap.utils.interpolate(-15, 15, progress),
+              xPercent: gsap.utils.interpolate(50, -100, progress),
               force3D: true,
             });
           },
@@ -142,21 +142,21 @@ export default function LandingPage() {
       }
 
       // Pinned parallax: ENTREPRENEUR ENTREPRENEUR
-      // Fixed: Better axis alignment and consistent animation
+      // Marquee-style continuous scroll (opposite direction for visual contrast)
       if (entrepreneurBandRef.current && entrepreneurTrackRef.current) {
         const entrepreneurTrigger = ScrollTrigger.create({
           trigger: entrepreneurBandRef.current,
           start: "top top",
-          end: "+=160%",
+          end: "+=180%",
           pin: true,
           pinSpacing: true,
-          scrub: prefersReducedMotion ? false : 0.8,
+          scrub: prefersReducedMotion ? false : 0.5,
           anticipatePin: 1,
           onUpdate: (self) => {
-            // Smooth horizontal movement - opposite direction for visual interest
+            // Marquee effect: continuous scroll from left to right (opposite direction)
             const progress = self.progress;
             gsap.set(entrepreneurTrackRef.current, {
-              xPercent: gsap.utils.interpolate(-12, 12, progress),
+              xPercent: gsap.utils.interpolate(-80, 30, progress),
               force3D: true,
             });
           },
