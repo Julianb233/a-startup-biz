@@ -116,7 +116,7 @@ export default function LandingPage() {
 
       // Pinned sideways questions: entrepreneur vs wantrepreneur
       if (questionBandRef.current && questionTrackRef.current) {
-        gsap.fromTo(
+        const questionTween = gsap.fromTo(
           questionTrackRef.current,
           { xPercent: -12 },
           {
@@ -131,56 +131,73 @@ export default function LandingPage() {
             },
           }
         );
+        if (questionTween.scrollTrigger) {
+          createdTriggers.push(questionTween.scrollTrigger);
+        }
       }
 
       // Animate the first question text with GSAP
       if (firstQuestionRef.current) {
         const textElements = firstQuestionRef.current.querySelectorAll("span");
         
-        // Set initial state
-        gsap.set(textElements, { 
-          opacity: 0, 
-          y: 50,
-          rotationX: -90 
-        });
-
-        // Animate each span with stagger
-        gsap.to(textElements, {
-          opacity: 1,
-          y: 0,
-          rotationX: 0,
-          duration: 1.2,
-          ease: "power3.out",
-          stagger: 0.15,
-          scrollTrigger: {
-            trigger: firstQuestionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
+        // Create staggered entrance animation with ScrollTrigger
+        const textTween = gsap.fromTo(
+          textElements,
+          { 
+            opacity: 0, 
+            y: 40,
+            scale: 0.95
           },
-        });
-
-        // Add a continuous subtle animation to the "entrepreneur" word
-        const entrepreneurSpan = firstQuestionRef.current.querySelector(".text-orange-500");
-        if (entrepreneurSpan) {
-          gsap.to(entrepreneurSpan, {
-            scale: 1.05,
-            duration: 2,
-            ease: "power1.inOut",
-            yoyo: true,
-            repeat: -1,
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: "power3.out",
+            stagger: 0.12,
             scrollTrigger: {
               trigger: firstQuestionRef.current,
-              start: "top 80%",
-              end: "bottom 20%",
+              start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          });
+          }
+        );
+        
+        // Track the ScrollTrigger for cleanup
+        if (textTween.scrollTrigger) {
+          createdTriggers.push(textTween.scrollTrigger);
+        }
+
+        // Add a subtle pulse animation to the "entrepreneur" word (triggered on scroll, not infinite)
+        const entrepreneurSpan = firstQuestionRef.current.querySelector(".text-orange-500");
+        if (entrepreneurSpan) {
+          const pulseTween = gsap.fromTo(
+            entrepreneurSpan,
+            { scale: 1, textShadow: "0 0 0px rgba(249, 115, 22, 0)" },
+            {
+              scale: 1.08,
+              textShadow: "0 0 20px rgba(249, 115, 22, 0.5)",
+              duration: 0.6,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: firstQuestionRef.current,
+                start: "top 70%",
+                end: "bottom 30%",
+                scrub: 1,
+              },
+            }
+          );
+          
+          // Track for cleanup
+          if (pulseTween.scrollTrigger) {
+            createdTriggers.push(pulseTween.scrollTrigger);
+          }
         }
       }
 
       // Pinned parallax: ENTREPRENEUR ENTREPRENEUR
       if (entrepreneurBandRef.current && entrepreneurTrackRef.current) {
-        gsap.fromTo(
+        const entrepreneurTween = gsap.fromTo(
           entrepreneurTrackRef.current,
           // Left -> right as you scroll down
           { xPercent: -10 },
@@ -196,12 +213,15 @@ export default function LandingPage() {
             },
           }
         );
+        if (entrepreneurTween.scrollTrigger) {
+          createdTriggers.push(entrepreneurTween.scrollTrigger);
+        }
       }
 
       // Animate sections on scroll (stronger entrance).
       const flowSections = gsap.utils.toArray<HTMLElement>(".flow-animate");
       flowSections.forEach((section) => {
-        gsap.from(section, {
+        const sectionTween = gsap.from(section, {
           y: 60,
           opacity: 0,
           duration: 0.9,
@@ -212,13 +232,16 @@ export default function LandingPage() {
             toggleActions: "play none none reverse",
           },
         });
+        if (sectionTween.scrollTrigger) {
+          createdTriggers.push(sectionTween.scrollTrigger);
+        }
       });
 
       // Depth orbs (orange only).
       const orbs = gsap.utils.toArray<HTMLElement>(".depth-orb");
       orbs.forEach((orb, i) => {
         const speed = 0.25 + i * 0.12;
-        gsap.to(orb, {
+        const orbTween = gsap.to(orb, {
           y: () => -window.innerHeight * speed,
           ease: "none",
           scrollTrigger: {
@@ -228,6 +251,9 @@ export default function LandingPage() {
             scrub: 1,
           },
         });
+        if (orbTween.scrollTrigger) {
+          createdTriggers.push(orbTween.scrollTrigger);
+        }
       });
 
       return () => {
