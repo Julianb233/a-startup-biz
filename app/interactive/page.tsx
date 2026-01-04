@@ -17,6 +17,7 @@ export default function InteractivePage() {
   const logoSectionRef = useRef<HTMLDivElement>(null)
   const questionSectionRef = useRef<HTMLDivElement>(null)
   const torySectionRef = useRef<HTMLDivElement>(null)
+  const statsSectionRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
 
   useLayoutEffect(() => {
@@ -32,7 +33,116 @@ export default function InteractivePage() {
       const isMobile = window.innerWidth < 768
 
       // ============================================
-      // 1. LOGO ENTRANCE - Smooth scale with bounce
+      // 0. BACKGROUND GLOW PULSING - Throughout entire page
+      // ============================================
+      const glowBg = document.querySelector(".glow-bg")
+      const glowBg2 = document.querySelector(".glow-bg-2")
+
+      if (glowBg) {
+        gsap.to(glowBg, {
+          opacity: 0.7,
+          scale: 1.1,
+          duration: 4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+      }
+
+      if (glowBg2) {
+        gsap.to(glowBg2, {
+          opacity: 0.5,
+          duration: 3,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: 1,
+        })
+      }
+
+      // Animate glow spots
+      const glowSpot1 = document.querySelector(".glow-spot-1")
+      const glowSpot2 = document.querySelector(".glow-spot-2")
+
+      if (glowSpot1) {
+        gsap.to(glowSpot1, {
+          x: 100,
+          y: 50,
+          scale: 1.2,
+          opacity: 0.8,
+          duration: 8,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+      }
+
+      if (glowSpot2) {
+        gsap.to(glowSpot2, {
+          x: -80,
+          y: -40,
+          scale: 1.3,
+          opacity: 0.9,
+          duration: 7,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: 2,
+        })
+      }
+
+      // ============================================
+      // 0.5. AMBIENT ORBS - Large background orbs that pulse throughout
+      // ============================================
+      gsap.utils.toArray<HTMLElement>(".ambient-orb").forEach((orb, i) => {
+        // Slow pulsing
+        gsap.to(orb, {
+          scale: 1.3 + (i * 0.1),
+          opacity: 0.2 + (i * 0.03),
+          duration: 6 + (i * 1.5),
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+
+        // Slow floating movement
+        gsap.to(orb, {
+          x: `+=${50 + i * 30}`,
+          y: `+=${40 + i * 20}`,
+          duration: 10 + (i * 2),
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+      })
+
+      // ============================================
+      // 1. ANIMATED FLOATING ORBS - Pulsing and moving (Logo section)
+      // ============================================
+      gsap.utils.toArray<HTMLElement>(".floating-orb").forEach((orb, i) => {
+        // Pulsing animation
+        gsap.to(orb, {
+          scale: 1.2 + (i * 0.1),
+          opacity: 0.2 + (i * 0.05),
+          duration: 3 + (i * 0.5),
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+
+        // Floating movement
+        gsap.to(orb, {
+          x: `+=${30 + i * 20}`,
+          y: `+=${20 + i * 15}`,
+          duration: 5 + i,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        })
+      })
+
+      // ============================================
+      // 2. LOGO ENTRANCE - Smooth scale with bounce
       // ============================================
       const logo = logoSectionRef.current?.querySelector(".hero-logo")
       if (logo) {
@@ -50,15 +160,13 @@ export default function InteractivePage() {
       }
 
       // ============================================
-      // 2. LETTER-BY-LETTER SCROLL REVEAL
-      // Pinned section - scroll to reveal each letter
+      // 3. LETTER-BY-LETTER SCROLL REVEAL
       // ============================================
       const questionSection = questionSectionRef.current
       if (questionSection) {
         const chars = questionSection.querySelectorAll(".char")
 
         if (chars.length > 0) {
-          // Set initial state - all chars hidden with staggered positions
           gsap.set(chars, {
             opacity: 0,
             y: 40,
@@ -66,20 +174,18 @@ export default function InteractivePage() {
             rotationX: -45
           })
 
-          // Create timeline - longer scroll distance for smoother reveal
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: questionSection,
               start: "top top",
-              end: "+=150%", // Longer scroll distance = slower reveal
-              scrub: 1, // Smoother scrub
+              end: "+=150%",
+              scrub: 1,
               pin: true,
               pinSpacing: true,
-              anticipatePin: 1, // Smoother pin transition
+              anticipatePin: 1,
             }
           })
 
-          // Animate each character with refined timing
           const totalChars = chars.length
           chars.forEach((char, i) => {
             const isEntrepreneur = i >= 11 && i <= 22
@@ -91,9 +197,8 @@ export default function InteractivePage() {
               rotationX: 0,
               duration: 1,
               ease: "power3.out",
-            }, i * (1 / totalChars)) // Evenly distributed timing
+            }, i * (1 / totalChars))
 
-            // Add glow pulse for ENTREPRENEUR letters
             if (isEntrepreneur) {
               tl.to(char, {
                 textShadow: "0 0 60px rgba(255,106,26,0.8), 0 0 120px rgba(255,106,26,0.4)",
@@ -106,7 +211,7 @@ export default function InteractivePage() {
       }
 
       // ============================================
-      // 3. TORY SECTION - Cinematic entrance
+      // 4. TORY SECTION - Cinematic entrance
       // ============================================
       const torySection = torySectionRef.current
       if (torySection) {
@@ -114,7 +219,6 @@ export default function InteractivePage() {
         const toryTitle = torySection.querySelector(".tory-title")
         const torySubtitle = torySection.querySelector(".tory-subtitle")
 
-        // Set initial states
         if (toryTitle) gsap.set(toryTitle, { y: 100, opacity: 0 })
         if (torySubtitle) gsap.set(torySubtitle, { y: 60, opacity: 0 })
         if (toryImage) gsap.set(toryImage, { scale: 0.7, opacity: 0, y: 80 })
@@ -124,44 +228,52 @@ export default function InteractivePage() {
             trigger: torySection,
             start: "top 75%",
             end: "top 25%",
-            scrub: 0.8, // Scrub-linked for smooth scroll animation
+            scrub: 0.8,
           }
         })
 
-        // Staggered reveal
         if (toryTitle) {
-          toryTl.to(toryTitle, {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power4.out"
-          }, 0)
+          toryTl.to(toryTitle, { y: 0, opacity: 1, duration: 1, ease: "power4.out" }, 0)
         }
-
         if (torySubtitle) {
-          toryTl.to(torySubtitle, {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out"
-          }, 0.2)
+          toryTl.to(torySubtitle, { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, 0.2)
         }
-
         if (toryImage) {
-          toryTl.to(toryImage, {
-            scale: 1,
-            opacity: 1,
-            y: 0,
-            duration: 1.5,
-            ease: "power3.out"
-          }, 0.3)
+          toryTl.to(toryImage, { scale: 1, opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }, 0.3)
         }
       }
 
       // ============================================
-      // 4. OTHER SECTIONS - Smooth fade up
+      // 5. STATS IMAGES - GSAP animated entrance
       // ============================================
-      gsap.utils.toArray<HTMLElement>(".flow-animate").forEach((section, index) => {
+      const statsSection = statsSectionRef.current
+      if (statsSection) {
+        const statImages = statsSection.querySelectorAll(".stat-image")
+
+        statImages.forEach((img, i) => {
+          gsap.fromTo(img,
+            { scale: 0.8, opacity: 0, y: 60 },
+            {
+              scale: 1,
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: img,
+                start: "top 85%",
+                toggleActions: "play none none none"
+              },
+              delay: i * 0.2
+            }
+          )
+        })
+      }
+
+      // ============================================
+      // 6. OTHER SECTIONS - Smooth fade up
+      // ============================================
+      gsap.utils.toArray<HTMLElement>(".flow-animate").forEach((section) => {
         gsap.fromTo(section,
           { y: 80, opacity: 0 },
           {
@@ -173,14 +285,14 @@ export default function InteractivePage() {
               trigger: section,
               start: "top 85%",
               end: "top 50%",
-              scrub: 0.5, // Smooth scroll-linked animation
+              scrub: 0.5,
             }
           }
         )
       })
 
       // ============================================
-      // 5. PARALLAX ORBS - Subtle depth effect
+      // 7. PARALLAX ORBS - Depth effect
       // ============================================
       if (!isMobile) {
         gsap.utils.toArray<HTMLElement>(".depth-orb").forEach((orb, i) => {
@@ -192,7 +304,7 @@ export default function InteractivePage() {
               trigger: containerRef.current,
               start: "top top",
               end: "bottom bottom",
-              scrub: 2 // Very smooth parallax
+              scrub: 2
             }
           })
         })
@@ -204,37 +316,67 @@ export default function InteractivePage() {
 
   return (
     <div ref={containerRef} className="relative min-h-screen overflow-x-hidden bg-black">
-      {/* Subtle Background Glow - not distracting */}
+      {/* PERSISTENT ORANGE GLOW BACKGROUND - Throughout entire page */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-black" />
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-950/20 via-black to-black" />
+        {/* Animated radial gradient overlay that pulses */}
+        <div
+          className="glow-bg absolute inset-0"
+          style={{ background: "radial-gradient(ellipse at center, rgba(194,65,12,0.25) 0%, rgba(0,0,0,0) 70%)" }}
+        />
+        <div className="glow-bg-2 absolute inset-0 bg-gradient-to-b from-orange-950/40 via-orange-950/10 to-black" />
+        {/* Additional animated glow spots */}
+        <div
+          className="glow-spot-1 absolute w-[60vw] h-[60vh] top-[20%] left-[10%]"
+          style={{ background: "radial-gradient(ellipse at center, rgba(234,88,12,0.15) 0%, transparent 70%)" }}
+        />
+        <div
+          className="glow-spot-2 absolute w-[50vw] h-[50vh] bottom-[30%] right-[5%]"
+          style={{ background: "radial-gradient(ellipse at center, rgba(251,146,60,0.1) 0%, transparent 70%)" }}
+        />
       </div>
 
-      {/* Floating Depth Orbs - subtle glow */}
+      {/* ANIMATED FLOATING ORBS - Visible throughout the entire page */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="depth-orb absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] top-[10%] left-[-10%] rounded-full bg-orange-500/5 blur-[100px]" />
-        <div className="depth-orb absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] top-[50%] right-[-5%] rounded-full bg-orange-400/5 blur-[80px]" />
-        <div className="depth-orb absolute w-[350px] h-[350px] md:w-[500px] md:h-[500px] bottom-[20%] left-[10%] rounded-full bg-orange-500/5 blur-[100px]" />
+        {/* Large ambient orbs */}
+        <div className="ambient-orb absolute w-[500px] h-[500px] md:w-[800px] md:h-[800px] top-[5%] left-[-15%] rounded-full bg-orange-500/15 blur-[120px]" />
+        <div className="ambient-orb absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] top-[30%] right-[-10%] rounded-full bg-orange-400/12 blur-[100px]" />
+        <div className="ambient-orb absolute w-[450px] h-[450px] md:w-[700px] md:h-[700px] bottom-[10%] left-[10%] rounded-full bg-orange-600/10 blur-[110px]" />
+        <div className="ambient-orb absolute w-[350px] h-[350px] md:w-[550px] md:h-[550px] top-[60%] right-[5%] rounded-full bg-orange-500/8 blur-[90px]" />
+
+        {/* Parallax depth orbs */}
+        <div className="depth-orb absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] top-[10%] left-[-10%] rounded-full bg-orange-500/10 blur-[100px]" />
+        <div className="depth-orb absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] top-[50%] right-[-5%] rounded-full bg-orange-400/10 blur-[80px]" />
+        <div className="depth-orb absolute w-[350px] h-[350px] md:w-[500px] md:h-[500px] bottom-[20%] left-[10%] rounded-full bg-orange-500/10 blur-[100px]" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col">
 
-        {/* SECTION 1: LOGO ONLY - 20-30% bigger */}
-        <section ref={logoSectionRef} className="min-h-screen flex flex-col items-center justify-center px-4">
-          <div className="hero-logo">
+        {/* SECTION 1: LOGO WITH ANIMATED ORBS */}
+        <section ref={logoSectionRef} className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+          {/* Animated floating orbs behind the logo */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="floating-orb absolute w-[300px] h-[300px] md:w-[500px] md:h-[500px] top-[20%] left-[10%] rounded-full bg-orange-500/10 blur-[80px]" />
+            <div className="floating-orb absolute w-[250px] h-[250px] md:w-[400px] md:h-[400px] top-[30%] right-[15%] rounded-full bg-orange-400/15 blur-[60px]" />
+            <div className="floating-orb absolute w-[200px] h-[200px] md:w-[350px] md:h-[350px] bottom-[25%] left-[25%] rounded-full bg-orange-600/10 blur-[70px]" />
+            <div className="floating-orb absolute w-[180px] h-[180px] md:w-[300px] md:h-[300px] top-[50%] right-[20%] rounded-full bg-orange-500/8 blur-[90px]" />
+          </div>
+
+          {/* BIGGER Logo */}
+          <div className="hero-logo relative z-10">
             <Image
               src="/images/a-startup-biz-logo.webp"
               alt="A Startup Biz"
-              width={1200}
-              height={600}
-              className="w-auto h-48 sm:h-64 md:h-80 lg:h-[400px] xl:h-[500px] mx-auto"
+              width={1400}
+              height={700}
+              className="w-auto h-56 sm:h-72 md:h-96 lg:h-[450px] xl:h-[550px] mx-auto"
               priority
             />
           </div>
 
           {/* Scroll indicator */}
-          <div className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40">
+          <div className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 z-10">
             <span className="text-xs md:text-sm tracking-widest uppercase">Scroll</span>
             <div className="w-5 h-8 md:w-6 md:h-10 rounded-full border-2 border-white/20 flex items-start justify-center p-2">
               <div className="w-1 h-2 bg-white/40 rounded-full animate-bounce" />
@@ -246,9 +388,8 @@ export default function InteractivePage() {
         <section ref={questionSectionRef} className="min-h-screen flex items-center justify-center px-4">
           <h1 className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight">
             {QUESTION_TEXT.split("").map((char, i) => {
-              // Determine styling based on position in text
-              const isEntrepreneur = i >= 11 && i <= 22 // "ENTREPRENEUR"
-              const isWantrepreneur = i >= 29 && i <= 42 // "WANTREPRENEUR?"
+              const isEntrepreneur = i >= 11 && i <= 22
+              const isWantrepreneur = i >= 29 && i <= 42
 
               let colorClass = "text-white"
               if (isEntrepreneur) colorClass = "text-orange-500"
@@ -270,36 +411,36 @@ export default function InteractivePage() {
           </h1>
         </section>
 
-        {/* SECTION 3: TORY PROFILE - GSAP animated entrance */}
+        {/* SECTION 3: TORY PROFILE - BIGGER HEADING */}
         <section ref={torySectionRef} className="min-h-screen flex items-center justify-center py-16 md:py-24">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="text-center mb-8 md:mb-12">
-              <h2 className="tory-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center mb-10 md:mb-16">
+              <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-4">
                 Meet <span className="text-orange-500">Tory R. Zweigle</span>
               </h2>
-              <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold">Serial Entrepreneur & Business Mentor</p>
+              <p className="tory-subtitle text-2xl sm:text-3xl md:text-4xl text-gray-400 font-semibold">Serial Entrepreneur & Business Mentor</p>
             </div>
 
-            {/* Tory's Image */}
-            <div className="tory-image relative mx-auto w-[280px] h-[373px] sm:w-[350px] sm:h-[467px] md:w-[400px] md:h-[533px] rounded-2xl md:rounded-3xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_60px_rgba(255,106,26,0.2)]">
+            {/* BIGGER Tory's Image */}
+            <div className="tory-image relative mx-auto w-[320px] h-[427px] sm:w-[400px] sm:h-[533px] md:w-[480px] md:h-[640px] lg:w-[550px] lg:h-[733px] rounded-2xl md:rounded-3xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
               <Image
                 src="/images/tory-profile.jpg"
                 alt="Tory R. Zweigle"
                 fill
                 className="object-cover"
-                sizes="(max-width: 640px) 280px, (max-width: 768px) 350px, 400px"
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 400px, (max-width: 1024px) 480px, 550px"
               />
             </div>
           </div>
         </section>
 
-        {/* WISTIA VIDEO SECTION */}
+        {/* WISTIA VIDEO SECTION - Same size heading as Tory section */}
         <section className="py-16 md:py-24">
-          <div className="flow-animate max-w-lg mx-auto px-4">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-6 md:mb-8">
+          <div className="flow-animate max-w-xl mx-auto px-4">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white text-center mb-4">
               Watch This
             </h2>
-            <p className="text-center text-white/60 mb-6">See how Tory helps entrepreneurs succeed.</p>
+            <p className="text-center text-xl md:text-2xl text-white/60 mb-8">See how Tory helps entrepreneurs succeed.</p>
             <div className="rounded-2xl overflow-hidden shadow-2xl border border-orange-500/20">
               <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
                 <iframe
@@ -309,35 +450,71 @@ export default function InteractivePage() {
                   allowFullScreen
                   className="absolute inset-0 w-full h-full"
                   style={{ border: "none" }}
+                  loading="lazy"
                 />
               </div>
             </div>
           </div>
         </section>
 
-        {/* BUSINESS STATISTICS */}
-        <section className="py-16 md:py-24">
-          <div className="flow-animate max-w-5xl mx-auto px-4">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center mb-10 md:mb-16">
+        {/* BUSINESS STATISTICS WITH IMAGES */}
+        <section ref={statsSectionRef} className="py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4">
+            <h2 className="flow-animate text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-12 md:mb-20">
               The <span className="text-orange-500">Startup Boom</span> Is Real
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              <div className="bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl p-6 md:p-8 text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-orange-500 mb-2">4.7M</div>
-                <div className="text-base md:text-lg text-white/80">New businesses started every year</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+              {/* Stat 1 - 4.7M Image */}
+              <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
+                <div className="relative w-full h-48 md:h-56">
+                  <Image
+                    src="/images/stat-4-7-million.jpg"
+                    alt="4.7 Million new businesses"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6 text-center">
+                  <div className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 mb-2">4.7M</div>
+                  <div className="text-base md:text-lg text-white/80">New businesses started every year</div>
+                </div>
               </div>
-              <div className="bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl p-6 md:p-8 text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-orange-500 mb-2">+57%</div>
-                <div className="text-base md:text-lg text-white/80">Growth since 2019</div>
+
+              {/* Stat 2 - Growth Image */}
+              <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
+                <div className="relative w-full h-48 md:h-56">
+                  <Image
+                    src="/images/stat-business-growth.jpg"
+                    alt="Business growth statistics"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6 text-center">
+                  <div className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 mb-2">+57%</div>
+                  <div className="text-base md:text-lg text-white/80">Growth since 2019</div>
+                </div>
               </div>
-              <div className="bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl p-6 md:p-8 text-center">
-                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-orange-500 mb-2">90%</div>
-                <div className="text-base md:text-lg text-white/80">Fail within first 5 years</div>
+
+              {/* Stat 3 - Q4 Acceleration Image */}
+              <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
+                <div className="relative w-full h-48 md:h-56">
+                  <Image
+                    src="/images/stat-q4-acceleration.webp"
+                    alt="90% fail rate"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6 text-center">
+                  <div className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 mb-2">90%</div>
+                  <div className="text-base md:text-lg text-white/80">Fail within first 5 years</div>
+                </div>
               </div>
             </div>
 
-            <p className="text-center text-lg md:text-xl text-white/70 mt-8 md:mt-12 max-w-2xl mx-auto">
+            <p className="flow-animate text-center text-lg md:text-xl text-white/70 mt-10 md:mt-16 max-w-3xl mx-auto">
               Why become a statistic when solid advice from someone seasoned can help you avoid the biggest potholes?
             </p>
           </div>
@@ -346,7 +523,7 @@ export default function InteractivePage() {
         {/* WHAT WE KNOW SECTION */}
         <section className="py-16 md:py-24">
           <div className="flow-animate max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center mb-8 md:mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-8 md:mb-12">
               A Lifetime Devoted to <span className="text-orange-500">Business</span>
             </h2>
             <div className="space-y-6 text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
@@ -384,7 +561,7 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* TRANSFORMATION - Subtle, readable text on dark background */}
+        {/* TRANSFORMATION */}
         <section className="py-20 md:py-32">
           <div className="flow-animate text-center space-y-4 md:space-y-6 px-4">
             <p className="text-xl sm:text-2xl md:text-4xl font-bold text-white">
@@ -431,18 +608,18 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* FOOTER */}
-        <footer className="py-12 md:py-16 text-center">
+        {/* FOOTER WITH LOGO */}
+        <footer className="py-12 md:py-16 text-center border-t border-orange-500/20">
           <div className="flow-animate px-4">
             <Image
               src="/images/a-startup-biz-logo.webp"
               alt="A Startup Biz"
-              width={200}
-              height={100}
-              className="w-auto h-10 md:h-12 lg:h-16 mx-auto mb-4 md:mb-6"
+              width={300}
+              height={150}
+              className="w-auto h-16 md:h-20 lg:h-24 mx-auto mb-6 md:mb-8"
             />
-            <p className="text-white/40 text-xs md:text-sm">© {new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
-            <p className="text-white/30 text-xs mt-2">Stop dreaming about success. Start building it.</p>
+            <p className="text-white/40 text-sm md:text-base">© {new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            <p className="text-white/30 text-xs md:text-sm mt-2">Stop dreaming about success. Start building it.</p>
           </div>
         </footer>
       </div>
