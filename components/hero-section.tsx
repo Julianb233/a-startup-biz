@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, CheckCircle } from 'lucide-react'
 
 export default function HeroSection() {
@@ -28,6 +29,20 @@ export default function HeroSection() {
     },
   }
 
+  const imageVariants = {
+    hidden: { opacity: 0, scale: 0.9, x: 50 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      x: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+        delay: 0.3,
+      },
+    },
+  }
+
   const highlights = [
     "46+ years of lived experience",
     "100+ businesses started",
@@ -50,119 +65,174 @@ export default function HeroSection() {
         animate="visible"
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28"
       >
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Main headline */}
-          <motion.h1
-            variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white leading-tight mb-6"
-            style={{ fontFamily: 'Montserrat, sans-serif' }}
-          >
-            Get{' '}
-            <span className="text-[#ff6a1a] relative inline-block">
-              46+ Years
-              <motion.span
-                className="absolute -bottom-2 left-0 w-full h-3 bg-[#ff6a1a] opacity-20"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-                style={{ transformOrigin: 'left' }}
-              />
-            </span>{' '}
-            of Lived Experience
-            <br className="hidden sm:block" />
-            <span className="text-gray-700 dark:text-gray-300">Focused on Your Business</span>
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p
-            variants={itemVariants}
-            className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4 font-medium"
-            style={{ fontFamily: 'Montserrat, sans-serif' }}
-          >
-            Are You an{' '}
-            <span className="font-bold text-black dark:text-white">Entrepreneur</span>{' '}
-            or a{' '}
-            <span className="font-bold text-[#ff6a1a]">Wantrepreneur?</span>
-          </motion.p>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto"
-            style={{ fontFamily: 'Montserrat, sans-serif' }}
-          >
-            Real-world strategy from someone who's started 100+ businesses—not textbook theory from consultants who've never built anything.
-          </motion.p>
-
-          {/* Highlights */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left: Tory's Image First */}
           <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-10"
+            variants={imageVariants}
+            className="relative flex items-center justify-center order-1 lg:order-1"
           >
-            {highlights.map((highlight, index) => (
-              <div key={index} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <CheckCircle className="w-5 h-5 text-[#ff6a1a] flex-shrink-0" />
-                <span className="text-sm sm:text-base font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  {highlight}
-                </span>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* CTAs */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            {/* Primary CTA - Book Call */}
-            <Link href="/book-call">
+            <div className="relative w-full max-w-md mx-auto">
+              {/* Big Logo above image */}
               <motion.div
-                whileHover={{ scale: 1.05, boxShadow: '0 20px 40px -15px rgba(255, 106, 26, 0.4)' }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative w-full sm:w-auto px-8 py-4 bg-[#ff6a1a] text-white font-bold text-lg rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center gap-3"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
+                variants={itemVariants}
+                className="mb-6 flex justify-center"
               >
-                <Calendar className="w-5 h-5" />
-                <span>Apply to Qualify</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <Image
+                  src="/logo.webp"
+                  alt="A Startup Biz Logo"
+                  width={280}
+                  height={100}
+                  className="h-auto w-auto max-w-[280px]"
+                  priority
+                />
               </motion.div>
-            </Link>
 
-            {/* Secondary CTA */}
-            <Link href="#about">
+              {/* Decorative background elements */}
+              <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-[#ff6a1a] rounded-3xl -z-10 opacity-80" />
+              <div className="absolute -top-6 -left-6 w-32 h-32 border-4 border-[#c0c0c0] dark:border-gray-600 rounded-3xl -z-10" />
+
+              {/* Main image container */}
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/tory-profile.jpg"
+                  alt="Tory - Business Strategy Expert with 46+ years of experience"
+                  fill
+                  className="object-cover parallax-image"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 400px"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              </div>
+
+              {/* Floating stats badge */}
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold text-lg rounded-xl hover:border-[#ff6a1a] hover:text-[#ff6a1a] transition-all duration-300"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 border border-gray-100 dark:border-gray-700"
               >
-                Meet Tory
+                <div className="text-2xl font-bold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>100+</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Businesses Built</div>
               </motion.div>
-            </Link>
-          </motion.div>
-
-          {/* Trust indicator */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
-          >
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              The $1,000 investment that could save you everything
-            </p>
-            <div className="flex flex-wrap justify-center gap-8 text-gray-600 dark:text-gray-400">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>$1,000</div>
-                <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>30-Min Clarity Call</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>100+</div>
-                <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Businesses Started</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>46+</div>
-                <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Years Experience</div>
-              </div>
             </div>
           </motion.div>
+
+          {/* Right: Text content */}
+          <div className="text-center lg:text-left max-w-2xl mx-auto lg:mx-0 order-2 lg:order-2">
+            {/* Main headline */}
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white leading-tight mb-6"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Get{' '}
+              <span className="text-[#ff6a1a] relative inline-block">
+                46+ Years
+                <motion.span
+                  className="absolute -bottom-2 left-0 w-full h-3 bg-[#ff6a1a] opacity-20"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+                  style={{ transformOrigin: 'left' }}
+                />
+              </span>{' '}
+              of Lived Experience
+              <br className="hidden sm:block" />
+              <span className="text-gray-700 dark:text-gray-300">Focused on Your Business</span>
+            </motion.h1>
+
+            {/* Subheadline */}
+            <motion.p
+              variants={itemVariants}
+              className="text-xl sm:text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4 font-medium"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Are You an{' '}
+              <span className="font-bold text-black dark:text-white">Entrepreneur</span>{' '}
+              or a{' '}
+              <span className="font-bold text-[#ff6a1a]">Wantrepreneur?</span>
+            </motion.p>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto lg:mx-0"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Real-world strategy from someone who's started 100+ businesses—not textbook theory from consultants who've never built anything.
+            </motion.p>
+
+            {/* Highlights */}
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 mb-10"
+            >
+              {highlights.map((highlight, index) => (
+                <div key={index} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <CheckCircle className="w-5 h-5 text-[#ff6a1a] flex-shrink-0" />
+                  <span className="text-sm sm:text-base font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    {highlight}
+                  </span>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* CTAs */}
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
+            >
+              {/* Primary CTA - Book Call */}
+              <Link href="/book-call">
+                <motion.div
+                  whileHover={{ scale: 1.05, boxShadow: '0 20px 40px -15px rgba(255, 106, 26, 0.4)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative w-full sm:w-auto px-8 py-4 bg-[#ff6a1a] text-white font-bold text-lg rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center gap-3"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  <Calendar className="w-5 h-5" />
+                  <span>Apply to Qualify</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.div>
+              </Link>
+
+              {/* Secondary CTA */}
+              <Link href="#about">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold text-lg rounded-xl hover:border-[#ff6a1a] hover:text-[#ff6a1a] transition-all duration-300"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Meet Tory
+                </motion.div>
+              </Link>
+            </motion.div>
+
+            {/* Trust indicator */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+            >
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                The $1,000 investment that could save you everything
+              </p>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-8 text-gray-600 dark:text-gray-400">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>$1,000</div>
+                  <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>30-Min Clarity Call</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>100+</div>
+                  <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Businesses Started</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>46+</div>
+                  <div className="text-xs uppercase tracking-wider" style={{ fontFamily: 'Montserrat, sans-serif' }}>Years Experience</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
 
         {/* Scroll indicator */}
