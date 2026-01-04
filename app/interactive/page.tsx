@@ -6,6 +6,9 @@ import Link from "next/link"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
+// The full question text for letter-by-letter reveal
+const QUESTION_TEXT = "Are you an ENTREPRENEUR or a WANTREPRENEUR?"
+
 // ============================================
 // MAIN COMPONENT
 // ============================================
@@ -13,6 +16,7 @@ export default function InteractivePage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const logoSectionRef = useRef<HTMLDivElement>(null)
   const questionSectionRef = useRef<HTMLDivElement>(null)
+  const torySectionRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
 
   useLayoutEffect(() => {
@@ -36,27 +40,75 @@ export default function InteractivePage() {
         )
       }
 
-      // Question section - horizontal slide animation on scroll
+      // Letter-by-letter reveal on scroll
       const questionSection = questionSectionRef.current
       if (questionSection) {
-        const questionText = questionSection.querySelector(".question-text")
+        const chars = questionSection.querySelectorAll(".char")
 
-        if (questionText) {
-          // Set initial state
-          gsap.set(questionText, { x: "-100%", opacity: 0 })
+        if (chars.length > 0) {
+          // Set initial state - all chars hidden
+          gsap.set(chars, { opacity: 0, y: 20 })
 
-          // Animate from left to right as you scroll into view
-          gsap.to(questionText, {
-            x: "0%",
-            opacity: 1,
-            ease: "power2.out",
+          // Create timeline for letter-by-letter reveal
+          const tl = gsap.timeline({
             scrollTrigger: {
               trigger: questionSection,
-              start: "top 80%",
-              end: "top 20%",
-              scrub: 1,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.5,
+              pin: true,
+              pinSpacing: true,
             }
           })
+
+          // Animate each character sequentially
+          chars.forEach((char, i) => {
+            tl.to(char, {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+              ease: "power2.out",
+            }, i * 0.03) // Stagger each letter
+          })
+        }
+      }
+
+      // Tory section GSAP animation - dramatic entrance
+      const torySection = torySectionRef.current
+      if (torySection) {
+        const toryImage = torySection.querySelector(".tory-image")
+        const toryTitle = torySection.querySelector(".tory-title")
+        const torySubtitle = torySection.querySelector(".tory-subtitle")
+
+        const toryTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: torySection,
+            start: "top 70%",
+            toggleActions: "play none none none"
+          }
+        })
+
+        if (toryTitle) {
+          toryTl.fromTo(toryTitle,
+            { y: 80, opacity: 0, scale: 0.9 },
+            { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" }
+          )
+        }
+
+        if (torySubtitle) {
+          toryTl.fromTo(torySubtitle,
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
+            "-=0.5"
+          )
+        }
+
+        if (toryImage) {
+          toryTl.fromTo(toryImage,
+            { scale: 0.8, opacity: 0, rotateY: -15 },
+            { scale: 1, opacity: 1, rotateY: 0, duration: 1.2, ease: "power3.out" },
+            "-=0.6"
+          )
         }
       }
 
@@ -117,15 +169,15 @@ export default function InteractivePage() {
       {/* Content */}
       <div className="relative z-10 flex flex-col">
 
-        {/* SECTION 1: LOGO ONLY */}
+        {/* SECTION 1: LOGO ONLY - 20-30% bigger */}
         <section ref={logoSectionRef} className="min-h-screen flex flex-col items-center justify-center px-4">
           <div className="hero-logo">
             <Image
               src="/images/a-startup-biz-logo.webp"
               alt="A Startup Biz"
-              width={800}
-              height={400}
-              className="w-auto h-32 sm:h-48 md:h-64 lg:h-80 xl:h-96 mx-auto"
+              width={1200}
+              height={600}
+              className="w-auto h-48 sm:h-64 md:h-80 lg:h-[400px] xl:h-[500px] mx-auto"
               priority
             />
           </div>
@@ -139,36 +191,46 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* SECTION 2: THE QUESTION - Full Screen, Slides from Left */}
-        <section ref={questionSectionRef} className="min-h-screen flex items-center justify-center overflow-hidden px-4">
-          <h1 className="question-text text-center">
-            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4">
-              Are you an
-            </span>
-            <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-orange-500 mb-4" style={{ textShadow: "0 0 60px rgba(255,106,26,0.5)" }}>
-              ENTREPRENEUR
-            </span>
-            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4">
-              or a
-            </span>
-            <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-500">
-              WANTREPRENEUR?
-            </span>
+        {/* SECTION 2: THE QUESTION - Letter by letter scroll reveal */}
+        <section ref={questionSectionRef} className="min-h-screen flex items-center justify-center px-4">
+          <h1 className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight">
+            {QUESTION_TEXT.split("").map((char, i) => {
+              // Determine styling based on position in text
+              const isEntrepreneur = i >= 11 && i <= 22 // "ENTREPRENEUR"
+              const isWantrepreneur = i >= 29 && i <= 42 // "WANTREPRENEUR?"
+
+              let colorClass = "text-white"
+              if (isEntrepreneur) colorClass = "text-orange-500"
+              if (isWantrepreneur) colorClass = "text-gray-500"
+
+              return (
+                <span
+                  key={i}
+                  className={`char inline-block ${colorClass}`}
+                  style={{
+                    display: char === " " ? "inline" : "inline-block",
+                    textShadow: isEntrepreneur ? "0 0 40px rgba(255,106,26,0.6)" : "none"
+                  }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              )
+            })}
           </h1>
         </section>
 
-        {/* SECTION 3: TORY PROFILE */}
-        <section className="min-h-screen flex items-center justify-center py-16 md:py-24">
-          <div className="flow-animate max-w-4xl mx-auto px-4">
+        {/* SECTION 3: TORY PROFILE - GSAP animated entrance */}
+        <section ref={torySectionRef} className="min-h-screen flex items-center justify-center py-16 md:py-24">
+          <div className="max-w-4xl mx-auto px-4">
             <div className="text-center mb-8 md:mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
+              <h2 className="tory-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2">
                 Meet <span className="text-orange-500">Tory R. Zweigle</span>
               </h2>
-              <p className="text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold">Serial Entrepreneur & Business Mentor</p>
+              <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold">Serial Entrepreneur & Business Mentor</p>
             </div>
 
             {/* Tory's Image */}
-            <div className="relative mx-auto w-[280px] h-[373px] sm:w-[350px] sm:h-[467px] md:w-[400px] md:h-[533px] rounded-2xl md:rounded-3xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_60px_rgba(255,106,26,0.2)]">
+            <div className="tory-image relative mx-auto w-[280px] h-[373px] sm:w-[350px] sm:h-[467px] md:w-[400px] md:h-[533px] rounded-2xl md:rounded-3xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_60px_rgba(255,106,26,0.2)]">
               <Image
                 src="/images/tory-profile.jpg"
                 alt="Tory R. Zweigle"
