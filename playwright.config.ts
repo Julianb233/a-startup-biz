@@ -40,7 +40,7 @@ export default defineConfig({
     {
       name: 'mobile-preview',
       use: {
-        ...devices['iPhone 14'],
+        ...devices['Pixel 5'],
         baseURL: 'https://a-startup-gpqvcpygs-ai-acrobatics.vercel.app',
       },
     },
