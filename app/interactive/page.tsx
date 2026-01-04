@@ -6,6 +6,37 @@ import Link from "next/link"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
+const features = [
+  {
+    title: "Vision",
+    description: "Entrepreneurs see opportunities where others see obstacles. They envision a future that doesn't yet exist.",
+    icon: "🎯",
+  },
+  {
+    title: "Action",
+    description: "While wantrepreneurs wait for the 'perfect moment,' entrepreneurs take imperfect action today.",
+    icon: "🚀",
+  },
+  {
+    title: "Resilience",
+    description: "Failure is feedback. Real entrepreneurs embrace setbacks as stepping stones to success.",
+    icon: "💪",
+  },
+  {
+    title: "Growth",
+    description: "Continuous learning and adaptation separate those who make it from those who talk about it.",
+    icon: "📈",
+  },
+]
+
+const differences = [
+  { entrepreneur: "Takes action today", wantrepreneur: "Waits for the perfect time" },
+  { entrepreneur: "Learns from failure", wantrepreneur: "Fears failure" },
+  { entrepreneur: "Invests in growth", wantrepreneur: "Makes excuses" },
+  { entrepreneur: "Builds a network", wantrepreneur: "Works alone" },
+  { entrepreneur: "Creates value first", wantrepreneur: "Chases money first" },
+]
+
 export default function InteractivePage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
@@ -23,158 +54,424 @@ export default function InteractivePage() {
     if (prefersReducedMotion) return
 
     const ctx = gsap.context(() => {
-      // Detect mobile for optimized animations
       const isMobile = window.innerWidth < 768
 
-      // Animate sections on scroll
-      const sections = gsap.utils.toArray<HTMLElement>(".reveal-on-scroll")
-
-      sections.forEach((section) => {
-        gsap.fromTo(section,
+      // Hero text reveal animation - character by character
+      const chars = document.querySelectorAll(".char")
+      if (chars.length > 0) {
+        gsap.fromTo(chars,
+          { yPercent: 100, opacity: 0 },
           {
-            y: 50,
-            opacity: 0
-          },
-          {
-            y: 0,
+            yPercent: 0,
             opacity: 1,
-            duration: isMobile ? 0.5 : 0.7,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 85%",
-              toggleActions: "play none none none",
-            },
+            duration: isMobile ? 0.5 : 0.8,
+            stagger: isMobile ? 0.015 : 0.02,
+            ease: "power3.out",
+            delay: 0.5,
           }
         )
-      })
+      }
 
-      // Staggered stat cards
-      const statCards = gsap.utils.toArray<HTMLElement>(".stat-card")
-      if (statCards.length > 0) {
-        gsap.fromTo(statCards,
-          { y: 40, opacity: 0, scale: 0.95 },
+      // Logo entrance
+      const logo = document.querySelector(".hero-logo")
+      if (logo) {
+        gsap.fromTo(logo,
+          { scale: 0, opacity: 0 },
           {
-            y: 0,
-            opacity: 1,
             scale: 1,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "back.out(1.2)",
+            opacity: 1,
+            duration: 1,
+            ease: "back.out(1.7)",
+            delay: 0.2,
+          }
+        )
+      }
+
+      // Parallax hero background (desktop only)
+      if (!isMobile) {
+        gsap.to(".hero-bg", {
+          yPercent: 50,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        })
+      }
+
+      // Feature cards stagger animation
+      gsap.fromTo(".feature-card",
+        { y: 80, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: isMobile ? 0.5 : 0.8,
+          stagger: isMobile ? 0.1 : 0.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".features-section",
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      )
+
+      // Comparison section animations
+      gsap.fromTo(".comparison-row",
+        { x: (index) => (index % 2 === 0 ? -60 : 60), opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: isMobile ? 0.4 : 0.6,
+          stagger: isMobile ? 0.1 : 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".comparison-section",
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+        }
+      )
+
+      // Pinned section with text reveal (desktop only - causes issues on mobile)
+      if (!isMobile) {
+        const pinnedTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".pinned-section",
+            start: "top top",
+            end: "+=200%",
+            pin: true,
+            scrub: 1,
+          },
+        })
+
+        pinnedTl
+          .fromTo(".pinned-text-1", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1 })
+          .to(".pinned-text-1", { opacity: 0, y: -50, duration: 1 }, "+=0.5")
+          .fromTo(".pinned-text-2", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1 })
+          .to(".pinned-text-2", { opacity: 0, y: -50, duration: 1 }, "+=0.5")
+          .fromTo(".pinned-text-3", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 1 })
+          .to(".pinned-text-3", { scale: 1.1, duration: 0.5 }, "+=0.3")
+      } else {
+        // Mobile: simple fade in for pinned texts
+        gsap.fromTo(".pinned-text-mobile",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.2,
             scrollTrigger: {
-              trigger: statCards[0],
-              start: "top 85%",
+              trigger: ".pinned-section-mobile",
+              start: "top 80%",
               toggleActions: "play none none none",
             },
           }
         )
+      }
+
+      // Stats animation
+      gsap.fromTo(".stat-item",
+        { y: 50, opacity: 0, scale: 0.9 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "back.out(1.2)",
+          scrollTrigger: {
+            trigger: ".stats-section",
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      )
+
+      // CTA section animation
+      gsap.fromTo(".cta-section",
+        { scale: 0.95, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".cta-section",
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      )
+
+      // Floating elements parallax (desktop only)
+      if (!isMobile) {
+        gsap.utils.toArray<HTMLElement>(".floating-element").forEach((el, i) => {
+          gsap.to(el, {
+            y: `${(i + 1) * -30}%`,
+            ease: "none",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
+          })
+        })
       }
     }, containerRef)
 
     return () => ctx.revert()
   }, [])
 
+  // Split text into characters for animation
+  const splitText = (text: string, colorClass: string) => {
+    return text.split("").map((char, i) => (
+      <span
+        key={i}
+        className={`char inline-block ${colorClass}`}
+        style={{ display: char === " " ? "inline" : "inline-block" }}
+      >
+        {char === " " ? "\u00A0" : char}
+      </span>
+    ))
+  }
+
   return (
-    <div ref={containerRef} className="min-h-screen w-full bg-black overflow-x-hidden">
-      {/* Section 1: Logo */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="reveal-on-scroll relative w-[35vw] max-w-[250px] min-w-[120px] aspect-[3/1]">
+    <div ref={containerRef} className="bg-black min-h-screen overflow-x-hidden">
+      {/* Floating background elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="floating-element absolute top-[20%] left-[10%] w-32 h-32 md:w-48 md:h-48 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="floating-element absolute top-[40%] right-[15%] w-40 h-40 md:w-64 md:h-64 rounded-full bg-orange-400/5 blur-3xl" />
+        <div className="floating-element absolute top-[60%] left-[20%] w-24 h-24 md:w-32 md:h-32 rounded-full bg-white/5 blur-2xl" />
+        <div className="floating-element absolute top-[80%] right-[25%] w-32 h-32 md:w-48 md:h-48 rounded-full bg-orange-500/10 blur-3xl" />
+      </div>
+
+      {/* Hero Section */}
+      <section className="hero-section relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
+        <div className="hero-bg absolute inset-0 bg-gradient-to-b from-orange-900/20 via-black to-black" />
+
+        {/* Logo */}
+        <div className="hero-logo relative z-10 mb-6 md:mb-8">
           <Image
             src="/images/a-startup-biz-logo.webp"
             alt="A Startup Biz"
-            fill
-            className="object-contain"
+            width={400}
+            height={200}
+            className="w-auto h-16 sm:h-20 md:h-28 lg:h-32"
             priority
           />
         </div>
-      </section>
 
-      {/* Section 2: H1 - The Question */}
-      <section className="min-h-screen flex items-center justify-center px-4 py-16 bg-gradient-to-b from-black to-orange-950/20">
-        <h1 className="reveal-on-scroll text-[clamp(1.5rem,5vw,4rem)] font-black text-center leading-tight max-w-4xl">
+        {/* Main Question */}
+        <h1 className="relative z-10 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-center max-w-5xl leading-tight px-2">
           <span className="text-white">Are you an </span>
-          <span className="text-orange-500">entrepreneur</span>
+          {splitText("entrepreneur", "text-orange-500")}
           <br className="hidden sm:block" />
-          <span className="text-white"> or a </span>
-          <span className="text-white/60">wantrepreneur</span>
+          <span className="text-white sm:hidden"> </span>
+          <span className="text-white">or a </span>
+          {splitText("wantrepreneur", "text-orange-400")}
           <span className="text-white">?</span>
         </h1>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+          <span className="text-white/60 text-xs md:text-sm">Scroll to discover</span>
+          <svg
+            className="w-5 h-5 md:w-6 md:h-6 text-orange-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+            />
+          </svg>
+        </div>
       </section>
 
-      {/* Section 3: H2 - Supporting Text */}
-      <section className="min-h-[50vh] md:min-h-[60vh] flex items-center justify-center px-4 py-12 bg-gradient-to-b from-orange-950/20 to-black">
-        <div className="reveal-on-scroll max-w-3xl text-center">
-          <h2 className="text-[clamp(1.1rem,3vw,2rem)] font-bold text-white mb-4">
-            Clear guidance from <span className="text-orange-500">lived experience</span> — not theory.
-          </h2>
-          <p className="text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
-            46+ years of building businesses from the ground up.
-            Real answers to real problems. No fluff, no filler.
+      {/* Pinned Text Section - Desktop */}
+      <section className="pinned-section relative h-screen hidden md:flex items-center justify-center bg-black">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="pinned-text-1 absolute text-2xl md:text-4xl lg:text-5xl font-bold text-center px-4">
+            <span className="text-white">The difference between </span>
+            <span className="text-orange-500">success</span>
+            <span className="text-white"> and </span>
+            <span className="text-orange-400">dreaming</span>
+            <span className="text-white">...</span>
+          </p>
+          <p className="pinned-text-2 absolute text-2xl md:text-4xl lg:text-5xl font-bold text-center px-4 opacity-0">
+            <span className="text-white">...is </span>
+            <span className="text-orange-500">taking action</span>
+            <span className="text-white"> when others </span>
+            <span className="text-orange-400">hesitate</span>
+          </p>
+          <p className="pinned-text-3 absolute text-3xl md:text-5xl lg:text-6xl font-bold text-center px-4 opacity-0">
+            <span className="text-orange-500">Which one are you?</span>
           </p>
         </div>
       </section>
 
-      {/* Section 4: Tory's Profile Image */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-gradient-to-b from-black via-orange-950/10 to-black">
-        <div className="reveal-on-scroll text-center mb-6">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white mb-2">
-            Meet <span className="text-orange-500">Tory</span>
-          </h2>
-          <p className="text-sm md:text-base text-white/70">Serial Entrepreneur & Business Mentor</p>
-        </div>
-        <div className="reveal-on-scroll relative w-[220px] h-[293px] md:w-[300px] md:h-[400px] lg:w-[350px] lg:h-[467px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_30px_rgba(255,106,26,0.2)]">
-          <Image
-            src="/images/tory-profile.jpg"
-            alt="Tory R. Zweigle"
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 220px, (max-width: 1024px) 300px, 350px"
-          />
+      {/* Pinned Text Section - Mobile */}
+      <section className="pinned-section-mobile md:hidden py-16 px-4 bg-gradient-to-b from-black via-orange-950/10 to-black">
+        <div className="space-y-12 text-center">
+          <p className="pinned-text-mobile text-xl sm:text-2xl font-bold">
+            <span className="text-white">The difference between </span>
+            <span className="text-orange-500">success</span>
+            <span className="text-white"> and </span>
+            <span className="text-orange-400">dreaming</span>
+            <span className="text-white">...</span>
+          </p>
+          <p className="pinned-text-mobile text-xl sm:text-2xl font-bold">
+            <span className="text-white">...is </span>
+            <span className="text-orange-500">taking action</span>
+            <span className="text-white"> when others </span>
+            <span className="text-orange-400">hesitate</span>
+          </p>
+          <p className="pinned-text-mobile text-2xl sm:text-3xl font-bold">
+            <span className="text-orange-500">Which one are you?</span>
+          </p>
         </div>
       </section>
 
-      {/* Section 5: Business Stats */}
-      <section className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-black to-orange-950/30">
-        <div className="max-w-4xl w-full">
-          <h2 className="reveal-on-scroll text-xl md:text-3xl lg:text-4xl font-black text-white text-center mb-8">
-            The <span className="text-orange-500">Startup Boom</span> Is Real
+      {/* Features Section */}
+      <section className="features-section py-16 md:py-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-10 md:mb-16">
+            <span className="text-white">What Makes an </span>
+            <span className="text-orange-500">Entrepreneur</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div className="stat-card bg-black/60 border border-orange-500/30 rounded-xl p-5 md:p-6 text-center">
-              <div className="text-3xl md:text-4xl lg:text-5xl font-black text-orange-500 mb-1">4.7M</div>
-              <div className="text-sm md:text-base text-white/80">New businesses started every year</div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="feature-card bg-gradient-to-br from-gray-900 to-gray-950 border border-orange-500/20 rounded-xl md:rounded-2xl p-5 md:p-8 hover:border-orange-500/50 transition-all duration-300 md:hover:scale-105"
+              >
+                <div className="text-4xl md:text-5xl mb-3 md:mb-4">{feature.icon}</div>
+                <h3 className="text-xl md:text-2xl font-bold text-orange-500 mb-2 md:mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-white/80 text-sm md:text-lg">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <div className="stat-card bg-black/60 border border-orange-500/30 rounded-xl p-5 md:p-6 text-center">
-              <div className="text-3xl md:text-4xl lg:text-5xl font-black text-orange-500 mb-1">+57%</div>
-              <div className="text-sm md:text-base text-white/80">Growth since 2019</div>
-            </div>
+      {/* Comparison Section */}
+      <section className="comparison-section py-16 md:py-24 px-4 bg-gradient-to-b from-black via-orange-950/10 to-black">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-10 md:mb-16">
+            <span className="text-orange-500">Entrepreneur</span>
+            <span className="text-white"> vs </span>
+            <span className="text-orange-400">Wantrepreneur</span>
+          </h2>
 
-            <div className="stat-card bg-black/60 border border-orange-500/30 rounded-xl p-5 md:p-6 text-center">
-              <div className="text-3xl md:text-4xl lg:text-5xl font-black text-orange-500 mb-1">90%</div>
-              <div className="text-sm md:text-base text-white/80">Fail within first 5 years</div>
+          <div className="space-y-4 md:space-y-6">
+            {differences.map((diff, index) => (
+              <div
+                key={index}
+                className="comparison-row grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 items-center"
+              >
+                <div className="bg-gradient-to-r from-orange-500/20 to-transparent border border-orange-500/30 rounded-lg md:rounded-xl p-4 md:p-6 text-center md:text-right">
+                  <span className="text-orange-500 font-semibold text-sm md:text-lg">
+                    {diff.entrepreneur}
+                  </span>
+                </div>
+                <div className="bg-gradient-to-l from-gray-500/20 to-transparent border border-gray-500/30 rounded-lg md:rounded-xl p-4 md:p-6 text-center md:text-left">
+                  <span className="text-gray-400 text-sm md:text-lg">
+                    {diff.wantrepreneur}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="stats-section py-16 md:py-24 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-600/10 via-transparent to-orange-600/10" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
+            <div className="stat-item">
+              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-orange-500 mb-2">
+                90%
+              </div>
+              <p className="text-white/80 text-sm md:text-lg px-4">
+                of startups fail because founders give up too early
+              </p>
+            </div>
+            <div className="stat-item">
+              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-orange-500 mb-2">
+                72%
+              </div>
+              <p className="text-white/80 text-sm md:text-lg px-4">
+                of people have business ideas but never take action
+              </p>
+            </div>
+            <div className="stat-item">
+              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-orange-500 mb-2">
+                100%
+              </div>
+              <p className="text-white/80 text-sm md:text-lg px-4">
+                of successful entrepreneurs started somewhere
+              </p>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="reveal-on-scroll mt-8 text-center">
-            <p className="text-base md:text-lg lg:text-xl text-white/90 mb-6 px-2">
-              Don&apos;t become a statistic. Get guidance from someone who&apos;s been there.
-            </p>
+      {/* CTA Section */}
+      <section className="cta-section py-16 md:py-24 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
+            <span className="text-white">Ready to become an </span>
+            <span className="text-orange-500">Entrepreneur</span>
+            <span className="text-white">?</span>
+          </h2>
+          <p className="text-white/70 text-base md:text-xl mb-8 md:mb-10 max-w-2xl mx-auto px-4">
+            Stop waiting for the perfect moment. The best time to start was yesterday.
+            The second best time is now.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
             <Link
               href="https://astartupbiz.com/#contact"
-              className="inline-block px-6 py-3 md:px-8 md:py-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-sm md:text-base rounded-full transition-colors duration-200"
+              className="px-6 md:px-8 py-3 md:py-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold text-base md:text-lg rounded-full transition-all duration-300 md:hover:scale-105 md:hover:shadow-lg md:hover:shadow-orange-500/30"
             >
               Book Your Clarity Call
+            </Link>
+            <Link
+              href="https://astartupbiz.com"
+              className="px-6 md:px-8 py-3 md:py-4 border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-bold text-base md:text-lg rounded-full transition-all duration-300"
+            >
+              Learn More
             </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-6 bg-black border-t border-orange-500/20">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-xs md:text-sm text-white/60">© 2026 A Startup Biz. All rights reserved.</p>
+      <footer className="py-8 md:py-12 px-4 border-t border-orange-500/20">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+          <Image
+            src="/images/a-startup-biz-logo.webp"
+            alt="A Startup Biz"
+            width={150}
+            height={75}
+            className="w-auto h-10 md:h-12"
+          />
+          <p className="text-white/50 text-xs md:text-sm">
+            © {new Date().getFullYear()} A Startup Biz. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
