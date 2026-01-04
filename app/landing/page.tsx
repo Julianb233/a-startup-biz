@@ -68,7 +68,6 @@ export default function LandingPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const questionBandRef = useRef<HTMLElement>(null);
   const questionTrackRef = useRef<HTMLDivElement>(null);
-  const firstQuestionRef = useRef<HTMLDivElement>(null);
   const entrepreneurBandRef = useRef<HTMLElement>(null);
   const entrepreneurTrackRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -116,7 +115,7 @@ export default function LandingPage() {
 
       // Pinned sideways questions: entrepreneur vs wantrepreneur
       if (questionBandRef.current && questionTrackRef.current) {
-        const questionTween = gsap.fromTo(
+        gsap.fromTo(
           questionTrackRef.current,
           { xPercent: -12 },
           {
@@ -131,73 +130,11 @@ export default function LandingPage() {
             },
           }
         );
-        if (questionTween.scrollTrigger) {
-          createdTriggers.push(questionTween.scrollTrigger);
-        }
-      }
-
-      // Animate the first question text with GSAP
-      if (firstQuestionRef.current) {
-        const textElements = firstQuestionRef.current.querySelectorAll("span");
-        
-        // Create staggered entrance animation with ScrollTrigger
-        const textTween = gsap.fromTo(
-          textElements,
-          { 
-            opacity: 0, 
-            y: 40,
-            scale: 0.95
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: "power3.out",
-            stagger: 0.12,
-            scrollTrigger: {
-              trigger: firstQuestionRef.current,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-        
-        // Track the ScrollTrigger for cleanup
-        if (textTween.scrollTrigger) {
-          createdTriggers.push(textTween.scrollTrigger);
-        }
-
-        // Add a subtle pulse animation to the "entrepreneur" word (triggered on scroll, not infinite)
-        const entrepreneurSpan = firstQuestionRef.current.querySelector(".text-orange-500");
-        if (entrepreneurSpan) {
-          const pulseTween = gsap.fromTo(
-            entrepreneurSpan,
-            { scale: 1, textShadow: "0 0 0px rgba(249, 115, 22, 0)" },
-            {
-              scale: 1.08,
-              textShadow: "0 0 20px rgba(249, 115, 22, 0.5)",
-              duration: 0.6,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: firstQuestionRef.current,
-                start: "top 70%",
-                end: "bottom 30%",
-                scrub: 1,
-              },
-            }
-          );
-          
-          // Track for cleanup
-          if (pulseTween.scrollTrigger) {
-            createdTriggers.push(pulseTween.scrollTrigger);
-          }
-        }
       }
 
       // Pinned parallax: ENTREPRENEUR ENTREPRENEUR
       if (entrepreneurBandRef.current && entrepreneurTrackRef.current) {
-        const entrepreneurTween = gsap.fromTo(
+        gsap.fromTo(
           entrepreneurTrackRef.current,
           // Left -> right as you scroll down
           { xPercent: -10 },
@@ -213,15 +150,12 @@ export default function LandingPage() {
             },
           }
         );
-        if (entrepreneurTween.scrollTrigger) {
-          createdTriggers.push(entrepreneurTween.scrollTrigger);
-        }
       }
 
       // Animate sections on scroll (stronger entrance).
       const flowSections = gsap.utils.toArray<HTMLElement>(".flow-animate");
       flowSections.forEach((section) => {
-        const sectionTween = gsap.from(section, {
+        gsap.from(section, {
           y: 60,
           opacity: 0,
           duration: 0.9,
@@ -232,16 +166,13 @@ export default function LandingPage() {
             toggleActions: "play none none reverse",
           },
         });
-        if (sectionTween.scrollTrigger) {
-          createdTriggers.push(sectionTween.scrollTrigger);
-        }
       });
 
       // Depth orbs (orange only).
       const orbs = gsap.utils.toArray<HTMLElement>(".depth-orb");
       orbs.forEach((orb, i) => {
         const speed = 0.25 + i * 0.12;
-        const orbTween = gsap.to(orb, {
+        gsap.to(orb, {
           y: () => -window.innerHeight * speed,
           ease: "none",
           scrollTrigger: {
@@ -251,9 +182,6 @@ export default function LandingPage() {
             scrub: 1,
           },
         });
-        if (orbTween.scrollTrigger) {
-          createdTriggers.push(orbTween.scrollTrigger);
-        }
       });
 
       return () => {
@@ -264,31 +192,29 @@ export default function LandingPage() {
   );
 
   return (
-    <div ref={containerRef} className="relative min-h-screen overflow-x-hidden" style={{ isolation: "isolate" }}>
-      {/* Background - lowest layer */}
+    <div ref={containerRef} className="relative min-h-screen overflow-x-hidden">
+      {/* Background */}
       <div
-        className="fixed inset-0 transition-colors duration-500"
+        className="fixed inset-0 z-0 transition-colors duration-500"
         style={{
           background: `linear-gradient(145deg, ${gradientColors.from} 0%, ${gradientColors.mid} 50%, ${gradientColors.to} 100%)`,
-          zIndex: -2,
         }}
       />
 
-      {/* Orange depth orbs - behind content but above background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: -1 }}>
+      {/* Orange depth orbs */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="depth-orb orb-orange w-[680px] h-[680px] top-[8%] left-[-14%]" />
         <div className="depth-orb orb-orange w-[520px] h-[520px] top-[42%] right-[-12%] opacity-70" />
         <div className="depth-orb orb-orange w-[420px] h-[420px] bottom-[-12%] right-[12%] opacity-60" />
       </div>
 
-      <div className="relative flex flex-col" style={{ zIndex: 1 }}>
+      <div className="relative z-10 flex flex-col">
         {/* ============================================
             SECTION 1: HERO — full-frame logo
             ============================================ */}
         <section
           ref={heroRef}
-          className="relative min-h-screen w-full flex items-center justify-center bg-black"
-          style={{ zIndex: 5 }}
+          className="relative min-h-screen w-full flex items-center justify-center"
         >
           <div className="hero-logo-frame relative w-screen h-screen overflow-hidden bg-black">
             <Image
@@ -313,7 +239,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 2: pinned sideways questions
             ============================================ */}
-        <section ref={questionBandRef} className="relative w-full" style={{ zIndex: 10 }}>
+        <section ref={questionBandRef} className="relative w-full">
           <div className="min-h-screen w-full bg-black flex items-center overflow-hidden">
             <div
               ref={questionTrackRef}
@@ -324,15 +250,10 @@ export default function LandingPage() {
                 <span className="text-orange-500">entrepreneur</span> or{" "}
                 <span className="text-white/70">not</span>?
               </div>
-              <div 
-                ref={firstQuestionRef}
-                className="whitespace-nowrap text-[clamp(2.3rem,6.2vw,6.5rem)] font-black tracking-tight text-white"
-              >
-                <span>Are you an </span>
-                <span className="text-orange-500">entrepreneur</span>
-                <span> or a </span>
-                <span className="text-white/70">wantrepreneur</span>
-                <span>?</span>
+              <div className="whitespace-nowrap text-[clamp(2.3rem,6.2vw,6.5rem)] font-black tracking-tight text-white">
+                Are you an{" "}
+                <span className="text-orange-500">entrepreneur</span> or a{" "}
+                <span className="text-white/70">wantrepreneur</span>?
               </div>
             </div>
           </div>
@@ -341,7 +262,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 3: pinned parallax word band
             ============================================ */}
-        <section ref={entrepreneurBandRef} className="relative w-full" style={{ zIndex: 20 }}>
+        <section ref={entrepreneurBandRef} className="relative w-full">
           <div className="min-h-screen w-full bg-white flex items-center overflow-hidden">
             <div
               ref={entrepreneurTrackRef}
@@ -360,7 +281,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 4: Me and Tori (use homepage Tory photo)
             ============================================ */}
-        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-5xl mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-large font-black text-white mb-3">
@@ -387,7 +308,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 4.5: VIDEO — Wistia Embed
             ============================================ */}
-        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-lg mx-auto px-4">
             <div className="text-center mb-8">
               <h2 className="text-large font-black text-white mb-3">
@@ -433,7 +354,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION 5+: Core story (updated contrast + weight)
             ============================================ */}
-        <section className="flow-section relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-huge font-black text-white text-center mb-8">
               A Lifetime Devoted to <span className="text-orange-500">Business</span>
@@ -454,7 +375,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="flow-section flow-section-compact relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-compact">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-large font-black text-white text-center mb-8">
               Lessons From a Lifetime of <span className="text-orange-500">Business</span>
@@ -470,7 +391,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-huge font-black text-white text-center mb-8">
               Why Most Business Advice <span className="text-orange-500">Fails</span>
@@ -496,7 +417,7 @@ export default function LandingPage() {
             SECTION: G-Step stats (from your images)
             This is placed RIGHT BEFORE the "Animations" section.
             ============================================ */}
-        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-breathe">
           <div className="flow-animate">
             <div className="max-w-6xl mx-auto px-4">
               <div className="rounded-[2rem] bg-white/95 border border-black/10 p-6 md:p-10">
@@ -513,7 +434,7 @@ export default function LandingPage() {
         {/* ============================================
             SECTION: Animations (infographics)
             ============================================ */}
-        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-6xl mx-auto px-4 w-full">
             <div className="text-center mb-10">
               <h2 className="text-large font-black text-white">
@@ -556,7 +477,7 @@ export default function LandingPage() {
         {/* ============================================
             FINAL CTA
             ============================================ */}
-        <section className="flow-section flow-section-breathe relative bg-black" style={{ zIndex: 30 }}>
+        <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-4xl mx-auto text-center px-4">
             <h2 className="text-huge font-black text-white mb-6">
               Book Your <span className="text-orange-500 glow-orange-intense">$1,000</span> Clarity Call Now
@@ -584,7 +505,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <footer className="flow-section flow-section-compact text-center relative bg-black" style={{ zIndex: 30 }}>
+        <footer className="flow-section flow-section-compact text-center">
           <div className="flow-animate px-4">
             <Image
               src="/images/a-startup-biz-logo.webp"
