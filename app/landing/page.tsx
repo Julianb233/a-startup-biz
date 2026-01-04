@@ -3,7 +3,6 @@
 import { useRef, useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Script from "next/script";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -14,13 +13,14 @@ import ParallaxStatsGallery from "@/components/parallax-stats-gallery";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-// Keep the background brand-forward: black + orange (no gray journey).
+// Keep the background brand-forward: black + orange ONLY (no gray/silver).
 const gradientStops = [
-  { at: 0.0, from: "#000000", mid: "#050505", to: "#000000" },
-  { at: 0.35, from: "#000000", mid: "#090909", to: "#000000" },
-  { at: 0.55, from: "#000000", mid: "#140a03", to: "#000000" },
-  { at: 0.75, from: "#000000", mid: "#ff6a1a", to: "#000000" },
-  { at: 1.0, from: "#000000", mid: "#050505", to: "#000000" },
+  { at: 0.0, from: "#000000", mid: "#1a0a00", to: "#000000" },
+  { at: 0.2, from: "#000000", mid: "#2a1200", to: "#000000" },
+  { at: 0.4, from: "#0a0500", mid: "#3a1a00", to: "#0a0500" },
+  { at: 0.6, from: "#0f0800", mid: "#ff6a1a", to: "#0f0800" },
+  { at: 0.8, from: "#0a0500", mid: "#cc5500", to: "#0a0500" },
+  { at: 1.0, from: "#000000", mid: "#1a0a00", to: "#000000" },
 ];
 
 function interpolateColor(color1: string, color2: string, factor: number): string {
@@ -84,6 +84,10 @@ export default function LandingPage() {
     () => {
       if (!containerRef.current) return;
 
+      // Check for reduced motion preference
+      const prefersReducedMotion = typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       const createdTriggers: ScrollTrigger[] = [];
 
       // Track scroll progress for background accent.
@@ -91,7 +95,7 @@ export default function LandingPage() {
         trigger: containerRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: true,
+        scrub: prefersReducedMotion ? false : 0.5,
         onUpdate: (self) => setScrollProgress(self.progress),
       }));
 
@@ -103,89 +107,103 @@ export default function LandingPage() {
         gsap.fromTo(
           logoFrame,
           { opacity: 0, scale: 0.96 },
-          { opacity: 1, scale: 1, duration: 1.0, ease: "power3.out", delay: 0.2 }
+          { opacity: 1, scale: 1, duration: prefersReducedMotion ? 0.01 : 1.0, ease: "power3.out", delay: 0.2 }
         );
 
         gsap.fromTo(
           scrollHint,
           { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out", delay: 0.8 }
+          { opacity: 1, y: 0, duration: prefersReducedMotion ? 0.01 : 0.8, ease: "power2.out", delay: 0.8 }
         );
       }
 
       // Pinned sideways questions: entrepreneur vs wantrepreneur
+      // Fixed: Better pin alignment and smoother horizontal scroll
       if (questionBandRef.current && questionTrackRef.current) {
-        gsap.fromTo(
-          questionTrackRef.current,
-          { xPercent: -12 },
-          {
-            xPercent: 12,
-            ease: "none",
-            scrollTrigger: {
-              trigger: questionBandRef.current,
-              start: "top top",
-              end: "+=130%",
-              pin: true,
-              scrub: 1,
-            },
-          }
-        );
+        const questionTrigger = ScrollTrigger.create({
+          trigger: questionBandRef.current,
+          start: "top top",
+          end: "+=150%",
+          pin: true,
+          pinSpacing: true,
+          scrub: prefersReducedMotion ? false : 0.8,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            // Smooth horizontal movement based on scroll progress
+            const progress = self.progress;
+            gsap.set(questionTrackRef.current, {
+              xPercent: gsap.utils.interpolate(-15, 15, progress),
+              force3D: true,
+            });
+          },
+        });
+        createdTriggers.push(questionTrigger);
       }
 
       // Pinned parallax: ENTREPRENEUR ENTREPRENEUR
+      // Fixed: Better axis alignment and consistent animation
       if (entrepreneurBandRef.current && entrepreneurTrackRef.current) {
-        gsap.fromTo(
-          entrepreneurTrackRef.current,
-          // Left -> right as you scroll down
-          { xPercent: -10 },
-          {
-            xPercent: 10,
-            ease: "none",
-            scrollTrigger: {
-              trigger: entrepreneurBandRef.current,
-              start: "top top",
-              end: "+=140%",
-              pin: true,
-              scrub: 1,
-            },
-          }
-        );
+        const entrepreneurTrigger = ScrollTrigger.create({
+          trigger: entrepreneurBandRef.current,
+          start: "top top",
+          end: "+=160%",
+          pin: true,
+          pinSpacing: true,
+          scrub: prefersReducedMotion ? false : 0.8,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            // Smooth horizontal movement - opposite direction for visual interest
+            const progress = self.progress;
+            gsap.set(entrepreneurTrackRef.current, {
+              xPercent: gsap.utils.interpolate(-12, 12, progress),
+              force3D: true,
+            });
+          },
+        });
+        createdTriggers.push(entrepreneurTrigger);
       }
 
-      // Animate sections on scroll (stronger entrance).
+      // Animate sections on scroll (stronger entrance) - consistent timing
       const flowSections = gsap.utils.toArray<HTMLElement>(".flow-animate");
-      flowSections.forEach((section) => {
+      flowSections.forEach((section, index) => {
         gsap.from(section, {
-          y: 60,
+          y: 50,
           opacity: 0,
-          duration: 0.9,
+          duration: prefersReducedMotion ? 0.01 : 0.8,
           ease: "power3.out",
           scrollTrigger: {
             trigger: section,
             start: "top 85%",
+            end: "top 50%",
             toggleActions: "play none none reverse",
           },
         });
       });
 
-      // Depth orbs (orange only).
+      // Depth orbs (orange only) - Fixed Y-axis positioning
       const orbs = gsap.utils.toArray<HTMLElement>(".depth-orb");
       orbs.forEach((orb, i) => {
-        const speed = 0.25 + i * 0.12;
-        gsap.to(orb, {
-          y: () => -window.innerHeight * speed,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1,
+        // Stagger speeds for depth effect
+        const speed = 0.15 + i * 0.1;
+        const orbTrigger = ScrollTrigger.create({
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: prefersReducedMotion ? false : 1.2,
+          onUpdate: (self) => {
+            gsap.set(orb, {
+              y: -window.innerHeight * speed * self.progress,
+              force3D: true,
+            });
           },
         });
+        createdTriggers.push(orbTrigger);
       });
 
+      // Cleanup function
       return () => {
         createdTriggers.forEach((t) => t.kill());
+        ScrollTrigger.getAll().forEach((t) => t.kill());
       };
     },
     { scope: containerRef }
@@ -210,27 +228,32 @@ export default function LandingPage() {
 
       <div className="relative z-10 flex flex-col">
         {/* ============================================
-            SECTION 1: HERO — full-frame logo
+            SECTION 1: HERO — full-frame logo (LARGER)
             ============================================ */}
         <section
           ref={heroRef}
           className="relative min-h-screen w-full flex items-center justify-center"
         >
-          <div className="hero-logo-frame relative w-screen h-screen overflow-hidden bg-black">
-            <Image
-              src="/images/a-startup-biz-logo.webp"
-              alt="A Startup Biz"
-              fill
-              priority
-              className="object-contain hero-logo-mega"
-              sizes="100vw"
-            />
+          <div className="hero-logo-frame relative w-screen h-screen overflow-hidden bg-black flex items-center justify-center">
+            {/* Large prominent logo */}
+            <div className="relative w-[90vw] h-[90vh] md:w-[85vw] md:h-[85vh] max-w-[1400px]">
+              <Image
+                src="/images/a-startup-biz-logo.webp"
+                alt="A Startup Biz"
+                fill
+                priority
+                className="object-contain hero-logo-mega drop-shadow-[0_0_60px_rgba(255,106,26,0.3)]"
+                sizes="(max-width: 768px) 90vw, 85vw"
+              />
+            </div>
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-radial from-orange-500/10 via-transparent to-transparent pointer-events-none" />
           </div>
 
           {/* Scroll hint */}
           <div className="hero-scroll-hint absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/80">
             <span className="text-sm tracking-[0.25em] uppercase font-extrabold">Scroll</span>
-            <div className="w-7 h-11 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
+            <div className="w-7 h-11 rounded-full border-2 border-orange-500/50 flex items-start justify-center p-2">
               <div className="w-1.5 h-2.5 bg-orange-500 rounded-full animate-bounce" />
             </div>
           </div>
@@ -306,7 +329,7 @@ export default function LandingPage() {
         </section>
 
         {/* ============================================
-            SECTION 4.5: VIDEO — Wistia Embed
+            SECTION 4.5: VIDEO — Wistia Embed (iframe for stability)
             ============================================ */}
         <section className="flow-section flow-section-breathe">
           <div className="flow-animate max-w-lg mx-auto px-4">
@@ -319,34 +342,25 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="relative rounded-3xl overflow-hidden border border-orange-500/30 box-glow-orange bg-black/60">
-              {videoMounted ? (
-                <>
-                  <Script
-                    src="https://fast.wistia.com/player.js"
-                    strategy="lazyOnload"
-                  />
-                  <Script
-                    src="https://fast.wistia.com/embed/kono7sttzg.js"
-                    strategy="lazyOnload"
-                    type="module"
-                  />
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: '<wistia-player media-id="kono7sttzg" aspect="0.5625"></wistia-player>'
-                    }}
-                  />
-                </>
-              ) : (
-                <div
-                  className="bg-black/80 animate-pulse flex items-center justify-center"
-                  style={{ paddingTop: '177.78%' }}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative rounded-3xl overflow-hidden border border-orange-500/30 box-glow-orange bg-black/60 shadow-[0_0_40px_rgba(255,106,26,0.2)]">
+              <div className="relative w-full" style={{ paddingTop: '177.78%' }}>
+                {/* Loading placeholder */}
+                {!videoMounted && (
+                  <div className="absolute inset-0 bg-black/80 animate-pulse flex items-center justify-center">
                     <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* Wistia iframe embed - more stable than web component */}
+                <iframe
+                  src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
+                  title="A Startup Biz Introduction Video"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${videoMounted ? 'opacity-100' : 'opacity-0'}`}
+                  style={{ border: 'none' }}
+                />
+              </div>
             </div>
           </div>
         </section>

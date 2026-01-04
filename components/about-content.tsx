@@ -38,13 +38,14 @@ const staggerContainer = {
   }
 }
 
-// Gradient color journey based on scroll position
+// Gradient color journey based on scroll position - CONSISTENT BLACK/ORANGE ONLY
 const gradientStops = [
   { at: 0.0, from: "#000000", mid: "#1a0a00", to: "#000000" },
-  { at: 0.25, from: "#0a0500", mid: "#1a0a00", to: "#0a0500" },
-  { at: 0.5, from: "#1a0a00", mid: "#2a1500", to: "#1a0a00" },
-  { at: 0.75, from: "#2a1500", mid: "#ff6a1a", to: "#2a1500" },
-  { at: 1.0, from: "#0a0500", mid: "#1a0a00", to: "#000000" },
+  { at: 0.2, from: "#000000", mid: "#2a1200", to: "#000000" },
+  { at: 0.4, from: "#0a0500", mid: "#3a1a00", to: "#0a0500" },
+  { at: 0.6, from: "#0f0800", mid: "#ff6a1a", to: "#0f0800" },
+  { at: 0.8, from: "#0a0500", mid: "#cc5500", to: "#0a0500" },
+  { at: 1.0, from: "#000000", mid: "#1a0a00", to: "#000000" },
 ]
 
 function interpolateColor(color1: string, color2: string, factor: number): string {
