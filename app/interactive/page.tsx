@@ -411,61 +411,101 @@ export default function InteractivePage() {
           </h1>
         </section>
 
-        {/* SECTION 3: TORY PROFILE - BIGGER HEADING */}
-        <section ref={torySectionRef} className="min-h-screen flex items-center justify-center py-16 md:py-24">
-          <div className="max-w-5xl mx-auto px-4">
-            <div className="text-center mb-10 md:mb-16">
-              <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-white mb-4">
-                Meet <span className="text-orange-500">Tory R. Zweigle</span>
-              </h2>
-              <p className="tory-subtitle text-2xl sm:text-3xl md:text-4xl text-gray-400 font-semibold">Serial Entrepreneur & Business Mentor</p>
-            </div>
+        {/* SECTION 3: TORY + VIDEO - Same fold, same vibe */}
+        <section ref={torySectionRef} className="py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4">
+            {/* Grid: Tory on left, Video on right */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-            {/* BIGGER Tory's Image */}
-            <div className="tory-image relative mx-auto w-[320px] h-[427px] sm:w-[400px] sm:h-[533px] md:w-[480px] md:h-[640px] lg:w-[550px] lg:h-[733px] rounded-2xl md:rounded-3xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
-              <Image
-                src="/images/tory-profile.jpg"
-                alt="Tory R. Zweigle"
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 320px, (max-width: 768px) 400px, (max-width: 1024px) 480px, 550px"
-              />
-            </div>
-          </div>
-        </section>
+              {/* Left: Meet Tory */}
+              <div className="text-center lg:text-left">
+                <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
+                  Meet <span className="text-orange-500">Tory</span>
+                </h2>
+                <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-8">Serial Entrepreneur & Business Mentor</p>
 
-        {/* WISTIA VIDEO SECTION - Same size heading as Tory section */}
-        <section className="py-16 md:py-24">
-          <div className="flow-animate max-w-xl mx-auto px-4">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white text-center mb-4">
-              Watch This
-            </h2>
-            <p className="text-center text-xl md:text-2xl text-white/60 mb-8">See how Tory helps entrepreneurs succeed.</p>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border border-orange-500/20">
-              <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
-                <iframe
-                  src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
-                  title="A Startup Biz Introduction Video"
-                  allow="autoplay; fullscreen"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                  style={{ border: "none" }}
-                  loading="lazy"
-                />
+                {/* Tory's Image */}
+                <div className="tory-image relative mx-auto lg:mx-0 w-[280px] h-[373px] sm:w-[320px] sm:h-[427px] md:w-[380px] md:h-[507px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_60px_rgba(255,106,26,0.2)]">
+                  <Image
+                    src="/images/tory-profile.jpg"
+                    alt="Tory R. Zweigle"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, 380px"
+                  />
+                </div>
+              </div>
+
+              {/* Right: Watch This */}
+              <div className="text-center lg:text-left">
+                <h2 className="flow-animate text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
+                  Watch <span className="text-orange-500">This</span>
+                </h2>
+                <p className="flow-animate text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-8">See how Tory helps entrepreneurs succeed.</p>
+
+                {/* Video */}
+                <div className="flow-animate rounded-2xl overflow-hidden shadow-2xl border border-orange-500/20">
+                  <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
+                    <iframe
+                      src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
+                      title="A Startup Biz Introduction Video"
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                      style={{ border: "none" }}
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* BUSINESS STATISTICS WITH IMAGES */}
-        <section ref={statsSectionRef} className="py-16 md:py-24">
+        {/* THE HARD TRUTH - Business Failure Facts */}
+        <section ref={statsSectionRef} className="py-20 md:py-32">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="flow-animate text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-12 md:mb-20">
-              The <span className="text-orange-500">Startup Boom</span> Is Real
+            <h2 className="flow-animate text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-6">
+              The <span className="text-orange-500">Hard Truth</span> About Startups
             </h2>
+            <p className="flow-animate text-xl md:text-2xl text-white/60 text-center mb-16 md:mb-20 max-w-3xl mx-auto">
+              Every year, millions try. Most fail. Here&apos;s what the numbers say:
+            </p>
 
+            {/* Key Failure Stats - Big and Bold */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
+              {/* Stat 1 - 90% Fail */}
+              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-red-500/30 rounded-2xl">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-red-500 mb-3">90%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">of startups FAIL</div>
+                <div className="text-sm text-white/60">Within the first 5 years</div>
+              </div>
+
+              {/* Stat 2 - Year 1 */}
+              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-orange-500/30 rounded-2xl">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-500 mb-3">20%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">fail in Year 1</div>
+                <div className="text-sm text-white/60">Before they even get started</div>
+              </div>
+
+              {/* Stat 3 - Cash Flow */}
+              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-orange-500/30 rounded-2xl">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-400 mb-3">82%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">cash flow issues</div>
+                <div className="text-sm text-white/60">#1 reason businesses fail</div>
+              </div>
+
+              {/* Stat 4 - No Plan */}
+              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-orange-500/30 rounded-2xl">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-300 mb-3">42%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">no market need</div>
+                <div className="text-sm text-white/60">Built something nobody wanted</div>
+              </div>
+            </div>
+
+            {/* The Contrast - With Images */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-              {/* Stat 1 - 4.7M Image */}
+              {/* Stat Image 1 */}
               <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
                 <div className="relative w-full h-48 md:h-56">
                   <Image
@@ -476,12 +516,12 @@ export default function InteractivePage() {
                   />
                 </div>
                 <div className="p-6 text-center">
-                  <div className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 mb-2">4.7M</div>
+                  <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-2">4.7M</div>
                   <div className="text-base md:text-lg text-white/80">New businesses started every year</div>
                 </div>
               </div>
 
-              {/* Stat 2 - Growth Image */}
+              {/* Stat Image 2 */}
               <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
                 <div className="relative w-full h-48 md:h-56">
                   <Image
@@ -492,71 +532,144 @@ export default function InteractivePage() {
                   />
                 </div>
                 <div className="p-6 text-center">
-                  <div className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 mb-2">+57%</div>
-                  <div className="text-base md:text-lg text-white/80">Growth since 2019</div>
+                  <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-2">Only 10%</div>
+                  <div className="text-base md:text-lg text-white/80">Make it past year 5</div>
                 </div>
               </div>
 
-              {/* Stat 3 - Q4 Acceleration Image */}
+              {/* Stat Image 3 */}
               <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
                 <div className="relative w-full h-48 md:h-56">
                   <Image
                     src="/images/stat-q4-acceleration.webp"
-                    alt="90% fail rate"
+                    alt="Why they fail"
                     fill
                     className="object-cover"
                   />
                 </div>
                 <div className="p-6 text-center">
-                  <div className="text-4xl sm:text-5xl md:text-6xl font-black text-orange-500 mb-2">90%</div>
-                  <div className="text-base md:text-lg text-white/80">Fail within first 5 years</div>
+                  <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-2">$0</div>
+                  <div className="text-base md:text-lg text-white/80">What most get back when they fail</div>
                 </div>
               </div>
             </div>
 
-            <p className="flow-animate text-center text-lg md:text-xl text-white/70 mt-10 md:mt-16 max-w-3xl mx-auto">
-              Why become a statistic when solid advice from someone seasoned can help you avoid the biggest potholes?
-            </p>
+            {/* The Point */}
+            <div className="flow-animate text-center mt-16 md:mt-20 p-8 md:p-12 bg-gradient-to-r from-orange-950/30 via-orange-900/20 to-orange-950/30 rounded-3xl border border-orange-500/30">
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+                Why become a <span className="text-red-500">statistic</span>?
+              </p>
+              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+                Solid advice from someone who&apos;s been through it 100+ times can help you avoid the biggest potholes before you hit them.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* WHAT WE KNOW SECTION */}
+        {/* TORY'S STORY - Authentic Voice */}
         <section className="py-16 md:py-24">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-8 md:mb-12">
-              A Lifetime Devoted to <span className="text-orange-500">Business</span>
+              <span className="text-orange-500">100+</span> Businesses. <span className="text-orange-500">50+</span> Years.
             </h2>
             <div className="space-y-6 text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
-              <p>My name is Tory R. Zweigle, and I am a serial entrepreneur. For the last five decades, I have done nothing but eat, breathe, and sleep business. I started at age 11, beginning a lifelong journey of ideas and startups.</p>
-              <p>I have been in thousands of situations across the many businesses I&apos;ve run. For every business I start, it&apos;s always a new journey. I still learn every day. There are not many people on this planet who have started over 100 businesses.</p>
+              <p>My name is <span className="text-orange-500 font-bold">Tory Zweigle</span>, and I am a serial entrepreneur. I am also the author of <em className="text-orange-400">The Art and Soul of Common Sense in Business</em> — a global top seller in both English and Mandarin.</p>
+              <p>I started my first business at just <span className="text-orange-500 font-bold">11 years old</span>, selling avocados from our family orchard in the canyons. Since then, I have started over <span className="text-orange-500 font-bold">100 businesses</span> — each one different from the last.</p>
+              <p>Manufacturing. Restaurants. Distribution. Auto Dealerships. Hotels. Salons. Towing. Autobody Shops. Senior Care. Design. Custom Homes. Commercial Real Estate. Upholstery. Art Galleries. Furniture. Printing. Graphics. High-End Gifts. Marketing. Publishing.</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400">Everything I share comes from experience — not theory.</p>
             </div>
           </div>
         </section>
 
-        {/* THE FISHBOWL QUOTE */}
+        {/* WHY MOST FAIL */}
+        <section className="py-12 md:py-20">
+          <div className="flow-animate max-w-4xl mx-auto px-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center mb-10 md:mb-16">
+              Why <span className="text-red-500">Most</span> Fail
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+                <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">82%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">Cash Flow Issues</div>
+                <p className="text-white/70 text-sm md:text-base">Limited funding, mixing personal and business finances, poor budgeting and pricing strategies.</p>
+              </div>
+
+              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+                <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">42%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">No Market Need</div>
+                <p className="text-white/70 text-sm md:text-base">Built something nobody wanted. Without real demand, no marketing campaign can save you.</p>
+              </div>
+
+              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+                <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">22%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">Marketing Failure</div>
+                <p className="text-white/70 text-sm md:text-base">Without branding, direction, or a clear strategy, even great products remain invisible.</p>
+              </div>
+
+              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+                <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">35%</div>
+                <div className="text-lg md:text-xl text-white font-semibold mb-2">Poor Management</div>
+                <p className="text-white/70 text-sm md:text-base">Excel at products/services but struggle with finance, hiring, or marketing — often without realizing it.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* THE WANTREPRENEUR TRUTH */}
+        <section className="py-12 md:py-20">
+          <div className="flow-animate max-w-4xl mx-auto px-4">
+            <div className="relative p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-gradient-to-r from-red-950/30 via-black to-red-950/30 border border-red-500/30">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6">
+                The <span className="text-red-500">Wantrepreneur</span> Problem
+              </h3>
+              <blockquote className="text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed mb-6">
+                &ldquo;I believe over 50% of people should not start a business. These individuals are often called &apos;wantrepreneurs.&apos; I would advise many of them to go home, watch TV, and keep their money in the bank.&rdquo;
+              </blockquote>
+              <p className="text-base md:text-lg text-white/70 mb-4">People enter business with excitement but without preparation. When they fail, it costs them years of stress and significant financial losses.</p>
+              <p className="text-orange-400 font-semibold">— Tory Zweigle</p>
+            </div>
+          </div>
+        </section>
+
+        {/* CONSULTANTS VS EXPERIENCE */}
         <section className="py-12 md:py-20">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <div className="relative p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-black/60 border border-orange-500/20">
-              <blockquote className="text-lg sm:text-xl md:text-2xl font-bold text-white italic leading-relaxed">
-                &ldquo;I&apos;ve had so many startups that I can see what others do not. Your business is in a fishbowl to me. I can see all around it while you&apos;re inside the bowl trying to keep things going. I see the ups, the downs, the patterns, the blind spots, the opportunities, and the dangers.&rdquo;
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6">
+                Theory <span className="text-gray-500">vs</span> <span className="text-orange-500">Experience</span>
+              </h3>
+              <blockquote className="text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed">
+                &ldquo;Some hire business consultants, but the majority have never actually started a business or operated multiple startups. They teach theory. Just like in colleges globally, most business teachers have never run a real business. If someone has not done something, how can they teach others how to do it?&rdquo;
               </blockquote>
-              <p className="mt-4 text-orange-400 font-semibold">— Tory R. Zweigle</p>
+              <p className="mt-6 text-lg md:text-xl font-bold text-orange-400">You always need to find an expert in the field so you get solid, real information. Theory alone will not pay the bills.</p>
+              <p className="mt-4 text-orange-400 font-semibold">— Tory Zweigle</p>
             </div>
           </div>
         </section>
 
-        {/* THE $1,000 INVESTMENT */}
+        {/* THE $1,000 SOLUTION */}
         <section className="py-16 md:py-24">
-          <div className="flow-animate max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
-              The <span className="text-orange-500">$1,000</span> Investment
-            </h2>
-            <p className="text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-8 md:mb-12">That Pays for Itself</p>
+          <div className="flow-animate max-w-4xl mx-auto px-4">
+            <div className="text-center mb-10 md:mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
+                The <span className="text-orange-500">$1,000</span> Solution
+              </h2>
+              <p className="text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold">Insurance for Your Entrepreneurial Future</p>
+            </div>
 
-            <div className="text-left space-y-6 text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
-              <p>I charge <span className="text-orange-500 font-bold">$1,000</span> for a 30-minute Zoom call. You will fill out our questionnaire beforehand so I can prepare and understand your idea, your funding, your timeline, and your plan.</p>
-              <p>During the call, I will tell you exactly what I see—good or bad. After the call, I follow up with an email explaining why your idea works or why it doesn&apos;t.</p>
-              <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400">It will be the best $1,000 you ever spend for your future in business and in life.</p>
+            <div className="space-y-6 text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
+              <p>I offer a <span className="text-orange-500 font-bold">30-minute Zoom call</span> to discuss your startup idea. After the call, I send you a full email analysis explaining why your idea is good — or why it&apos;s bad.</p>
+
+              <p>If it&apos;s not a good idea, I will show you why — <span className="text-orange-400 font-semibold">potentially saving your investment, your time, and your health</span>.</p>
+
+              <p>If it is a good idea, I will explain why it has potential and what you should do next.</p>
+
+              <div className="p-6 md:p-8 bg-gradient-to-r from-orange-950/30 via-black to-orange-950/30 border border-orange-500/30 rounded-2xl mt-8">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400 text-center">
+                  It&apos;s like insurance for your entrepreneurial future. Either way, we both win.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -608,18 +721,18 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* FOOTER WITH LOGO */}
-        <footer className="py-12 md:py-16 text-center border-t border-orange-500/20">
+        {/* FOOTER WITH BIGGER LOGO */}
+        <footer className="py-16 md:py-24 text-center border-t border-orange-500/20">
           <div className="flow-animate px-4">
             <Image
               src="/images/a-startup-biz-logo.webp"
               alt="A Startup Biz"
-              width={300}
-              height={150}
-              className="w-auto h-16 md:h-20 lg:h-24 mx-auto mb-6 md:mb-8"
+              width={600}
+              height={300}
+              className="w-auto h-24 sm:h-32 md:h-40 lg:h-48 xl:h-56 mx-auto mb-8 md:mb-12"
             />
-            <p className="text-white/40 text-sm md:text-base">© {new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
-            <p className="text-white/30 text-xs md:text-sm mt-2">Stop dreaming about success. Start building it.</p>
+            <p className="text-white/50 text-base md:text-lg">© {new Date().getFullYear()} A Startup Biz. All rights reserved.</p>
+            <p className="text-white/40 text-sm md:text-base mt-2">Stop dreaming about success. Start building it.</p>
           </div>
         </footer>
       </div>
