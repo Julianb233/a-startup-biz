@@ -27,7 +27,7 @@ export default defineConfig({
       name: 'preview',
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: 'https://a-startup-gpqvcpygs-ai-acrobatics.vercel.app',
+        baseURL: 'https://astartupbiz.com',
       },
     },
     {
@@ -41,7 +41,7 @@ export default defineConfig({
       name: 'mobile-preview',
       use: {
         ...devices['Pixel 5'],
-        baseURL: 'https://a-startup-gpqvcpygs-ai-acrobatics.vercel.app',
+        baseURL: 'https://astartupbiz.com',
       },
     },
   ],
