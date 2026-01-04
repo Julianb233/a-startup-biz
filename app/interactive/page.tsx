@@ -31,109 +31,160 @@ export default function InteractivePage() {
     const ctx = gsap.context(() => {
       const isMobile = window.innerWidth < 768
 
-      // Logo entrance animation
+      // ============================================
+      // 1. LOGO ENTRANCE - Smooth scale with bounce
+      // ============================================
       const logo = logoSectionRef.current?.querySelector(".hero-logo")
       if (logo) {
         gsap.fromTo(logo,
-          { scale: 0.5, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 1.5, ease: "back.out(1.5)", delay: 0.3 }
+          { scale: 0.3, opacity: 0, y: 50 },
+          {
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            duration: 2,
+            ease: "elastic.out(1, 0.5)",
+            delay: 0.2
+          }
         )
       }
 
-      // Letter-by-letter reveal on scroll
+      // ============================================
+      // 2. LETTER-BY-LETTER SCROLL REVEAL
+      // Pinned section - scroll to reveal each letter
+      // ============================================
       const questionSection = questionSectionRef.current
       if (questionSection) {
         const chars = questionSection.querySelectorAll(".char")
 
         if (chars.length > 0) {
-          // Set initial state - all chars hidden
-          gsap.set(chars, { opacity: 0, y: 20 })
+          // Set initial state - all chars hidden with staggered positions
+          gsap.set(chars, {
+            opacity: 0,
+            y: 40,
+            scale: 0.8,
+            rotationX: -45
+          })
 
-          // Create timeline for letter-by-letter reveal
+          // Create timeline - longer scroll distance for smoother reveal
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: questionSection,
               start: "top top",
-              end: "bottom top",
-              scrub: 0.5,
+              end: "+=150%", // Longer scroll distance = slower reveal
+              scrub: 1, // Smoother scrub
               pin: true,
               pinSpacing: true,
+              anticipatePin: 1, // Smoother pin transition
             }
           })
 
-          // Animate each character sequentially
+          // Animate each character with refined timing
+          const totalChars = chars.length
           chars.forEach((char, i) => {
+            const isEntrepreneur = i >= 11 && i <= 22
+
             tl.to(char, {
               opacity: 1,
               y: 0,
-              duration: 0.5,
-              ease: "power2.out",
-            }, i * 0.03) // Stagger each letter
+              scale: 1,
+              rotationX: 0,
+              duration: 1,
+              ease: "power3.out",
+            }, i * (1 / totalChars)) // Evenly distributed timing
+
+            // Add glow pulse for ENTREPRENEUR letters
+            if (isEntrepreneur) {
+              tl.to(char, {
+                textShadow: "0 0 60px rgba(255,106,26,0.8), 0 0 120px rgba(255,106,26,0.4)",
+                duration: 0.5,
+                ease: "power2.inOut",
+              }, i * (1 / totalChars) + 0.5)
+            }
           })
         }
       }
 
-      // Tory section GSAP animation - dramatic entrance
+      // ============================================
+      // 3. TORY SECTION - Cinematic entrance
+      // ============================================
       const torySection = torySectionRef.current
       if (torySection) {
         const toryImage = torySection.querySelector(".tory-image")
         const toryTitle = torySection.querySelector(".tory-title")
         const torySubtitle = torySection.querySelector(".tory-subtitle")
 
+        // Set initial states
+        if (toryTitle) gsap.set(toryTitle, { y: 100, opacity: 0 })
+        if (torySubtitle) gsap.set(torySubtitle, { y: 60, opacity: 0 })
+        if (toryImage) gsap.set(toryImage, { scale: 0.7, opacity: 0, y: 80 })
+
         const toryTl = gsap.timeline({
           scrollTrigger: {
             trigger: torySection,
-            start: "top 70%",
-            toggleActions: "play none none none"
+            start: "top 75%",
+            end: "top 25%",
+            scrub: 0.8, // Scrub-linked for smooth scroll animation
           }
         })
 
+        // Staggered reveal
         if (toryTitle) {
-          toryTl.fromTo(toryTitle,
-            { y: 80, opacity: 0, scale: 0.9 },
-            { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" }
-          )
+          toryTl.to(toryTitle, {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power4.out"
+          }, 0)
         }
 
         if (torySubtitle) {
-          toryTl.fromTo(torySubtitle,
-            { y: 40, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
-            "-=0.5"
-          )
+          toryTl.to(torySubtitle, {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out"
+          }, 0.2)
         }
 
         if (toryImage) {
-          toryTl.fromTo(toryImage,
-            { scale: 0.8, opacity: 0, rotateY: -15 },
-            { scale: 1, opacity: 1, rotateY: 0, duration: 1.2, ease: "power3.out" },
-            "-=0.6"
-          )
+          toryTl.to(toryImage, {
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            ease: "power3.out"
+          }, 0.3)
         }
       }
 
-      // Animate other sections on scroll
-      gsap.utils.toArray<HTMLElement>(".flow-animate").forEach((section) => {
+      // ============================================
+      // 4. OTHER SECTIONS - Smooth fade up
+      // ============================================
+      gsap.utils.toArray<HTMLElement>(".flow-animate").forEach((section, index) => {
         gsap.fromTo(section,
-          { y: 60, opacity: 0 },
+          { y: 80, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            duration: isMobile ? 0.6 : 1,
-            ease: "power2.out",
+            duration: isMobile ? 0.8 : 1.2,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: section,
               start: "top 85%",
-              toggleActions: "play none none none"
+              end: "top 50%",
+              scrub: 0.5, // Smooth scroll-linked animation
             }
           }
         )
       })
 
-      // Subtle parallax for orbs (desktop only)
+      // ============================================
+      // 5. PARALLAX ORBS - Subtle depth effect
+      // ============================================
       if (!isMobile) {
         gsap.utils.toArray<HTMLElement>(".depth-orb").forEach((orb, i) => {
-          const speed = 0.15 + i * 0.08
+          const speed = 0.1 + i * 0.05
           gsap.to(orb, {
             y: () => -window.innerHeight * speed,
             ease: "none",
@@ -141,7 +192,7 @@ export default function InteractivePage() {
               trigger: containerRef.current,
               start: "top top",
               end: "bottom bottom",
-              scrub: 1
+              scrub: 2 // Very smooth parallax
             }
           })
         })
