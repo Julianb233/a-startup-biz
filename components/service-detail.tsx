@@ -71,8 +71,8 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
   const priceDisplay = service.pricing.customQuote
     ? "Custom Quote"
     : service.pricing.priceRange
-    ? `$${service.pricing.priceRange.min.toLocaleString()} - $${service.pricing.priceRange.max.toLocaleString()}`
-    : `$${service.pricing.basePrice.toLocaleString()}`
+      ? `$${service.pricing.priceRange.min.toLocaleString()} - $${service.pricing.priceRange.max.toLocaleString()}`
+      : `$${service.pricing.basePrice.toLocaleString()}`
 
   const billingPeriod = service.pricing.billingPeriod
     ? service.pricing.billingPeriod === 'one-time'
@@ -88,6 +88,11 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Force scroll to top on mount to fix navigation issue
+  useEffect(() => {
+    window.scrollTo(0, 0)
   }, [])
 
   return (
@@ -398,8 +403,8 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                   const relatedPriceDisplay = relatedService.pricing.customQuote
                     ? "Custom Quote"
                     : relatedService.pricing.priceRange
-                    ? `From $${relatedService.pricing.priceRange.min.toLocaleString()}`
-                    : `$${relatedService.pricing.basePrice.toLocaleString()}`;
+                      ? `From $${relatedService.pricing.priceRange.min.toLocaleString()}`
+                      : `$${relatedService.pricing.basePrice.toLocaleString()}`;
 
                   return (
                     <motion.div

@@ -58,6 +58,11 @@ export default function ContactForm() {
     }
   }, [serviceParam])
 
+  // Force scroll to top on mount to fix navigation issue
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const selectedServiceName = serviceParam && serviceSlugMap[serviceParam]
     ? serviceDisplayNames[serviceSlugMap[serviceParam]]
     : null
