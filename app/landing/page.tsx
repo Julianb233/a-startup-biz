@@ -369,15 +369,21 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="relative rounded-3xl overflow-hidden h-[82vh] md:h-[92vh] bg-black/60 border border-white/15 box-glow-orange">
-              <Image
-                src="/images/tory-profile.jpg"
-                alt="Tory R. Zweigle"
-                fill
-                className="object-cover object-top"
-                sizes="(max-width: 768px) 92vw, 960px"
-                priority
-              />
+            <div className="relative">
+              {/* Orange glow behind the image */}
+              <div className="absolute -inset-4 md:-inset-6 bg-orange-500/30 rounded-[2rem] blur-2xl" />
+              <div className="absolute -inset-2 md:-inset-3 bg-orange-500/20 rounded-[2rem] blur-xl" />
+              
+              <div className="relative rounded-3xl overflow-hidden h-[82vh] md:h-[92vh] bg-black/60 border border-orange-500/30 shadow-[0_0_60px_rgba(249,115,22,0.3)]">
+                <Image
+                  src="/images/tory-profile.jpg"
+                  alt="Tory R. Zweigle"
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 92vw, 960px"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
