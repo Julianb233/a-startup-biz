@@ -33,7 +33,7 @@ export default function WhyStatisticSection() {
   return (
     <section
       ref={sectionRef}
-      className="tory-profile-section relative bg-gradient-to-b from-gray-900 via-gray-950 to-gray-50 dark:to-gray-900 py-24 sm:py-32 overflow-hidden"
+      className="tory-profile-section relative bg-gradient-to-b from-gray-100 via-gray-50 to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 py-24 sm:py-32 overflow-hidden"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -65,7 +65,7 @@ export default function WhyStatisticSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Why Become a{' '}
@@ -77,7 +77,7 @@ export default function WhyStatisticSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-400 max-w-3xl mx-auto"
+            className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             When you can learn from someone who's been there—over 100 times.
@@ -156,21 +156,21 @@ export default function WhyStatisticSection() {
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.7 + index * 0.15 }}
                   whileHover={{ x: 8 }}
-                  className="tory-stat-item flex items-start gap-5 p-5 bg-gray-800/50 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl border border-gray-700 hover:border-[#ff6a1a]/50 transition-all duration-300"
+                  className="tory-stat-item flex items-start gap-5 p-5 bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-[#ff6a1a]/50 transition-all duration-300 shadow-lg dark:shadow-none"
                 >
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#ff6a1a] to-[#ff8c4a] flex items-center justify-center flex-shrink-0">
                     <stat.icon className="w-7 h-7 text-white" />
                   </div>
                   <div>
                     <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-4xl font-black text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      <span className="text-4xl font-black text-gray-900 dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         {stat.value}
                       </span>
                       <span className="text-lg font-bold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         {stat.label}
                       </span>
                     </div>
-                    <p className="text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       {stat.description}
                     </p>
                   </div>
@@ -183,18 +183,18 @@ export default function WhyStatisticSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 1.2 }}
-              className="bg-gradient-to-br from-[#ff6a1a]/10 to-orange-900/10 rounded-2xl p-6 border border-[#ff6a1a]/30"
+              className="bg-gradient-to-br from-[#ff6a1a]/10 to-orange-500/10 dark:to-orange-900/10 rounded-2xl p-6 border border-[#ff6a1a]/30"
             >
               <div className="flex items-center gap-3 mb-4">
                 <Target className="w-6 h-6 text-[#ff6a1a]" />
-                <h4 className="text-xl font-bold text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <h4 className="text-xl font-bold text-gray-900 dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   Why Most Businesses Fail
                 </h4>
               </div>
-              <p className="text-gray-300 leading-relaxed mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 They try to figure it out alone. They learn from theory instead of experience. They get advice from people who've never built a business.
               </p>
-              <p className="text-white font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-gray-900 dark:text-white font-bold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <span className="text-[#ff6a1a]">Don't be one of them.</span> Learn from someone who's done it over 100 times.
               </p>
             </motion.div>
@@ -206,7 +206,7 @@ export default function WhyStatisticSection() {
               transition={{ duration: 0.6, delay: 1.4 }}
               className="border-l-4 border-[#ff6a1a] pl-6"
             >
-              <p className="text-lg text-gray-300 italic mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <p className="text-lg text-gray-700 dark:text-gray-300 italic mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 "Most consultants teach theory. And theory does not pay the bills."
               </p>
               <footer className="text-[#ff6a1a] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>

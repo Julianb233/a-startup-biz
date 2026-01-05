@@ -24,19 +24,19 @@ export default function HardTruthSection() {
   return (
     <section
       ref={sectionRef}
-      className="hard-truth-section relative bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 py-24 sm:py-32 overflow-hidden"
+      className="hard-truth-section relative bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 py-24 sm:py-32 overflow-hidden"
     >
       {/* Dramatic Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-red-900/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-red-500/20 dark:from-red-900/30 to-transparent rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
       </div>
 
       {/* Grid Pattern Overlay */}
       <div
-        className="absolute inset-0 opacity-5 pointer-events-none"
+        className="absolute inset-0 opacity-5 dark:opacity-5 pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
       />
 
@@ -55,7 +55,7 @@ export default function HardTruthSection() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/30 mb-6"
           >
             <AlertTriangle className="w-4 h-4 text-red-500" />
-            <span className="text-sm font-medium text-red-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <span className="text-sm font-medium text-red-500 dark:text-red-400" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Reality Check
             </span>
           </motion.div>
@@ -64,7 +64,7 @@ export default function HardTruthSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6"
+            className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             The Hard Truth
@@ -77,7 +77,7 @@ export default function HardTruthSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl text-gray-400 max-w-3xl mx-auto"
+            className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Most businesses fail. These are the statistics that nobody wants to talk about—but you need to know.
@@ -100,7 +100,7 @@ export default function HardTruthSection() {
               whileHover={{ scale: 1.02, y: -4 }}
               className="relative group"
             >
-              <div className="stat-card bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700 hover:border-red-500/50 transition-all duration-300">
+              <div className="stat-card bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-700 hover:border-red-500/50 transition-all duration-300 shadow-lg dark:shadow-none">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -113,10 +113,10 @@ export default function HardTruthSection() {
                 >
                   {stat.percentage}
                 </motion.span>
-                <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   {stat.label}
                 </h3>
-                <p className="text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <p className="text-gray-600 dark:text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   {stat.description}
                 </p>
               </div>
@@ -129,9 +129,9 @@ export default function HardTruthSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.9 }}
-          className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-3xl p-8 sm:p-12 border border-gray-700"
+          className="bg-gradient-to-br from-white/80 to-gray-100/80 dark:from-gray-800/50 dark:to-gray-900/50 backdrop-blur-sm rounded-3xl p-8 sm:p-12 border border-gray-200 dark:border-gray-700 shadow-lg dark:shadow-none"
         >
-          <h3 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white text-center mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Top Reasons Startups Fail
           </h3>
 
@@ -145,12 +145,12 @@ export default function HardTruthSection() {
                 className="text-center"
               >
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center border border-red-500/30">
-                  <item.icon className="w-8 h-8 text-red-400" />
+                  <item.icon className="w-8 h-8 text-red-500 dark:text-red-400" />
                 </div>
-                <span className="block text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <span className="block text-3xl font-bold text-gray-900 dark:text-white mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   {item.percentage}
                 </span>
-                <span className="text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <span className="text-gray-600 dark:text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   {item.reason}
                 </span>
               </motion.div>
@@ -165,10 +165,10 @@ export default function HardTruthSection() {
           transition={{ duration: 0.8, delay: 1.4 }}
           className="mt-16 text-center"
         >
-          <p className="text-2xl sm:text-3xl font-bold text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             So the question is...
           </p>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             With odds like these, why would you try to figure it out alone?
           </p>
         </motion.div>
