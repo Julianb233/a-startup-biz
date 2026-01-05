@@ -411,52 +411,47 @@ export default function InteractivePage() {
           </h1>
         </section>
 
-        {/* SECTION 3: TORY + VIDEO - Same fold, same vibe */}
+        {/* SECTION 3: MEET TORY - Standalone centered section */}
         <section ref={torySectionRef} className="py-16 md:py-24">
-          <div className="max-w-6xl mx-auto px-4">
-            {/* Grid: Tory on left, Video on right */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
+              Meet <span className="text-orange-500">Tory</span>
+            </h2>
+            <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">Serial Entrepreneur & Business Mentor</p>
 
-              {/* Left: Meet Tory */}
-              <div className="text-center lg:text-left">
-                <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
-                  Meet <span className="text-orange-500">Tory</span>
-                </h2>
-                <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-8">Serial Entrepreneur & Business Mentor</p>
+            {/* Tory's Image - Centered and larger */}
+            <div className="tory-image relative mx-auto w-[320px] h-[427px] sm:w-[380px] sm:h-[507px] md:w-[450px] md:h-[600px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
+              <Image
+                src="/images/tory-profile.jpg"
+                alt="Tory R. Zweigle"
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, 450px"
+              />
+            </div>
+          </div>
+        </section>
 
-                {/* Tory's Image */}
-                <div className="tory-image relative mx-auto lg:mx-0 w-[280px] h-[373px] sm:w-[320px] sm:h-[427px] md:w-[380px] md:h-[507px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_60px_rgba(255,106,26,0.2)]">
-                  <Image
-                    src="/images/tory-profile.jpg"
-                    alt="Tory R. Zweigle"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, 380px"
-                  />
-                </div>
-              </div>
+        {/* SECTION 4: WATCH THIS - Standalone centered section */}
+        <section className="py-16 md:py-24">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <h2 className="flow-animate text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
+              Watch <span className="text-orange-500">This</span>
+            </h2>
+            <p className="flow-animate text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">See how Tory helps entrepreneurs succeed.</p>
 
-              {/* Right: Watch This */}
-              <div className="text-center lg:text-left">
-                <h2 className="flow-animate text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
-                  Watch <span className="text-orange-500">This</span>
-                </h2>
-                <p className="flow-animate text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-8">See how Tory helps entrepreneurs succeed.</p>
-
-                {/* Video */}
-                <div className="flow-animate rounded-2xl overflow-hidden shadow-2xl border border-orange-500/20">
-                  <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
-                    <iframe
-                      src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
-                      title="A Startup Biz Introduction Video"
-                      allow="autoplay; fullscreen"
-                      allowFullScreen
-                      className="absolute inset-0 w-full h-full"
-                      style={{ border: "none" }}
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
+            {/* Video - Centered with glassmorphism */}
+            <div className="flow-animate rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(255,106,26,0.2)] border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
+              <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
+                <iframe
+                  src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
+                  title="A Startup Biz Introduction Video"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  style={{ border: "none" }}
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
@@ -475,28 +470,28 @@ export default function InteractivePage() {
             {/* Key Failure Stats - Big and Bold */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
               {/* Stat 1 - 90% Fail */}
-              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-red-500/30 rounded-2xl">
+              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-red-500/40 transition-all duration-300">
                 <div className="text-5xl sm:text-6xl md:text-7xl font-black text-red-500 mb-3">90%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">of startups FAIL</div>
                 <div className="text-sm text-white/60">Within the first 5 years</div>
               </div>
 
               {/* Stat 2 - Year 1 */}
-              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-orange-500/30 rounded-2xl">
+              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-500 mb-3">20%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">fail in Year 1</div>
                 <div className="text-sm text-white/60">Before they even get started</div>
               </div>
 
               {/* Stat 3 - Cash Flow */}
-              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-orange-500/30 rounded-2xl">
+              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-400 mb-3">82%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">cash flow issues</div>
                 <div className="text-sm text-white/60">#1 reason businesses fail</div>
               </div>
 
               {/* Stat 4 - No Plan */}
-              <div className="stat-image text-center p-8 bg-black/60 backdrop-blur-sm border border-orange-500/30 rounded-2xl">
+              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-300 mb-3">42%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">no market need</div>
                 <div className="text-sm text-white/60">Built something nobody wanted</div>
@@ -506,7 +501,7 @@ export default function InteractivePage() {
             {/* The Contrast - With Images */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
               {/* Stat Image 1 */}
-              <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
+              <div className="stat-image bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="relative w-full h-48 md:h-56">
                   <Image
                     src="/images/stat-4-7-million.jpg"
@@ -522,7 +517,7 @@ export default function InteractivePage() {
               </div>
 
               {/* Stat Image 2 */}
-              <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
+              <div className="stat-image bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="relative w-full h-48 md:h-56">
                   <Image
                     src="/images/stat-business-growth.jpg"
@@ -538,7 +533,7 @@ export default function InteractivePage() {
               </div>
 
               {/* Stat Image 3 */}
-              <div className="stat-image bg-black/60 backdrop-blur-sm border border-orange-500/20 rounded-2xl overflow-hidden">
+              <div className="stat-image bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="relative w-full h-48 md:h-56">
                   <Image
                     src="/images/stat-q4-acceleration.webp"
@@ -555,7 +550,7 @@ export default function InteractivePage() {
             </div>
 
             {/* The Point */}
-            <div className="flow-animate text-center mt-16 md:mt-20 p-8 md:p-12 bg-gradient-to-r from-orange-950/30 via-orange-900/20 to-orange-950/30 rounded-3xl border border-orange-500/30">
+            <div className="flow-animate text-center mt-16 md:mt-20 p-8 md:p-12 bg-gradient-to-br from-white/10 via-orange-500/10 to-transparent backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_32px_rgba(255,106,26,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.35)] transition-all duration-300">
               <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
                 Why become a <span className="text-red-500">statistic</span>?
               </p>
@@ -589,25 +584,25 @@ export default function InteractivePage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+              <div className="p-6 md:p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">82%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">Cash Flow Issues</div>
                 <p className="text-white/70 text-sm md:text-base">Limited funding, mixing personal and business finances, poor budgeting and pricing strategies.</p>
               </div>
 
-              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+              <div className="p-6 md:p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">42%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">No Market Need</div>
                 <p className="text-white/70 text-sm md:text-base">Built something nobody wanted. Without real demand, no marketing campaign can save you.</p>
               </div>
 
-              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+              <div className="p-6 md:p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">22%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">Marketing Failure</div>
                 <p className="text-white/70 text-sm md:text-base">Without branding, direction, or a clear strategy, even great products remain invisible.</p>
               </div>
 
-              <div className="p-6 md:p-8 bg-black/60 border border-orange-500/20 rounded-2xl">
+              <div className="p-6 md:p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
                 <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">35%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">Poor Management</div>
                 <p className="text-white/70 text-sm md:text-base">Excel at products/services but struggle with finance, hiring, or marketing — often without realizing it.</p>
@@ -619,7 +614,7 @@ export default function InteractivePage() {
         {/* THE WANTREPRENEUR TRUTH */}
         <section className="py-12 md:py-20">
           <div className="flow-animate max-w-4xl mx-auto px-4">
-            <div className="relative p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-gradient-to-r from-red-950/30 via-black to-red-950/30 border border-red-500/30">
+            <div className="relative p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-gradient-to-br from-white/10 via-red-500/10 to-transparent backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(239,68,68,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(239,68,68,0.25)] transition-all duration-300">
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6">
                 The <span className="text-red-500">Wantrepreneur</span> Problem
               </h3>
@@ -635,7 +630,7 @@ export default function InteractivePage() {
         {/* CONSULTANTS VS EXPERIENCE */}
         <section className="py-12 md:py-20">
           <div className="flow-animate max-w-4xl mx-auto px-4">
-            <div className="relative p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-black/60 border border-orange-500/20">
+            <div className="relative p-6 sm:p-8 md:p-12 rounded-2xl md:rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] transition-all duration-300">
               <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-6">
                 Theory <span className="text-gray-500">vs</span> <span className="text-orange-500">Experience</span>
               </h3>
@@ -665,7 +660,7 @@ export default function InteractivePage() {
 
               <p>If it is a good idea, I will explain why it has potential and what you should do next.</p>
 
-              <div className="p-6 md:p-8 bg-gradient-to-r from-orange-950/30 via-black to-orange-950/30 border border-orange-500/30 rounded-2xl mt-8">
+              <div className="p-6 md:p-8 bg-gradient-to-br from-white/10 via-orange-500/10 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl mt-8 shadow-[0_8px_32px_rgba(255,106,26,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.35)] transition-all duration-300">
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400 text-center">
                   It&apos;s like insurance for your entrepreneurial future. Either way, we both win.
                 </p>
