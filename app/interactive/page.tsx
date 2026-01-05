@@ -411,53 +411,7 @@ export default function InteractivePage() {
           </h1>
         </section>
 
-        {/* SECTION 3: MEET TORY - Standalone centered section */}
-        <section ref={torySectionRef} className="py-16 md:py-24">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
-              Meet <span className="text-orange-500">Tory</span>
-            </h2>
-            <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">Serial Entrepreneur & Business Mentor</p>
-
-            {/* Tory's Image - Centered and larger */}
-            <div className="tory-image relative mx-auto w-[320px] h-[427px] sm:w-[380px] sm:h-[507px] md:w-[450px] md:h-[600px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
-              <Image
-                src="/images/tory-profile.jpg"
-                alt="Tory R. Zweigle"
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, 450px"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 4: WATCH THIS - Standalone centered section */}
-        <section className="py-16 md:py-24">
-          <div className="max-w-3xl mx-auto px-4 text-center">
-            <h2 className="flow-animate text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
-              Watch <span className="text-orange-500">This</span>
-            </h2>
-            <p className="flow-animate text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">See how Tory helps entrepreneurs succeed.</p>
-
-            {/* Video - Centered with glassmorphism */}
-            <div className="flow-animate rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(255,106,26,0.2)] border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
-              <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
-                <iframe
-                  src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
-                  title="A Startup Biz Introduction Video"
-                  allow="autoplay; fullscreen"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                  style={{ border: "none" }}
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* THE HARD TRUTH - Business Failure Facts */}
+        {/* SECTION 3: THE HARD TRUTH - Business Failure Facts */}
         <section ref={statsSectionRef} className="py-20 md:py-32">
           <div className="max-w-6xl mx-auto px-4">
             <h2 className="flow-animate text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-6">
@@ -561,7 +515,28 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* TORY'S STORY - Authentic Voice */}
+        {/* SECTION 4: MEET TORY - Standalone centered section */}
+        <section ref={torySectionRef} className="py-16 md:py-24">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
+              Meet <span className="text-orange-500">Tory</span>
+            </h2>
+            <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">Serial Entrepreneur & Business Mentor</p>
+
+            {/* Tory's Image - Centered and larger */}
+            <div className="tory-image relative mx-auto w-[320px] h-[427px] sm:w-[380px] sm:h-[507px] md:w-[450px] md:h-[600px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
+              <Image
+                src="/images/tory-profile.jpg"
+                alt="Tory R. Zweigle"
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, 450px"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 5: TORY'S STORY - Authentic Voice */}
         <section className="py-16 md:py-24">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-8 md:mb-12">
@@ -576,7 +551,7 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* WHY MOST FAIL */}
+        {/* SECTION 6: WHY MOST FAIL */}
         <section className="py-12 md:py-20">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center mb-10 md:mb-16">
@@ -606,6 +581,31 @@ export default function InteractivePage() {
                 <div className="text-3xl md:text-4xl font-black text-orange-500 mb-3">35%</div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">Poor Management</div>
                 <p className="text-white/70 text-sm md:text-base">Excel at products/services but struggle with finance, hiring, or marketing — often without realizing it.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 7: WATCH THIS - Video section (moved after Why Most Fail) */}
+        <section className="py-16 md:py-24">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <h2 className="flow-animate text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
+              Watch <span className="text-orange-500">This</span>
+            </h2>
+            <p className="flow-animate text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">See how Tory helps entrepreneurs succeed.</p>
+
+            {/* Video - Centered with glassmorphism */}
+            <div className="flow-animate rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(255,106,26,0.2)] border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
+              <div className="relative w-full" style={{ paddingTop: "177.78%" }}>
+                <iframe
+                  src="https://fast.wistia.net/embed/iframe/kono7sttzg?seo=true&videoFoam=false"
+                  title="A Startup Biz Introduction Video"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                  style={{ border: "none" }}
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
