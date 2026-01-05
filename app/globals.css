@@ -583,6 +583,26 @@ body {
     will-change: transform, opacity;
   }
 
+  @keyframes depth-orb-orbit {
+    0% {
+      transform: rotate(0deg) translateX(var(--orb-orbit-radius, 24px))
+        translateY(calc(var(--orb-orbit-radius, 24px) * 0.35)) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(var(--orb-orbit-radius, 24px))
+        translateY(calc(var(--orb-orbit-radius, 24px) * 0.35)) rotate(-360deg);
+    }
+  }
+
+  /* Inner element so GSAP can own the wrapper transform */
+  .depth-orb__inner {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    will-change: transform;
+    animation: depth-orb-orbit var(--orb-orbit-duration, 180s) linear infinite;
+  }
+
   .orb-orange {
     background: radial-gradient(circle, rgba(255, 106, 26, 0.4) 0%, transparent 70%);
   }
@@ -593,6 +613,12 @@ body {
 
   .orb-white {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .depth-orb__inner {
+      animation: none;
+    }
   }
 
   /* Section base for horizontal scroll (legacy) */
