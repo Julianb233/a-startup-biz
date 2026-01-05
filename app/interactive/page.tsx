@@ -515,43 +515,40 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* SECTION 4: MEET TORY - Standalone centered section */}
+        {/* SECTION 4: MEET TORY + 100+ BUSINESSES - Side by side layout */}
         <section ref={torySectionRef} className="py-16 md:py-24">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
-              Meet <span className="text-orange-500">Tory</span>
-            </h2>
-            <p className="tory-subtitle text-xl sm:text-2xl md:text-3xl text-gray-400 font-semibold mb-10">Serial Entrepreneur & Business Mentor</p>
-
-            {/* Tory's Image - Centered and larger */}
-            <div className="tory-image relative mx-auto w-[320px] h-[427px] sm:w-[380px] sm:h-[507px] md:w-[450px] md:h-[600px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
-              <Image
-                src="/images/tory-profile.jpg"
-                alt="Tory R. Zweigle"
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, 450px"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 5: TORY'S STORY - Authentic Voice */}
-        <section className="py-16 md:py-24">
-          <div className="flow-animate max-w-4xl mx-auto px-4">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white text-center mb-8 md:mb-12">
+          <div className="max-w-6xl mx-auto px-4">
+            {/* Section Header */}
+            <h2 className="tory-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white text-center mb-4">
               <span className="text-orange-500">100+</span> Businesses. <span className="text-orange-500">50+</span> Years.
             </h2>
-            <div className="space-y-6 text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
-              <p>My name is <span className="text-orange-500 font-bold">Tory Zweigle</span>, and I am a serial entrepreneur. I am also the author of <em className="text-orange-400">The Art and Soul of Common Sense in Business</em> — a global top seller in both English and Mandarin.</p>
-              <p>I started my first business at just <span className="text-orange-500 font-bold">11 years old</span>, selling avocados from our family orchard in the canyons. Since then, I have started over <span className="text-orange-500 font-bold">100 businesses</span> — each one different from the last.</p>
-              <p>Manufacturing. Restaurants. Distribution. Auto Dealerships. Hotels. Salons. Towing. Autobody Shops. Senior Care. Design. Custom Homes. Commercial Real Estate. Upholstery. Art Galleries. Furniture. Printing. Graphics. High-End Gifts. Marketing. Publishing.</p>
-              <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400">Everything I share comes from experience — not theory.</p>
+            <p className="tory-subtitle text-xl sm:text-2xl text-gray-400 font-semibold text-center mb-12 md:mb-16">Serial Entrepreneur & Business Mentor</p>
+
+            {/* Side by side: Image left, Text right */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+              {/* Left: Tory's Image */}
+              <div className="tory-image relative mx-auto lg:mx-0 w-[320px] h-[427px] sm:w-[380px] sm:h-[507px] md:w-[400px] md:h-[533px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
+                <Image
+                  src="/images/tory-profile.jpg"
+                  alt="Tory R. Zweigle"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, 400px"
+                />
+              </div>
+
+              {/* Right: Text content */}
+              <div className="flow-animate space-y-6 text-base sm:text-lg md:text-xl text-white/80 leading-relaxed">
+                <p>My name is <span className="text-orange-500 font-bold">Tory Zweigle</span>, and I am a serial entrepreneur. I am also the author of <em className="text-orange-400">The Art and Soul of Common Sense in Business</em> — a global top seller in both English and Mandarin.</p>
+                <p>I started my first business at just <span className="text-orange-500 font-bold">11 years old</span>, selling avocados from our family orchard in the canyons. Since then, I have started over <span className="text-orange-500 font-bold">100 businesses</span> — each one different from the last.</p>
+                <p>Manufacturing. Restaurants. Distribution. Auto Dealerships. Hotels. Salons. Towing. Autobody Shops. Senior Care. Design. Custom Homes. Commercial Real Estate. Upholstery. Art Galleries. Furniture. Printing. Graphics. High-End Gifts. Marketing. Publishing.</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-400">Everything I share comes from experience — not theory.</p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 6: WHY MOST FAIL */}
+        {/* SECTION 5: WHY MOST FAIL */}
         <section className="py-12 md:py-20">
           <div className="flow-animate max-w-4xl mx-auto px-4">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white text-center mb-10 md:mb-16">
@@ -586,7 +583,7 @@ export default function InteractivePage() {
           </div>
         </section>
 
-        {/* SECTION 7: WATCH THIS - Video section (moved after Why Most Fail) */}
+        {/* SECTION 6: WATCH THIS - Video section */}
         <section className="py-16 md:py-24">
           <div className="max-w-3xl mx-auto px-4 text-center">
             <h2 className="flow-animate text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4">
