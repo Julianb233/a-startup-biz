@@ -1,9 +1,11 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Briefcase, Award, TrendingUp, ShieldCheck, Target } from 'lucide-react';
 import Image from 'next/image';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export default function WhyStatisticSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -13,22 +15,125 @@ export default function WhyStatisticSection() {
     {
       icon: Briefcase,
       value: '100+',
+      numericValue: 100,
+      suffix: '+',
       label: 'Businesses Started',
-      description: 'Real experience from launching over a hundred ventures'
+      description: 'Real experience from launching over a hundred ventures',
+      graph: {
+        bars: [12, 22, 18, 34, 28, 46, 38, 58, 50, 72, 66, 86],
+        path: 'M2 18 L18 17 L30 15 L44 13 L58 11 L72 9 L84 7 L98 6',
+      },
     },
     {
       icon: Award,
       value: '46+',
+      numericValue: 46,
+      suffix: '+',
       label: 'Years of Experience',
-      description: 'Nearly five decades of entrepreneurial knowledge'
+      description: 'Nearly five decades of entrepreneurial knowledge',
+      graph: {
+        bars: [18, 24, 28, 34, 40, 48, 54, 60, 64, 70, 74, 78],
+        path: 'M2 19 L16 18 L30 17 L44 15 L58 13 L72 11 L84 9 L98 7',
+      },
     },
     {
       icon: TrendingUp,
       value: '11',
+      numericValue: 11,
+      suffix: '',
       label: 'Started at Age',
-      description: 'A lifetime devoted to building businesses'
+      description: 'A lifetime devoted to building businesses',
+      graph: {
+        bars: [10, 14, 18, 22, 18, 26, 22, 30, 26, 34, 30, 38],
+        path: 'M2 18 L18 18 L30 17 L44 16 L58 15 L72 13 L84 12 L98 10',
+      },
     },
   ];
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray<HTMLElement>('.tory-stat-item');
+
+      items.forEach((item) => {
+        const valueEl = item.querySelector<HTMLElement>('[data-stat-value]');
+        const bars = item.querySelectorAll<HTMLElement>('.mini-bar');
+        const path = item.querySelector<SVGPathElement>('.mini-line-path');
+
+        // Bars
+        if (bars.length > 0) {
+          gsap.fromTo(
+            bars,
+            { scaleY: 0, opacity: 0.85, transformOrigin: 'bottom' },
+            {
+              scaleY: 1,
+              opacity: 1,
+              duration: 0.9,
+              ease: 'power3.out',
+              stagger: 0.035,
+              scrollTrigger: {
+                trigger: item,
+                start: 'top 85%',
+                toggleActions: 'play none none none',
+              },
+            }
+          );
+        }
+
+        // Line
+        if (path) {
+          const length = path.getTotalLength();
+          gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+          gsap.to(path, {
+            strokeDashoffset: 0,
+            duration: 1.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: item,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+          });
+        }
+
+        // Count-up
+        if (valueEl) {
+          const targetValue = Number(valueEl.getAttribute('data-value') || '0');
+          const suffix = valueEl.getAttribute('data-suffix') || '';
+          const counter = { value: 0 };
+
+          gsap.fromTo(
+            counter,
+            { value: 0 },
+            {
+              value: targetValue,
+              duration: 1.0,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: item,
+                start: 'top 85%',
+                toggleActions: 'play none none none',
+              },
+              onUpdate: () => {
+                valueEl.textContent = `${Math.round(counter.value)}${suffix}`;
+              },
+            }
+          );
+        }
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
@@ -93,7 +198,7 @@ export default function WhyStatisticSection() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="relative"
           >
-            <div className="tory-image relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl">
+            <div className="tory-image relative w-full h-[520px] sm:h-[600px] lg:h-[680px] rounded-3xl overflow-hidden shadow-2xl">
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent z-10" />
               <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/20 via-transparent to-[#ff8c4a]/20 z-10" />
@@ -164,7 +269,9 @@ export default function WhyStatisticSection() {
                   <div>
                     <div className="flex items-baseline gap-2 mb-1">
                       <span className="text-4xl font-black text-gray-900 dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        {stat.value}
+                        <span data-stat-value data-value={stat.numericValue} data-suffix={stat.suffix}>
+                          {stat.value}
+                        </span>
                       </span>
                       <span className="text-lg font-bold text-[#ff6a1a]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                         {stat.label}
@@ -173,6 +280,30 @@ export default function WhyStatisticSection() {
                     <p className="text-gray-600 dark:text-gray-400 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       {stat.description}
                     </p>
+
+                    {/* Mini graph (GSAP animated) */}
+                    <div className="mt-4">
+                      <div className="h-8 flex items-end gap-1">
+                        {stat.graph.bars.map((h, i) => (
+                          <div
+                            key={i}
+                            className="mini-bar w-1.5 rounded-full bg-gradient-to-t from-[#ff6a1a]/60 to-[#ff8c4a]/80 shadow-[0_0_16px_rgba(255,106,26,0.18)]"
+                            style={{ height: `${h}%` }}
+                          />
+                        ))}
+                      </div>
+                      <svg viewBox="0 0 100 24" className="mt-2 h-5 w-32">
+                        <path
+                          className="mini-line-path"
+                          d={stat.graph.path}
+                          fill="none"
+                          stroke="rgba(255,106,26,0.95)"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </motion.div>
               ))}

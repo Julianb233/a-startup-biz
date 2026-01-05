@@ -268,6 +268,76 @@ export default function InteractivePage() {
             }
           )
         })
+
+        // Graph + count-up animations for the stat cards
+        const statCards = statsSection.querySelectorAll<HTMLElement>("[data-stat-card]")
+        statCards.forEach((card) => {
+          const numberEl = card.querySelector<HTMLElement>("[data-stat-number]")
+          const bars = card.querySelectorAll<HTMLElement>(".mini-bar")
+          const linePath = card.querySelector<SVGPathElement>(".mini-line-path")
+
+          if (numberEl) {
+            const targetValue = Number(numberEl.getAttribute("data-value") || "0")
+            const suffix = numberEl.getAttribute("data-suffix") || ""
+            const counter = { value: 0 }
+
+            gsap.fromTo(
+              counter,
+              { value: 0 },
+              {
+                value: targetValue,
+                duration: 1.1,
+                ease: "power2.out",
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top 85%",
+                  toggleActions: "play none none none",
+                },
+                onUpdate: () => {
+                  const v = Math.round(counter.value)
+                  numberEl.textContent = `${v}${suffix}`
+                },
+              }
+            )
+          }
+
+          if (bars.length > 0) {
+            gsap.fromTo(
+              bars,
+              { scaleY: 0, opacity: 0.85, transformOrigin: "bottom" },
+              {
+                scaleY: 1,
+                opacity: 1,
+                duration: 0.9,
+                ease: "power3.out",
+                stagger: 0.04,
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top 85%",
+                  toggleActions: "play none none none",
+                },
+              }
+            )
+          }
+
+          if (linePath) {
+            const length = linePath.getTotalLength()
+            gsap.set(linePath, {
+              strokeDasharray: length,
+              strokeDashoffset: length,
+            })
+            gsap.to(linePath, {
+              strokeDashoffset: 0,
+              duration: 1.1,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+            })
+          }
+        })
       }
 
       // ============================================
@@ -424,31 +494,127 @@ export default function InteractivePage() {
             {/* Key Failure Stats - Big and Bold */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16">
               {/* Stat 1 - 90% Fail */}
-              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-red-500/40 transition-all duration-300">
-                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-red-500 mb-3">90%</div>
+              <div data-stat-card className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-red-500/40 transition-all duration-300">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-red-500 mb-3">
+                  <span data-stat-number data-value="90" data-suffix="%">90%</span>
+                </div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">of startups FAIL</div>
                 <div className="text-sm text-white/60">Within the first 5 years</div>
+                <div className="mt-6">
+                  <div className="h-10 flex items-end justify-center gap-1.5">
+                    {[18, 42, 55, 70, 48, 76, 64, 84, 72, 90, 78, 88].map((h, idx) => (
+                      <div
+                        key={idx}
+                        className="mini-bar w-1.5 rounded-full bg-red-500/70 shadow-[0_0_18px_rgba(239,68,68,0.25)]"
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
+                  </div>
+                  <svg viewBox="0 0 100 24" className="mt-3 mx-auto h-6 w-32">
+                    <path
+                      className="mini-line-path"
+                      d="M2 18 L18 16 L30 14 L42 12 L58 9 L70 7 L84 5 L98 3"
+                      fill="none"
+                      stroke="rgba(239,68,68,0.9)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
               </div>
 
               {/* Stat 2 - Year 1 */}
-              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
-                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-500 mb-3">20%</div>
+              <div data-stat-card className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-500 mb-3">
+                  <span data-stat-number data-value="20" data-suffix="%">20%</span>
+                </div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">fail in Year 1</div>
                 <div className="text-sm text-white/60">Before they even get started</div>
+                <div className="mt-6">
+                  <div className="h-10 flex items-end justify-center gap-1.5">
+                    {[10, 18, 14, 22, 16, 28, 20, 32, 24, 36, 30, 40].map((h, idx) => (
+                      <div
+                        key={idx}
+                        className="mini-bar w-1.5 rounded-full bg-orange-500/75 shadow-[0_0_18px_rgba(255,106,26,0.25)]"
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
+                  </div>
+                  <svg viewBox="0 0 100 24" className="mt-3 mx-auto h-6 w-32">
+                    <path
+                      className="mini-line-path"
+                      d="M2 18 L16 18 L28 17 L42 16 L56 15 L70 13 L84 11 L98 9"
+                      fill="none"
+                      stroke="rgba(255,106,26,0.95)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
               </div>
 
               {/* Stat 3 - Cash Flow */}
-              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
-                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-400 mb-3">82%</div>
+              <div data-stat-card className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-400 mb-3">
+                  <span data-stat-number data-value="82" data-suffix="%">82%</span>
+                </div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">cash flow issues</div>
                 <div className="text-sm text-white/60">#1 reason businesses fail</div>
+                <div className="mt-6">
+                  <div className="h-10 flex items-end justify-center gap-1.5">
+                    {[22, 34, 46, 58, 52, 66, 60, 74, 70, 86, 78, 92].map((h, idx) => (
+                      <div
+                        key={idx}
+                        className="mini-bar w-1.5 rounded-full bg-orange-400/75 shadow-[0_0_18px_rgba(251,146,60,0.25)]"
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
+                  </div>
+                  <svg viewBox="0 0 100 24" className="mt-3 mx-auto h-6 w-32">
+                    <path
+                      className="mini-line-path"
+                      d="M2 19 L18 18 L30 16 L44 14 L58 12 L72 10 L84 8 L98 6"
+                      fill="none"
+                      stroke="rgba(251,146,60,0.95)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
               </div>
 
               {/* Stat 4 - No Plan */}
-              <div className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
-                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-300 mb-3">42%</div>
+              <div data-stat-card className="stat-image text-center p-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_32px_rgba(255,106,26,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_20px_60px_rgba(255,106,26,0.3)] hover:-translate-y-1 hover:border-orange-500/40 transition-all duration-300">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-orange-300 mb-3">
+                  <span data-stat-number data-value="42" data-suffix="%">42%</span>
+                </div>
                 <div className="text-lg md:text-xl text-white font-semibold mb-2">no market need</div>
                 <div className="text-sm text-white/60">Built something nobody wanted</div>
+                <div className="mt-6">
+                  <div className="h-10 flex items-end justify-center gap-1.5">
+                    {[14, 26, 20, 34, 28, 42, 36, 50, 44, 58, 52, 66].map((h, idx) => (
+                      <div
+                        key={idx}
+                        className="mini-bar w-1.5 rounded-full bg-orange-300/75 shadow-[0_0_18px_rgba(253,186,116,0.25)]"
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
+                  </div>
+                  <svg viewBox="0 0 100 24" className="mt-3 mx-auto h-6 w-32">
+                    <path
+                      className="mini-line-path"
+                      d="M2 17 L18 16 L30 15 L44 14 L58 13 L72 12 L84 11 L98 10"
+                      fill="none"
+                      stroke="rgba(253,186,116,0.95)"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
 
@@ -527,13 +693,13 @@ export default function InteractivePage() {
             {/* Side by side: Image left, Text right */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
               {/* Left: Tory's Image */}
-              <div className="tory-image relative mx-auto lg:mx-0 w-[320px] h-[427px] sm:w-[380px] sm:h-[507px] md:w-[400px] md:h-[533px] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
+              <div className="tory-image relative mx-auto lg:mx-0 w-full max-w-[420px] sm:max-w-[460px] lg:max-w-[520px] aspect-[3/4] rounded-2xl overflow-hidden border-2 border-orange-500/30 shadow-[0_0_80px_rgba(255,106,26,0.25)]">
                 <Image
                   src="/images/tory-profile.jpg"
                   alt="Tory R. Zweigle"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, 400px"
+                  sizes="(max-width: 1024px) 90vw, 520px"
                 />
               </div>
 
