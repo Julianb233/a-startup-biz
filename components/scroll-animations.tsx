@@ -161,6 +161,75 @@ export function ScrollAnimations() {
           },
         });
       });
+
+      // Entrepreneur section traits stagger
+      gsap.fromTo(
+        '.entrepreneur-trait',
+        { opacity: 0, x: -20 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: '.entrepreneur-section',
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
+
+      // Hard truth stat cards
+      gsap.fromTo(
+        '.stat-card',
+        { opacity: 0, scale: 0.8, y: 30 },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: 'back.out(1.4)',
+          scrollTrigger: {
+            trigger: '.hard-truth-section',
+            start: 'top 75%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
+
+      // Tory profile section - stats slide in
+      gsap.fromTo(
+        '.tory-stat-item',
+        { opacity: 0, x: 40 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.tory-profile-section',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
+
+      // Tory image parallax
+      gsap.utils.toArray('.tory-image').forEach((el: any) => {
+        gsap.to(el, {
+          yPercent: -10,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
+      });
     });
 
     return () => {

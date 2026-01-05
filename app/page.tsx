@@ -11,6 +11,9 @@ import CTASection from "@/components/cta-section"
 import Footer from "@/components/footer"
 import HeroSection from "@/components/hero-section"
 import WistiaVideo from "@/components/wistia-video"
+import EntrepreneurSection from "@/components/entrepreneur-section"
+import HardTruthSection from "@/components/hard-truth-section"
+import WhyStatisticSection from "@/components/why-statistic-section"
 
 export const metadata: Metadata = {
   title: "A Startup Biz - Expert Business Consulting for Entrepreneurs",
@@ -53,11 +56,20 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Meet Tory */}
-      <AboutSection />
+      {/* Are You an Entrepreneur or Wantrepreneur? */}
+      <EntrepreneurSection />
 
-      {/* Video Introduction */}
+      {/* The Hard Truth About Startups */}
+      <HardTruthSection />
+
+      {/* Why Become a Statistic? - Tory's Image + Stats */}
+      <WhyStatisticSection />
+
+      {/* Video Introduction - Why Most Businesses Fail */}
       <WistiaVideo />
+
+      {/* Tory's Story - Text Only */}
+      <AboutSection />
 
       {/* How It Works */}
       <HowItWorks />
