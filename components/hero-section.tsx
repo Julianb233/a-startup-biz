@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, CheckCircle } from 'lucide-react'
 
 export default function HeroSection() {
@@ -36,6 +37,20 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Hero background image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/tory-profile.jpg"
+          alt="A Startup Biz hero"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Readability overlay (light + dark modes) */}
+        <div className="absolute inset-0 bg-white/85 dark:bg-black/65" />
+      </div>
+
       {/* Subtle animated gradient background */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-[#ff6a1a] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
