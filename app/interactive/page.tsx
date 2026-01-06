@@ -292,20 +292,30 @@ export default function InteractivePage() {
       })
 
       // ============================================
-      // 7. PARALLAX ORBS - Depth effect
+      // 7. LAVA-LAMP ORBS - Subtle luxury drift
       // ============================================
       if (!isMobile) {
         gsap.utils.toArray<HTMLElement>(".depth-orb").forEach((orb, i) => {
-          const speed = 0.1 + i * 0.05
+          const xAmt = 40 + i * 25
+          const yAmt = 30 + i * 20
+          const base = 26 + i * 9
+
           gsap.to(orb, {
-            y: () => -window.innerHeight * speed,
-            ease: "none",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: 2
-            }
+            x: `+=${xAmt}`,
+            duration: base,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            force3D: true,
+          })
+
+          gsap.to(orb, {
+            y: `+=${yAmt}`,
+            duration: base + 10,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            force3D: true,
           })
         })
       }
@@ -345,9 +355,48 @@ export default function InteractivePage() {
         <div className="ambient-orb absolute w-[350px] h-[350px] md:w-[550px] md:h-[550px] top-[60%] right-[5%] rounded-full bg-orange-500/8 blur-[90px]" />
 
         {/* Parallax depth orbs */}
-        <div className="depth-orb absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] top-[10%] left-[-10%] rounded-full bg-orange-500/10 blur-[100px]" />
-        <div className="depth-orb absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] top-[50%] right-[-5%] rounded-full bg-orange-400/10 blur-[80px]" />
-        <div className="depth-orb absolute w-[350px] h-[350px] md:w-[500px] md:h-[500px] bottom-[20%] left-[10%] rounded-full bg-orange-500/10 blur-[100px]" />
+        <div
+          className="depth-orb depth-orb--lava absolute w-[400px] h-[400px] md:w-[600px] md:h-[600px] top-[10%] left-[-10%]"
+          style={
+            {
+              ["--lava-x" as any]: "52px",
+              ["--lava-y" as any]: "38px",
+              ["--lava-duration" as any]: "34s",
+              ["--orb-blur" as any]: "110px",
+              ["--orb-opacity" as any]: "0.55",
+            } as any
+          }
+        >
+          <div className="depth-orb__inner depth-orb__inner--lava orb-orange" />
+        </div>
+        <div
+          className="depth-orb depth-orb--lava absolute w-[300px] h-[300px] md:w-[400px] md:h-[400px] top-[50%] right-[-5%]"
+          style={
+            {
+              ["--lava-x" as any]: "44px",
+              ["--lava-y" as any]: "54px",
+              ["--lava-duration" as any]: "40s",
+              ["--orb-blur" as any]: "95px",
+              ["--orb-opacity" as any]: "0.45",
+            } as any
+          }
+        >
+          <div className="depth-orb__inner depth-orb__inner--lava orb-orange" />
+        </div>
+        <div
+          className="depth-orb depth-orb--lava absolute w-[350px] h-[350px] md:w-[500px] md:h-[500px] bottom-[20%] left-[10%]"
+          style={
+            {
+              ["--lava-x" as any]: "60px",
+              ["--lava-y" as any]: "34px",
+              ["--lava-duration" as any]: "46s",
+              ["--orb-blur" as any]: "120px",
+              ["--orb-opacity" as any]: "0.50",
+            } as any
+          }
+        >
+          <div className="depth-orb__inner depth-orb__inner--lava orb-orange" />
+        </div>
       </div>
 
       {/* Content */}

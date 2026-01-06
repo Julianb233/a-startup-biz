@@ -603,6 +603,30 @@ body {
     animation: depth-orb-orbit var(--orb-orbit-duration, 180s) linear infinite;
   }
 
+  @keyframes depth-orb-lava {
+    0% {
+      transform: translate3d(calc(var(--lava-x, 40px) * -0.35), calc(var(--lava-y, 40px) * 0.15), 0) scale(1);
+    }
+    33% {
+      transform: translate3d(calc(var(--lava-x, 40px) * 0.55), calc(var(--lava-y, 40px) * -0.35), 0) scale(1.06);
+    }
+    66% {
+      transform: translate3d(calc(var(--lava-x, 40px) * -0.25), calc(var(--lava-y, 40px) * 0.7), 0) scale(0.98);
+    }
+    100% {
+      transform: translate3d(calc(var(--lava-x, 40px) * 0.35), calc(var(--lava-y, 40px) * -0.2), 0) scale(1.03);
+    }
+  }
+
+  .depth-orb--lava {
+    filter: blur(var(--orb-blur, 110px));
+    opacity: var(--orb-opacity, 0.55);
+  }
+
+  .depth-orb__inner--lava {
+    animation: depth-orb-lava var(--lava-duration, 38s) ease-in-out infinite alternate;
+  }
+
   .orb-orange {
     background: radial-gradient(circle, rgba(255, 106, 26, 0.4) 0%, transparent 70%);
   }
