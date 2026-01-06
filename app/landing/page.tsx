@@ -222,9 +222,39 @@ export default function LandingPage() {
 
       {/* Orange depth orbs */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="depth-orb orb-orange w-[680px] h-[680px] top-[8%] left-[-14%]" />
-        <div className="depth-orb orb-orange w-[520px] h-[520px] top-[42%] right-[-12%] opacity-70" />
-        <div className="depth-orb orb-orange w-[420px] h-[420px] bottom-[-12%] right-[12%] opacity-60" />
+        <div
+          className="depth-orb w-[680px] h-[680px] top-[8%] left-[-14%]"
+          style={
+            {
+              ["--orb-orbit-radius" as any]: "34px",
+              ["--orb-orbit-duration" as any]: "160s",
+            } as any
+          }
+        >
+          <div className="depth-orb__inner orb-orange" />
+        </div>
+        <div
+          className="depth-orb w-[520px] h-[520px] top-[42%] right-[-12%] opacity-70"
+          style={
+            {
+              ["--orb-orbit-radius" as any]: "26px",
+              ["--orb-orbit-duration" as any]: "190s",
+            } as any
+          }
+        >
+          <div className="depth-orb__inner orb-orange" />
+        </div>
+        <div
+          className="depth-orb w-[420px] h-[420px] bottom-[-12%] right-[12%] opacity-60"
+          style={
+            {
+              ["--orb-orbit-radius" as any]: "22px",
+              ["--orb-orbit-duration" as any]: "220s",
+            } as any
+          }
+        >
+          <div className="depth-orb__inner orb-orange" />
+        </div>
       </div>
 
       <div className="relative z-10 flex flex-col">
