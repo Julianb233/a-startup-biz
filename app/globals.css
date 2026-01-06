@@ -626,7 +626,6 @@ body {
   .depth-orb__inner--lava {
     animation: depth-orb-lava var(--lava-duration, 38s) ease-in-out infinite alternate;
   }
-
   .orb-orange {
     background: radial-gradient(circle, rgba(255, 106, 26, 0.4) 0%, transparent 70%);
   }
