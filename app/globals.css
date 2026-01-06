@@ -583,6 +583,49 @@ body {
     will-change: transform, opacity;
   }
 
+  @keyframes depth-orb-orbit {
+    0% {
+      transform: rotate(0deg) translateX(var(--orb-orbit-radius, 24px))
+        translateY(calc(var(--orb-orbit-radius, 24px) * 0.35)) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(var(--orb-orbit-radius, 24px))
+        translateY(calc(var(--orb-orbit-radius, 24px) * 0.35)) rotate(-360deg);
+    }
+  }
+
+  /* Inner element so GSAP can own the wrapper transform */
+  .depth-orb__inner {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    will-change: transform;
+    animation: depth-orb-orbit var(--orb-orbit-duration, 180s) linear infinite;
+  }
+
+  @keyframes depth-orb-lava {
+    0% {
+      transform: translate3d(calc(var(--lava-x, 40px) * -0.35), calc(var(--lava-y, 40px) * 0.15), 0) scale(1);
+    }
+    33% {
+      transform: translate3d(calc(var(--lava-x, 40px) * 0.55), calc(var(--lava-y, 40px) * -0.35), 0) scale(1.06);
+    }
+    66% {
+      transform: translate3d(calc(var(--lava-x, 40px) * -0.25), calc(var(--lava-y, 40px) * 0.7), 0) scale(0.98);
+    }
+    100% {
+      transform: translate3d(calc(var(--lava-x, 40px) * 0.35), calc(var(--lava-y, 40px) * -0.2), 0) scale(1.03);
+    }
+  }
+
+  .depth-orb--lava {
+    filter: blur(var(--orb-blur, 110px));
+    opacity: var(--orb-opacity, 0.55);
+  }
+
+  .depth-orb__inner--lava {
+    animation: depth-orb-lava var(--lava-duration, 38s) ease-in-out infinite alternate;
+  }
   .orb-orange {
     background: radial-gradient(circle, rgba(255, 106, 26, 0.4) 0%, transparent 70%);
   }
@@ -593,6 +636,12 @@ body {
 
   .orb-white {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .depth-orb__inner {
+      animation: none;
+    }
   }
 
   /* Section base for horizontal scroll (legacy) */
