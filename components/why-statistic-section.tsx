@@ -200,8 +200,8 @@ export default function WhyStatisticSection() {
           >
             <div className="tory-image relative w-full h-[520px] sm:h-[600px] lg:h-[680px] rounded-3xl overflow-hidden shadow-2xl">
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent z-10" />
-              <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/20 via-transparent to-[#ff8c4a]/20 z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/55 via-transparent to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ff6a1a]/12 via-transparent to-[#ff8c4a]/12 z-10" />
 
               {/* Tory's Photo */}
               <Image
