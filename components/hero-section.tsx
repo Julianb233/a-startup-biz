@@ -36,7 +36,7 @@ export default function HeroSection() {
   ]
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <section className="relative min-h-[calc(100vh-8rem)] pt-32 flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Subtle animated gradient background */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-[#ff6a1a] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -59,7 +59,7 @@ export default function HeroSection() {
               alt="A Startup Biz"
               width={450}
               height={125}
-              className="h-16 w-auto sm:h-20 md:h-24 object-contain"
+              className="h-16 w-auto sm:h-20 md:h-24 object-contain opacity-25"
               priority
             />
           </motion.div>
