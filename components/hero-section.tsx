@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Calendar, CheckCircle } from 'lucide-react'
 
 export default function HeroSection() {
@@ -51,10 +52,22 @@ export default function HeroSection() {
         className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28"
       >
         <div className="text-center max-w-4xl mx-auto">
+          {/* Logo (matches navbar) */}
+          <motion.div variants={itemVariants} className="flex justify-center mb-5">
+            <Image
+              src="/logo.webp"
+              alt="A Startup Biz"
+              width={450}
+              height={125}
+              className="h-16 w-auto sm:h-20 md:h-24 object-contain"
+              priority
+            />
+          </motion.div>
+
           {/* Main headline */}
           <motion.h1
             variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white leading-tight mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white leading-tight mb-6"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Get{' '}
