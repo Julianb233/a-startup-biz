@@ -1,14 +1,29 @@
 'use client'
 
+import { useState, useEffect } from "react"
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Star } from 'lucide-react'
-import { ThinkingAnimation } from '@/components/animations/thinking-animation'
+
+// Import all animations from the repo
+import { ThinkingAnimation } from '@/components/animations/thinking-animation' // "Analyze"
+import { AbsorptionAnimation } from '@/components/animations/think-animation' // "Think"
+import { ConnectionAnimation } from '@/components/animations/connect-animation' // "Connect"
+import { IntenseAnimation } from '@/components/animations/intense-animation' // "Intense"
+import { DeepAnimation } from '@/components/animations/deep-animation' // "Deep"
+import { TransferAnimation } from '@/components/animations/transfer-animation' // "Transfer"
+
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+export type ShapeType = "circle" | "triangle" | "square" | "diamond"
 
 export default function HeroSection() {
+    const [mode, setMode] = useState<"analyze" | "think" | "connect" | "intense" | "deep" | "transfer">("analyze")
+    const [shape, setShape] = useState<ShapeType>("circle")
+
     return (
-        <section className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-gray-900">
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-500">
 
             {/* Background Image - High Quality "Up-Rendered" */}
             <div className="absolute inset-0 z-0">
@@ -21,17 +36,54 @@ export default function HeroSection() {
                     quality={100}
                 />
                 {/* Gradient Overlay for Text Readability & blending animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-black/40 dark:from-gray-950/95 dark:via-gray-950/70 dark:to-transparent z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/70 to-black/40 dark:from-gray-950/95 dark:via-gray-950/70 dark:to-transparent z-10 transition-all duration-700"></div>
             </div>
 
-            {/* 4K Animation Overlay - blended for "connected" feel */}
-            <div className="absolute inset-0 z-10 opacity-60 mix-blend-overlay pointer-events-none">
-                <ThinkingAnimation shape="circle" />
+            {/* 4K Animation Overlay - Switchable Modes */}
+            <div className="absolute inset-0 z-10 opacity-60 mix-blend-overlay pointer-events-none transition-opacity duration-500">
+                {mode === "analyze" ? (
+                    <ThinkingAnimation shape={shape} />
+                ) : mode === "think" ? (
+                    <AbsorptionAnimation shape={shape} />
+                ) : mode === "connect" ? (
+                    <ConnectionAnimation shape={shape} />
+                ) : mode === "intense" ? (
+                    <IntenseAnimation shape={shape} />
+                ) : mode === "deep" ? (
+                    <DeepAnimation shape={shape} />
+                ) : (
+                    <TransferAnimation shape={shape} />
+                )}
+            </div>
+
+            {/* Interactive Controls (Bottom Center) - From Repo */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-4">
+                {/* Shape Selector */}
+                <Tabs value={shape} onValueChange={(value) => setShape(value as ShapeType)}>
+                    <TabsList className="backdrop-blur-xl border-[#E8955F]/20 bg-white/80 dark:bg-black/80 border border-solid shadow-lg rounded-full px-2">
+                        <TabsTrigger value="circle" className="rounded-full w-8 h-8 p-0 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white">●</TabsTrigger>
+                        <TabsTrigger value="triangle" className="rounded-full w-8 h-8 p-0 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white">▲</TabsTrigger>
+                        <TabsTrigger value="square" className="rounded-full w-8 h-8 p-0 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white">■</TabsTrigger>
+                        <TabsTrigger value="diamond" className="rounded-full w-8 h-8 p-0 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white">◆</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+
+                {/* Mode Selector */}
+                <Tabs value={mode} onValueChange={(value) => setMode(value as any)}>
+                    <TabsList className="backdrop-blur-xl border-[#E8955F]/20 bg-white/80 dark:bg-black/80 border border-solid shadow-lg rounded-full px-4 py-1 h-auto">
+                        <TabsTrigger value="analyze" className="rounded-full px-4 py-1 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white transition-all">Analyze</TabsTrigger>
+                        <TabsTrigger value="think" className="rounded-full px-4 py-1 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white transition-all">Think</TabsTrigger>
+                        <TabsTrigger value="connect" className="rounded-full px-4 py-1 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white transition-all">Connect</TabsTrigger>
+                        <TabsTrigger value="intense" className="rounded-full px-4 py-1 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white transition-all">Intense</TabsTrigger>
+                        <TabsTrigger value="deep" className="rounded-full px-4 py-1 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white transition-all">Deep</TabsTrigger>
+                        <TabsTrigger value="transfer" className="rounded-full px-4 py-1 data-[state=active]:bg-[#ff6a1a] data-[state=active]:text-white transition-all">Transfer</TabsTrigger>
+                    </TabsList>
+                </Tabs>
             </div>
 
             {/* Content Container */}
-            <div className="container relative z-20 mx-auto px-4 md:px-6 lg:px-8 py-20 min-h-screen flex items-center justify-start">
-                <div className="max-w-3xl w-full text-left flex flex-col items-start">
+            <div className="container relative z-20 mx-auto px-4 md:px-6 lg:px-8 py-20 min-h-screen flex items-center justify-start pointer-events-none">
+                <div className="max-w-3xl w-full text-left flex flex-col items-start pointer-events-auto">
 
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
