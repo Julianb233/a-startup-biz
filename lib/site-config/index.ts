@@ -55,7 +55,7 @@ export const SITE_CONFIG = {
     name: 'Tory Zweigle',
     title: 'Founder & Business Consultant',
     email: 'tory@astartupbiz.com',
-    phone: '+1 (555) 123-4567', // Replace with actual
+    phone: '+1 (949) 806-4468',
   },
   social: {
     linkedin: 'https://linkedin.com/in/toryzweigle',
@@ -73,7 +73,7 @@ export const SITE_CONFIG = {
     email: 'hello@astartupbiz.com',
     supportEmail: 'support@astartupbiz.com',
     partnersEmail: 'partners@astartupbiz.com',
-    phone: '+1 (555) 123-4567',
+    phone: '+1 (949) 806-4468',
     address: {
       line1: '123 Business Street',
       line2: 'Suite 100',

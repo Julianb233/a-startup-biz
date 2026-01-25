@@ -347,7 +347,7 @@ export const siteMetadata = {
   description: "Professional business consulting and services for entrepreneurs. From EIN filing to full-service business solutions—launch, grow, and scale your business with expert support.",
   url: "https://astartupbiz.com",
   email: "tory@astartupbiz.com",
-  phone: "+1 (555) 123-4567", // Replace with actual phone
+  phone: "+1 (949) 806-4468",
   social: {
     linkedin: "https://linkedin.com/company/astartupbiz",
     twitter: "https://twitter.com/astartupbiz",

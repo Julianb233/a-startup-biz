@@ -89,7 +89,7 @@ APPLY (/apply)
 CONTACT (/contact)
 ├─ Contact Form
 ├─ Email: hello@astartupbiz.com
-├─ Phone: +1 (555) 123-4567
+├─ Phone: +1 (949) 806-4468
 ├─ Social Links
 └─ Office Address
 

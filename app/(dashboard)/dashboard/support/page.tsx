@@ -82,7 +82,7 @@ const contactMethods = [
   {
     icon: Phone,
     title: "Phone Support",
-    description: "(555) 123-4567",
+    description: "(949) 806-4468",
     availability: "Mon-Fri, 9AM-6PM EST",
     action: "Call Now",
     color: "bg-purple-100 text-purple-600"

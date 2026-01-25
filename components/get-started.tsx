@@ -116,11 +116,11 @@ export default function GetStarted() {
                   partnerships@dailyeventinsurance.com
                 </a>
                 <a
-                  href="tel:+1-555-123-4567"
+                  href="tel:+1-949-806-4468"
                   className="inline-flex items-center hover:text-teal-100 transition-colors"
                 >
                   <Phone className="h-5 w-5 mr-2" />
-                  +1 (555) 123-4567
+                  +1 (949) 806-4468
                 </a>
               </div>
             </div>
