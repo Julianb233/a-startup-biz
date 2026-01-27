@@ -10,8 +10,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { FloatingCallButton } from '../floating-call-button'
 import { useUser } from '@/components/clerk-safe'
 
-// Mock Clerk authentication
-vi.mock('@clerk/nextjs', () => ({
+// Mock clerk-safe authentication
+vi.mock('@/components/clerk-safe', () => ({
   useUser: vi.fn(),
 }))
 
