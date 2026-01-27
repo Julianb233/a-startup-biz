@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import {
   Briefcase,
@@ -12,58 +12,38 @@ import {
   MessageSquare,
   ArrowRight,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react"
 import Link from "next/link"
 
-// Mock services data - will be replaced with real database queries
-const activeServices = [
-  {
-    id: 1,
-    name: "Business Formation Package",
-    status: "completed",
-    progress: 100,
-    startDate: "2024-12-01",
-    completedDate: "2024-12-15",
-    deliverables: [
-      { name: "LLC Registration", status: "completed" },
-      { name: "Operating Agreement", status: "completed" },
-      { name: "EIN Filing", status: "completed" },
-      { name: "Business Bank Account Setup Guide", status: "completed" }
-    ],
-    documents: ["LLC Certificate", "Operating Agreement", "EIN Letter"]
-  },
-  {
-    id: 2,
-    name: "Website Development - Starter",
-    status: "in_progress",
-    progress: 65,
-    startDate: "2024-12-20",
-    estimatedCompletion: "2025-01-15",
-    deliverables: [
-      { name: "Discovery & Planning", status: "completed" },
-      { name: "Design Mockups", status: "completed" },
-      { name: "Development", status: "in_progress" },
-      { name: "Testing & Launch", status: "pending" }
-    ],
-    nextMilestone: "Development phase completion",
-    documents: []
-  },
-  {
-    id: 3,
-    name: "Clarity Call - Business Strategy",
-    status: "scheduled",
-    progress: 0,
-    scheduledDate: "2025-01-05",
-    scheduledTime: "2:00 PM EST",
-    deliverables: [
-      { name: "Strategy Session", status: "pending" },
-      { name: "Action Plan Document", status: "pending" },
-      { name: "Follow-up Email", status: "pending" }
-    ],
-    documents: []
-  }
-]
+interface Deliverable {
+  id: string
+  name: string
+  status: 'pending' | 'in_progress' | 'completed'
+}
+
+interface ServiceDocument {
+  id: string
+  name: string
+  url: string | null
+}
+
+interface Service {
+  id: string
+  order_id: string
+  name: string
+  status: 'pending' | 'scheduled' | 'in_progress' | 'completed'
+  progress: number
+  start_date: string | null
+  completed_date: string | null
+  estimated_completion: string | null
+  scheduled_date: string | null
+  scheduled_time: string | null
+  next_milestone: string | null
+  deliverables: Deliverable[]
+  documents: ServiceDocument[]
+}
 
 const statusConfig = {
   completed: {
@@ -89,10 +69,119 @@ const statusConfig = {
 }
 
 export default function ServicesPage() {
-  const [expandedService, setExpandedService] = useState<number | null>(null)
+  const [expandedService, setExpandedService] = useState<string | null>(null)
+  const [services, setServices] = useState<Service[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  const completedServices = activeServices.filter(s => s.status === "completed")
-  const inProgressServices = activeServices.filter(s => s.status === "in_progress" || s.status === "scheduled")
+  useEffect(() => {
+    async function fetchServices() {
+      // Cancel any previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+
+      // Create new abort controller for this request
+      abortControllerRef.current = new AbortController()
+
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        const response = await fetch('/api/user/services', {
+          signal: abortControllerRef.current.signal
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch services')
+        }
+
+        const data = await response.json()
+        setServices(data.services || [])
+      } catch (err) {
+        // Don't set error for aborted requests
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
+        console.error('Error fetching services:', err)
+        setError('Unable to load services. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchServices()
+
+    // Cleanup: abort request on unmount
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [])
+
+  const completedServices = services.filter(s => s.status === "completed")
+  const inProgressServices = services.filter(s => s.status === "in_progress" || s.status === "scheduled")
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="font-montserrat text-2xl font-bold text-gray-900">My Services</h1>
+            <p className="text-gray-600 mt-1">Track your active and completed services</p>
+          </div>
+          <div className="h-12 w-40 bg-gray-200 rounded-lg animate-pulse" />
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="space-y-2">
+                  <div className="w-20 h-4 bg-gray-200 rounded animate-pulse" />
+                  <div className="w-8 h-6 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Loading Indicator */}
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 text-[#ff6a1a] animate-spin" />
+          <span className="ml-2 text-gray-600">Loading services...</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="font-montserrat text-2xl font-bold text-gray-900">My Services</h1>
+            <p className="text-gray-600 mt-1">Track your active and completed services</p>
+          </div>
+        </div>
+
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -163,7 +252,7 @@ export default function ServicesPage() {
             <div>
               <p className="text-sm text-gray-600">Total Services</p>
               <p className="font-montserrat text-2xl font-bold text-gray-900">
-                {activeServices.length}
+                {services.length}
               </p>
             </div>
           </div>
@@ -204,8 +293,8 @@ export default function ServicesPage() {
                           </h3>
                           <p className="text-sm text-gray-600">
                             {service.status === "scheduled"
-                              ? `Scheduled: ${service.scheduledDate} at ${service.scheduledTime}`
-                              : service.startDate ? `Started: ${new Date(service.startDate).toLocaleDateString()}` : ""
+                              ? `Scheduled: ${service.scheduled_date ? new Date(service.scheduled_date).toLocaleDateString() : ''} at ${service.scheduled_time || ''}`
+                              : service.start_date ? `Started: ${new Date(service.start_date).toLocaleDateString()}` : ""
                             }
                           </p>
                         </div>
@@ -244,31 +333,33 @@ export default function ServicesPage() {
                     >
                       <div className="pt-4 space-y-4">
                         {/* Deliverables */}
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-3">Deliverables</h4>
-                          <div className="space-y-2">
-                            {service.deliverables.map((item, i) => (
-                              <div key={i} className="flex items-center gap-3">
-                                {item.status === "completed" ? (
-                                  <CheckCircle className="h-5 w-5 text-green-500" />
-                                ) : item.status === "in_progress" ? (
-                                  <Clock className="h-5 w-5 text-blue-500" />
-                                ) : (
-                                  <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
-                                )}
-                                <span className={item.status === "completed" ? "text-gray-600" : "text-gray-900"}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            ))}
+                        {service.deliverables.length > 0 && (
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-3">Deliverables</h4>
+                            <div className="space-y-2">
+                              {service.deliverables.map((item) => (
+                                <div key={item.id} className="flex items-center gap-3">
+                                  {item.status === "completed" ? (
+                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                  ) : item.status === "in_progress" ? (
+                                    <Clock className="h-5 w-5 text-blue-500" />
+                                  ) : (
+                                    <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                                  )}
+                                  <span className={item.status === "completed" ? "text-gray-600" : "text-gray-900"}>
+                                    {item.name}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
 
                         {/* Next Milestone */}
-                        {service.nextMilestone && (
+                        {service.next_milestone && (
                           <div className="bg-blue-50 rounded-lg p-4">
                             <p className="text-sm text-blue-800">
-                              <strong>Next Milestone:</strong> {service.nextMilestone}
+                              <strong>Next Milestone:</strong> {service.next_milestone}
                             </p>
                           </div>
                         )}
@@ -319,7 +410,7 @@ export default function ServicesPage() {
                         {service.name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Completed: {new Date(service.completedDate!).toLocaleDateString()}
+                        Completed: {service.completed_date ? new Date(service.completed_date).toLocaleDateString() : 'N/A'}
                       </p>
                     </div>
                   </div>
@@ -347,7 +438,7 @@ export default function ServicesPage() {
       )}
 
       {/* Empty State */}
-      {activeServices.length === 0 && (
+      {services.length === 0 && (
         <div className="bg-white rounded-xl p-12 border border-gray-200 text-center">
           <Briefcase className="h-12 w-12 text-gray-300 mx-auto mb-4" />
           <h3 className="font-montserrat text-lg font-semibold text-gray-900 mb-2">

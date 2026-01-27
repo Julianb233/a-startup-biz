@@ -220,6 +220,100 @@ export async function getServiceProgress(orderId: string): Promise<ServiceProgre
   ` as unknown as ServiceProgress[]
 }
 
+// ============================================
+// USER SERVICES QUERIES
+// ============================================
+
+export interface UserService {
+  id: string
+  order_id: string
+  name: string
+  status: 'pending' | 'scheduled' | 'in_progress' | 'completed'
+  progress: number
+  start_date: Date | null
+  completed_date: Date | null
+  estimated_completion: Date | null
+  scheduled_date: Date | null
+  scheduled_time: string | null
+  next_milestone: string | null
+  created_at: Date
+}
+
+export interface ServiceDeliverable {
+  id: string
+  service_id: string
+  name: string
+  status: 'pending' | 'in_progress' | 'completed'
+  sort_order: number
+}
+
+export interface ServiceDocument {
+  id: string
+  service_id: string
+  name: string
+  url: string | null
+}
+
+export async function getUserServices(userId: string): Promise<UserService[]> {
+  return sql`
+    SELECT
+      s.id,
+      s.order_id,
+      s.name,
+      s.status,
+      s.progress,
+      s.start_date,
+      s.completed_date,
+      s.estimated_completion,
+      s.scheduled_date,
+      s.scheduled_time,
+      s.next_milestone,
+      s.created_at
+    FROM user_services s
+    INNER JOIN orders o ON s.order_id = o.id
+    WHERE o.user_id = ${userId}
+    ORDER BY
+      CASE s.status
+        WHEN 'in_progress' THEN 1
+        WHEN 'scheduled' THEN 2
+        WHEN 'pending' THEN 3
+        ELSE 4
+      END,
+      s.created_at DESC
+  ` as unknown as UserService[]
+}
+
+export async function getServiceDeliverables(serviceId: string): Promise<ServiceDeliverable[]> {
+  return sql`
+    SELECT id, service_id, name, status, sort_order
+    FROM service_deliverables
+    WHERE service_id = ${serviceId}
+    ORDER BY sort_order ASC
+  ` as unknown as ServiceDeliverable[]
+}
+
+export async function getServiceDocuments(serviceId: string): Promise<ServiceDocument[]> {
+  return sql`
+    SELECT id, service_id, name, url
+    FROM service_documents
+    WHERE service_id = ${serviceId}
+  ` as unknown as ServiceDocument[]
+}
+
+export async function getUserServicesWithDetails(userId: string) {
+  const services = await getUserServices(userId)
+
+  const servicesWithDetails = await Promise.all(
+    services.map(async (service) => ({
+      ...service,
+      deliverables: await getServiceDeliverables(service.id),
+      documents: await getServiceDocuments(service.id)
+    }))
+  )
+
+  return servicesWithDetails
+}
+
 export async function getUserOnboarding(userId: string): Promise<OnboardingSubmission | null> {
   const results = await sql`
     SELECT * FROM onboarding_submissions

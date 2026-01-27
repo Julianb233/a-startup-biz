@@ -254,33 +254,39 @@ export default function ContactForm() {
 
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label htmlFor="name" className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Full Name <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <input
+                      id="name"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="John Smith"
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      aria-invalid={errors.name ? "true" : "false"}
                       className={`w-full h-12 px-4 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     />
-                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                    {errors.name && <p id="name-error" role="alert" className="text-red-500 text-sm mt-1">{errors.name}</p>}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label htmlFor="email" className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Email Address <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <input
+                      id="email"
                       name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="john@company.com"
+                      aria-describedby={errors.email ? "email-error" : undefined}
+                      aria-invalid={errors.email ? "true" : "false"}
                       className={`w-full h-12 px-4 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     />
-                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                    {errors.email && <p id="email-error" role="alert" className="text-red-500 text-sm mt-1">{errors.email}</p>}
                   </div>
 
                   {/* Phone & Company */}
@@ -314,13 +320,16 @@ export default function ContactForm() {
 
                   {/* Business Stage */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label htmlFor="businessStage" className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Where are you in your business journey? <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <select
+                      id="businessStage"
                       name="businessStage"
                       value={formData.businessStage}
                       onChange={handleChange}
+                      aria-describedby={errors.businessStage ? "businessStage-error" : undefined}
+                      aria-invalid={errors.businessStage ? "true" : "false"}
                       className={`w-full h-12 px-4 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all ${errors.businessStage ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     >
                       <option value="">Select your stage</option>
@@ -329,7 +338,7 @@ export default function ContactForm() {
                       <option value="established">Established - Looking to grow</option>
                       <option value="scaling">Scaling - Need systems and automation</option>
                     </select>
-                    {errors.businessStage && <p className="text-red-500 text-sm mt-1">{errors.businessStage}</p>}
+                    {errors.businessStage && <p id="businessStage-error" role="alert" className="text-red-500 text-sm mt-1">{errors.businessStage}</p>}
                   </div>
 
                   {/* Services */}
@@ -361,18 +370,21 @@ export default function ContactForm() {
 
                   {/* Message */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <label htmlFor="message" className="block text-sm font-semibold text-gray-900 dark:text-white mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                       Tell me about your business goals <span className="text-[#ff6a1a]">*</span>
                     </label>
                     <textarea
+                      id="message"
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="What are you trying to accomplish? What's holding you back?"
                       rows={5}
+                      aria-describedby={errors.message ? "message-error" : undefined}
+                      aria-invalid={errors.message ? "true" : "false"}
                       className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff6a1a]/20 focus:border-[#ff6a1a] transition-all resize-y ${errors.message ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                     />
-                    {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+                    {errors.message && <p id="message-error" role="alert" className="text-red-500 text-sm mt-1">{errors.message}</p>}
                   </div>
 
                   {/* Submit Button */}

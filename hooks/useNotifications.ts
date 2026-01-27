@@ -87,14 +87,23 @@ export function useNotifications(options: UseNotificationsOptions = {}): UseNoti
 
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const isMountedRef = useRef(true)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   /**
-   * Fetch notifications from the API
+   * Fetch notifications from the API with AbortController for race condition prevention
    */
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated || authLoading) {
       return
     }
+
+    // Cancel any in-flight request to prevent race conditions
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController()
 
     try {
       setIsLoading(true)
@@ -105,7 +114,9 @@ export function useNotifications(options: UseNotificationsOptions = {}): UseNoti
         unreadOnly: unreadOnly.toString(),
       })
 
-      const response = await fetch(`/api/notifications?${params}`)
+      const response = await fetch(`/api/notifications?${params}`, {
+        signal: abortControllerRef.current.signal
+      })
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -122,6 +133,10 @@ export function useNotifications(options: UseNotificationsOptions = {}): UseNoti
         setUnreadCount(data.unreadCount)
       }
     } catch (err) {
+      // Don't set error state for aborted requests (they're intentional)
+      if (err instanceof Error && err.name === 'AbortError') {
+        return
+      }
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch notifications'
       if (isMountedRef.current) {
         setError(new Error(errorMessage))
@@ -276,6 +291,11 @@ export function useNotifications(options: UseNotificationsOptions = {}): UseNoti
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current)
         pollIntervalRef.current = null
+      }
+      // Abort any in-flight requests on unmount
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
       }
     }
   }, [])
