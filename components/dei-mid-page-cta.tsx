@@ -46,10 +46,10 @@ export function MidPageCTA() {
             <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
               <span>or call</span>
               <a
-                href="tel:+18555551234"
+                href="tel:+19498064468"
                 className="text-teal-600 font-semibold hover:text-teal-700 transition-colors"
               >
-                (855) 555-1234
+                (949) 806-4468
               </a>
             </div>
           </div>

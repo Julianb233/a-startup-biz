@@ -91,11 +91,11 @@ export function OnboardingLayout({
                 partners@astartupbiz.com
               </a>
               <a
-                href="tel:+18005551234"
+                href="tel:+19498064468"
                 className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-600 transition-colors"
               >
                 <Phone className="h-4 w-4" />
-                1-800-555-1234
+                949-806-4468
               </a>
             </div>
           </div>

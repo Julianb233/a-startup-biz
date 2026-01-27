@@ -296,11 +296,11 @@ function CallRequiredView({
               </a>
               <span className="hidden sm:inline text-gray-300">|</span>
               <a
-                href="tel:+18005551234"
+                href="tel:+19498064468"
                 className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium"
               >
                 <Phone className="w-4 h-4" />
-                1-800-555-1234
+                949-806-4468
               </a>
             </div>
           </motion.div>
